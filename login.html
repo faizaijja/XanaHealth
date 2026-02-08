@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Login</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: Arial, sans-serif;
+      }
+
+      body {
+        height: 100vh;
+      }
+
+      h2 {
+        text-align: center;
+      }
+      .logo {
+        font-size: 32px;
+        font-weight: 300;
+        text-align: center;
+        margin-bottom: 100px;
+      }
+
+      .logo .xana {
+        color: #2c3e50;
+      }
+
+      .logo .health {
+        color: #5a9c8e;
+        font-weight: 500;
+      }
+      .login-container {
+        display: flex;
+        flex-direction: row-reverse;
+        height: 100vh;
+      }
+
+      /* Login form side */
+      .login-form {
+        width: 40%;
+        padding: 60px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+
+      .login-form h2 {
+        margin-bottom: 10px;
+      }
+
+      .login-form p {
+        margin-bottom: 30px;
+        color: #666;
+      }
+
+      .login-form input {
+        width: 100%;
+        padding: 12px;
+        margin-bottom: 15px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+      }
+
+      .login-form button {
+        padding: 12px;
+        background: #5a9c8e;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        width: 100%;
+        text-align: center;
+      }
+
+      .login-form button:hover {
+        background: #5a9c8e;
+      }
+
+      .forgot {
+        margin-top: 15px;
+        text-align: right;
+        display: block;
+        color: #5a9c8e;
+        text-decoration: underline;
+      }
+
+      .login-image {
+        width: 60%;
+        background-image: url("stethoscope.jpg");
+        background-size: cover; /* fills the div */
+        background-position: center; /* centers the image */
+        background-repeat: no-repeat; /* prevents tiling */
+        color: white;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
+
+      /* Mobile */
+      @media (max-width: 768px) {
+        .login-image {
+          display: none;
+        }
+
+        .login-form {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="login-container">
+      <!-- Login Side -->
+
+      <div class="login-form">
+        <div class="logo">Xana<span>Health</span></div>
+        <h2>Login</h2>
+
+        <form>
+          <label>Email</label>
+          <input type="email" placeholder="Enter your email here" required />
+
+          <label>Password</label>
+          <input
+            type="password"
+            placeholder="Enter your password here"
+            required
+          />
+
+          <a href="dashboard.html"> <button type="submit">Log in</button></a>
+
+          <a href="#" class="forgot">Forgot password?</a>
+        </form>
+      </div>
+
+      <!-- Empty / Branding Side -->
+      <div class="login-image"></div>
+    </div>
+  </body>
+</html>

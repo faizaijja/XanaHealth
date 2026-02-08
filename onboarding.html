@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>XanaHealth - Multi-Step Form</title>
+    <link rel="stylesheet" href="css/forms.css" />
+    <script src="forms.js"></script>
+  </head>
+  <body>
+    <div class="header">
+      <div class="logo">
+        <span class="xana">Xana</span><span class="health">Health</span>
+      </div>
+    </div>
+
+    <div class="container">
+      <!-- Step Progress Indicator -->
+      <div class="step-progress">
+        <div class="steps-container">
+          <div class="progress-line">
+            <div class="progress-line-fill" id="progressLineFill"></div>
+          </div>
+          <div class="step active" data-step="1">
+            <div class="step-circle">1</div>
+          </div>
+          <div class="step" data-step="2">
+            <div class="step-circle">2</div>
+          </div>
+          <div class="step" data-step="3">
+            <div class="step-circle">3</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Form Content -->
+      <div class="form-content">
+        <!-- Step 1: Health Facility Details -->
+        <div class="form-step active" data-step="1">
+          <h2 class="form-title">Health Facility Details</h2>
+          <p class="form-subtitle">
+            Please provide accurate details for your health facility
+          </p>
+
+          <div class="form-group">
+            <label>Health Facility Name</label>
+            <span class="required">*Required</span>
+            <input
+              type="text"
+              id="facilityName"
+              placeholder="Enter your facility's name here"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label>Health Facility Type</label>
+            <span class="required">*Required</span>
+            <select id="facilityType" required>
+              <option value="">Select health facility type</option>
+              <option value="hospital">General Clinic</option>
+              <option value="clinic">Polyclinic</option>
+              <option value="pharmacy">Hospital</option>
+              <option value="health-center">Health Center</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Email</label>
+            <span class="required">*Required</span>
+            <input
+              type="email"
+              id="facilityEmail"
+              placeholder="Enter your facility's email here"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label>Phone Number</label>
+            <span class="required">*Required</span>
+            <div class="phone-input-wrapper">
+              <select class="country-code-select" id="countryCode">
+                <!-- Options will be populated by JavaScript -->
+              </select>
+              <input
+                type="tel"
+                id="phoneNumber"
+                placeholder="Enter phone number"
+                required
+              />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Tax Identification Number</label>
+            <span class="required">*Required</span>
+            <input
+              type="text"
+              id="facilityTIN"
+              placeholder="Enter your facility's TIN here"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label>Business Registration Number</label>
+            <span class="optional">Optional</span>
+            <input
+              type="text"
+              id="facilityRegistration"
+              placeholder="Enter business registration number"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <!-- For side-by-side fields -->
+            <div class="form-columns">
+              <div class="form-row">
+                <label>Country</label>
+                <span class="required">*Required</span>
+                <input
+                  type="text"
+                  id="facilityCountry"
+                  placeholder="Rwanda"
+                  required
+                />
+              </div>
+
+              <div class="form-row">
+                <label>Province/State</label>
+                <span class="required">*Required</span>
+                <input
+                  type="text"
+                  id="anotherField"
+                  placeholder="Enter your street name here"
+                  required
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <!-- For side-by-side fields -->
+            <div class="form-columns">
+              <div class="form-row">
+                <label>District/Local Government</label>
+                <span class="required">*Required</span>
+                <input
+                  type="text"
+                  id="facilityName"
+                  placeholder="Enter your facility's name here"
+                  required
+                />
+              </div>
+
+              <div class="form-row">
+                <label>Sector/City</label>
+                <span class="required">*Required</span>
+                <input
+                  type="text"
+                  id="anotherField"
+                  placeholder="Enter value here"
+                  required
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="form-navigation">
+            <button class="btn btn-prev" onclick="previousStep()" disabled>
+              Previous
+            </button>
+            <button class="btn btn-next" onclick="nextStep()">Next</button>
+          </div>
+        </div>
+
+        <!-- Step 2: Contact Information -->
+        <div class="form-step" data-step="2">
+          <h2 class="form-title">Contact Information</h2>
+          <p class="form-subtitle">Provide contact details for communication</p>
+
+          <div class="form-group">
+            <label>Primary Contact Name</label>
+            <span class="required">*Required</span>
+            <input
+              type="text"
+              id="contactName"
+              placeholder="Enter contact person's name"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label>Email Address</label>
+            <span class="required">*Required</span>
+            <input
+              type="email"
+              id="contactEmail"
+              placeholder="example@email.com"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label>Phone Number</label>
+            <span class="required">*Required</span>
+            <input
+              type="tel"
+              id="contactPhone"
+              placeholder="+1 (555) 000-0000"
+              required
+            />
+          </div>
+
+          <div class="form-navigation">
+            <button class="btn btn-prev" onclick="previousStep()">
+              Previous
+            </button>
+            <button class="btn btn-next" onclick="nextStep()">Next</button>
+          </div>
+        </div>
+
+        <!-- Step 3: Additional Information -->
+        <div class="form-step" data-step="3">
+          <h2 class="form-title">Additional Information</h2>
+          <p class="form-subtitle">Tell us more about your facility</p>
+
+          <div class="form-group">
+            <label>Number of Beds</label>
+            <input
+              type="text"
+              id="bedCount"
+              placeholder="Enter number of beds (if applicable)"
+            />
+          </div>
+
+          <div class="form-group">
+            <label>Services Offered</label>
+            <span class="required">*Required</span>
+            <textarea
+              id="services"
+              placeholder="List the main services your facility provides"
+              required
+            ></textarea>
+          </div>
+
+          <div class="form-group">
+            <label>Operating Hours</label>
+            <input
+              type="text"
+              id="operatingHours"
+              placeholder="e.g., Mon-Fri 8AM-5PM"
+            />
+          </div>
+
+          <div class="form-navigation">
+            <button class="btn btn-prev" onclick="previousStep()">
+              Previous
+            </button>
+            <button class="btn btn-submit" onclick="submitForm()">
+              Submit
+            </button>
+          </div>
+        </div>
+
+        <!-- Success Message -->
+        <div class="success-message" id="successMessage">
+          <div class="success-icon">✓</div>
+          <h2 class="success-title">Registration Successful!</h2>
+          <p class="success-text">
+            Your health facility details have been submitted successfully.
+          </p>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

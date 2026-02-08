@@ -1,0 +1,79 @@
+<!doctype html>
+<html>
+  <head>
+    <style>
+      .overlay-section {
+        position: relative;
+        padding: 120px 16px;
+        background: #ffffff;
+        overflow: hidden;
+      }
+
+      /* Container on top */
+      .main-container {
+        position: relative;
+        z-index: 3;
+        max-width: 1100px;
+        margin: 0 auto;
+        background: #fff;
+        border-radius: 20px;
+        padding: 40px;
+        box-shadow: 0 18px 40px rgba(0, 0, 0, 0.08);
+      }
+
+      /* Shared decor wrapper */
+      .decor {
+        position: absolute;
+        bottom: 0;
+        width: 180px;
+        height: 180px;
+        z-index: 1;
+      }
+
+      /* Green background */
+      .decor-bg {
+        position: absolute;
+        inset: 0;
+        background: #e6f4ee;
+        border-radius: 16px;
+      }
+
+      /* Dots layer */
+      .decor-dots {
+        position: absolute;
+        inset: -20px; /* 🔑 pushes dots outside */
+        background-image: radial-gradient(#6fae95 3px, transparent 3px);
+        background-size: 18px 18px;
+        z-index: 2;
+        pointer-events: none;
+      }
+
+      /* Positioning */
+      .decor-left {
+        left: -40px;
+      }
+
+      .decor-right {
+        right: -40px;
+      }
+    </style>
+  </head>
+  <body>
+    <section class="overlay-section">
+      <!-- LEFT DECOR -->
+      <div class="decor decor-left">
+        <div class="decor-bg"></div>
+        <div class="decor-dots"></div>
+      </div>
+
+      <!-- RIGHT DECOR -->
+      <div class="decor decor-right">
+        <div class="decor-bg"></div>
+        <div class="decor-dots"></div>
+      </div>
+
+      <!-- MAIN CONTAINER -->
+      <div class="main-container">Dashboard content here</div>
+    </section>
+  </body>
+</html>

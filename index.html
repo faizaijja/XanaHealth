@@ -1,0 +1,1577 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>XanaHealth-Onboarding</title>
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+          "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+          sans-serif;
+        background-color: #f5f5f5;
+        color: #333;
+        line-height: 1.6;
+      }
+
+      /* Header */
+      .header {
+        background-color: #fff;
+        padding: 1.5rem 2rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+
+      .logo {
+        font-size: 1.5rem;
+        font-weight: 700;
+      }
+
+      .logo .xana {
+        color: #2563eb;
+      }
+
+      .logo .health {
+        color: #333;
+      }
+
+      /* Container */
+      .container {
+        max-width: 800px;
+        margin: 2rem auto;
+        padding: 0 1.5rem;
+      }
+
+      /* Step Progress */
+      .step-progress {
+        background-color: #fff;
+        padding: 2rem;
+        border-radius: 12px;
+        margin-bottom: 2rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      }
+
+      .steps-container {
+        position: relative;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        max-width: 400px;
+        margin: 0 auto;
+      }
+
+      .progress-line {
+        position: absolute;
+        top: 20px;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background-color: #e5e7eb;
+        z-index: 1;
+      }
+
+      .progress-line-fill {
+        height: 100%;
+        background-color: #2563eb;
+        transition: width 0.3s ease;
+        width: 0%;
+      }
+
+      .step {
+        position: relative;
+        z-index: 2;
+      }
+
+      .step-circle {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: #fff;
+        border: 3px solid #e5e7eb;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        color: #9ca3af;
+        transition: all 0.3s ease;
+        font-size: 0.9rem;
+      }
+
+      .step.active .step-circle {
+        border-color: #2563eb;
+        color: #2563eb;
+        background-color: #eff6ff;
+      }
+
+      .step.completed .step-circle {
+        border-color: #10b981;
+        background-color: #10b981;
+        color: #fff;
+        font-size: 1.2rem;
+      }
+
+      /* Hide the number and show only checkmark for completed steps */
+      .step.completed .step-circle::before {
+        content: "✓";
+      }
+
+      .step.completed .step-circle {
+        font-size: 0; /* Hide the number */
+      }
+
+      .step.completed .step-circle::before {
+        font-size: 1.2rem; /* Show checkmark at proper size */
+      }
+
+      /* Form Content */
+      .form-content {
+        background-color: #fff;
+        padding: 2.5rem;
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      }
+
+      .form-step {
+        display: none;
+      }
+
+      .form-step.active {
+        display: block;
+        animation: fadeIn 0.3s ease;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .form-title {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: #1f2937;
+        margin-bottom: 0.5rem;
+      }
+
+      .form-subtitle {
+        font-size: 0.95rem;
+        color: #6b7280;
+        margin-bottom: 2rem;
+      }
+
+      /* Form Groups */
+      .form-group {
+        margin-bottom: 1.5rem;
+      }
+
+      .form-group label {
+        display: block;
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: #374151;
+        margin-bottom: 0.5rem;
+      }
+
+      .required {
+        color: #dc2626;
+        font-size: 0.85rem;
+        margin-left: 0.25rem;
+        font-weight: 400;
+      }
+
+      .optional {
+        color: #6b7280;
+        font-size: 0.85rem;
+        margin-left: 0.25rem;
+        font-weight: 400;
+      }
+
+      /* Input Styles */
+      input[type="text"],
+      input[type="email"],
+      input[type="tel"],
+      select,
+      textarea {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        font-size: 0.95rem;
+        color: #1f2937;
+        background-color: #f9fafb;
+        transition: all 0.2s ease;
+      }
+
+      input[type="text"]:focus,
+      input[type="email"]:focus,
+      input[type="tel"]:focus,
+      select:focus,
+      textarea:focus {
+        outline: none;
+        border-color: #2563eb;
+        background-color: #fff;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+      }
+
+      input::placeholder,
+      textarea::placeholder {
+        color: #9ca3af;
+      }
+
+      input.error,
+      select.error,
+      textarea.error {
+        border-color: #dc2626;
+      }
+
+      input.error:focus,
+      select.error:focus,
+      textarea.error:focus {
+        box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+      }
+
+      textarea {
+        resize: vertical;
+        min-height: 120px;
+      }
+
+      /* Phone Input Wrapper - Matching the uploaded image */
+      .phone-input-wrapper {
+        display: flex;
+        gap: 0;
+        background-color: #f9fafb;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        overflow: hidden;
+        transition: all 0.2s ease;
+      }
+
+      .phone-input-wrapper:focus-within {
+        border-color: #2563eb;
+        background-color: #fff;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+      }
+
+      .country-code-select {
+        border: none;
+        background-color: transparent;
+        padding: 0.75rem 0.5rem 0.75rem 1rem;
+        font-size: 0.95rem;
+        color: #1f2937;
+        cursor: pointer;
+        min-width: 120px;
+        border-right: 1px solid #e5e7eb;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7280' d='M6 8L2 4h8z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 0.5rem center;
+        padding-right: 2rem;
+      }
+
+      .country-code-select:focus {
+        outline: none;
+      }
+
+      .phone-input-wrapper input[type="tel"] {
+        border: none;
+        background-color: transparent;
+        flex: 1;
+        padding: 0.75rem 1rem;
+        border-radius: 0;
+      }
+
+      .phone-input-wrapper input[type="tel"]:focus {
+        outline: none;
+        box-shadow: none;
+        border: none;
+      }
+
+      /* Two Column Layout */
+      .form-columns {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+      }
+
+      .form-row {
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* File Upload Styles - Matching uploaded image */
+      .file-upload-wrapper {
+        position: relative;
+      }
+
+      .file-input {
+        position: absolute;
+        width: 0.1px;
+        height: 0.1px;
+        opacity: 0;
+        overflow: hidden;
+        z-index: -1;
+      }
+
+      .file-upload-area {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 2.5rem 2rem;
+        border: 2px dashed #d1d5db;
+        border-radius: 8px;
+        background-color: #fafafa;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-align: center;
+      }
+
+      .file-upload-area:hover {
+        border-color: #9ca3af;
+        background-color: #f5f5f5;
+      }
+
+      .file-input:focus + .file-upload-area {
+        border-color: #2563eb;
+        background-color: #f9fafb;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+      }
+
+      .upload-icon {
+        color: #9ca3af;
+        margin-bottom: 1rem;
+      }
+
+      .upload-text {
+        display: block;
+        font-size: 0.95rem;
+        color: #6b7280;
+        margin-bottom: 0.5rem;
+      }
+
+      .upload-formats {
+        display: block;
+        font-size: 0.85rem;
+        color: #9ca3af;
+        margin-bottom: 0.25rem;
+      }
+
+      .upload-size {
+        display: block;
+        font-size: 0.85rem;
+        color: #9ca3af;
+      }
+
+      .file-preview {
+        margin-top: 1rem;
+        display: none;
+      }
+
+      .file-preview.active {
+        display: block;
+        padding: 1rem;
+        background-color: #f9fafb;
+        border-radius: 8px;
+        border: 1px solid #e5e7eb;
+      }
+
+      .file-preview-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+      }
+
+      .file-info {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        flex: 1;
+      }
+
+      .file-thumbnail {
+        width: 48px;
+        height: 48px;
+        border-radius: 4px;
+        object-fit: cover;
+        border: 1px solid #e5e7eb;
+      }
+
+      .file-details {
+        flex: 1;
+      }
+
+      .file-name {
+        font-size: 0.9rem;
+        color: #1f2937;
+        font-weight: 500;
+        margin-bottom: 0.25rem;
+        word-break: break-word;
+      }
+
+      .file-size {
+        font-size: 0.8rem;
+        color: #6b7280;
+      }
+
+      .file-remove {
+        background: none;
+        border: none;
+        color: #dc2626;
+        cursor: pointer;
+        padding: 0.5rem;
+        border-radius: 4px;
+        transition: background-color 0.2s ease;
+      }
+
+      .file-remove:hover {
+        background-color: #fee2e2;
+      }
+
+      /* Buttons */
+      .form-navigation {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2.5rem;
+        padding-top: 2rem;
+        border-top: 1px solid #e5e7eb;
+      }
+
+      .btn {
+        padding: 0.875rem 2rem;
+        border-radius: 8px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border: none;
+        flex: 1;
+      }
+
+      .btn-prev {
+        background-color: #fff;
+        color: #374151;
+        border: 1px solid #d1d5db;
+      }
+
+      .btn-prev:hover:not(:disabled) {
+        background-color: #f9fafb;
+        border-color: #9ca3af;
+      }
+
+      .btn-prev:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .btn-next,
+      .btn-submit {
+        background-color: #2563eb;
+        color: #fff;
+      }
+
+      .btn-next:hover,
+      .btn-submit:hover {
+        background-color: #1d4ed8;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
+      }
+
+      /* Success Message */
+      .success-message {
+        display: none;
+        text-align: center;
+        padding: 3rem 2rem;
+      }
+
+      /* Summary Section */
+      .summary-section {
+        background-color: #f9fafb;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+      }
+
+      .summary-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #1f2937;
+        margin-bottom: 1rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 2px solid #e5e7eb;
+      }
+
+      .summary-table-wrapper {
+        overflow-x: auto;
+      }
+
+      .summary-table {
+        width: 100%;
+        border-collapse: collapse;
+        background-color: #fff;
+        border-radius: 6px;
+        overflow: hidden;
+      }
+
+      .summary-table tbody tr {
+        border-bottom: 1px solid #f3f4f6;
+      }
+
+      .summary-table tbody tr:last-child {
+        border-bottom: none;
+      }
+
+      .summary-table td {
+        padding: 0.875rem 1rem;
+        font-size: 0.9rem;
+      }
+
+      .summary-table td:first-child {
+        font-weight: 600;
+        color: #374151;
+        width: 40%;
+        background-color: #f9fafb;
+      }
+
+      .summary-table td:last-child {
+        color: #1f2937;
+        width: 60%;
+      }
+
+      .summary-logo-preview {
+        max-width: 120px;
+        max-height: 80px;
+        border-radius: 4px;
+        border: 1px solid #e5e7eb;
+        margin-top: 0.25rem;
+      }
+
+      .summary-empty {
+        color: #9ca3af;
+        font-style: italic;
+      }
+
+      .success-icon {
+        width: 80px;
+        height: 80px;
+        background-color: #10b981;
+        color: #fff;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3rem;
+        margin: 0 auto 1.5rem;
+        animation: scaleIn 0.5s ease;
+      }
+
+      @keyframes scaleIn {
+        from {
+          transform: scale(0);
+        }
+        to {
+          transform: scale(1);
+        }
+      }
+
+      .success-title {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: #1f2937;
+        margin-bottom: 0.5rem;
+      }
+
+      .success-text {
+        font-size: 1rem;
+        color: #6b7280;
+      }
+
+      /* Responsive Design */
+      @media (max-width: 768px) {
+        .container {
+          padding: 0 1rem;
+          margin: 1rem auto;
+        }
+
+        .form-content {
+          padding: 1.5rem;
+        }
+
+        .step-progress {
+          padding: 1.5rem;
+        }
+
+        .form-columns {
+          grid-template-columns: 1fr;
+        }
+
+        .form-navigation {
+          flex-direction: column-reverse;
+        }
+
+        .btn {
+          width: 100%;
+        }
+
+        .form-title {
+          font-size: 1.5rem;
+        }
+
+        .steps-container {
+          max-width: 300px;
+        }
+
+        .step-circle {
+          width: 35px;
+          height: 35px;
+          font-size: 0.9rem;
+        }
+
+        .progress-line {
+          top: 17px;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .header {
+          padding: 1rem 1.5rem;
+        }
+
+        .logo {
+          font-size: 1.25rem;
+        }
+
+        .form-content {
+          padding: 1.25rem;
+        }
+
+        .country-code-select {
+          min-width: 100px;
+          font-size: 0.875rem;
+        }
+
+        .phone-input-wrapper input[type="tel"] {
+          font-size: 0.875rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <div class="logo">
+        <span class="xana">Xana</span><span class="health">Health</span>
+      </div>
+    </div>
+
+    <div class="container">
+      <!-- Step Progress Indicator -->
+      <div class="step-progress">
+        <div class="steps-container">
+          <div class="progress-line">
+            <div class="progress-line-fill" id="progressLineFill"></div>
+          </div>
+          <div class="step active" data-step="1">
+            <div class="step-circle">1</div>
+          </div>
+          <div class="step" data-step="2">
+            <div class="step-circle">2</div>
+          </div>
+          <div class="step" data-step="3">
+            <div class="step-circle">3</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Form Content -->
+      <div class="form-content">
+        <!-- Step 1: Health Facility Details -->
+        <div class="form-step active" data-step="1">
+          <h2 class="form-title">Health Facility Details</h2>
+          <p class="form-subtitle">
+            Please provide accurate details for your health facility
+          </p>
+
+          <div class="form-group">
+            <label
+              >Health Facility Name
+              <span class="required">*Required</span></label
+            >
+            <input
+              type="text"
+              id="facilityName"
+              placeholder="Enter your facility's name here"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label
+              >Health Facility Type
+              <span class="required">*Required</span></label
+            >
+            <select id="facilityType" required>
+              <option value="">Select health facility type</option>
+              <option value="general-clinic">General Clinic</option>
+              <option value="polyclinic">Polyclinic</option>
+              <option value="hospital">Hospital</option>
+              <option value="health-center">Health Center</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Email <span class="required">*Required</span></label>
+            <input
+              type="email"
+              id="facilityEmail"
+              placeholder="Enter your facility's email here"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label>Phone Number <span class="required">*Required</span></label>
+            <div class="phone-input-wrapper">
+              <select class="country-code-select" id="countryCode">
+                <!-- Options will be populated by JavaScript -->
+              </select>
+              <input
+                type="tel"
+                id="phoneNumber"
+                placeholder="Enter phone number"
+                required
+              />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label
+              >Tax Identification Number
+              <span class="required">*Required</span></label
+            >
+            <input
+              type="text"
+              id="facilityTIN"
+              placeholder="Enter your facility's TIN here"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label
+              >Business Registration Number
+              <span class="optional">Optional</span></label
+            >
+            <input
+              type="text"
+              id="facilityRegistration"
+              placeholder="Enter business registration number"
+            />
+          </div>
+
+          <div class="form-group">
+            <div class="form-columns">
+              <div class="form-row">
+                <label>Country <span class="required">*Required</span></label>
+                <input
+                  type="text"
+                  id="facilityCountry"
+                  placeholder="Rwanda"
+                  required
+                />
+              </div>
+
+              <div class="form-row">
+                <label
+                  >Province/State <span class="required">*Required</span></label
+                >
+                <input
+                  type="text"
+                  id="facilityProvince"
+                  placeholder="Enter your province/state here"
+                  required
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="form-columns">
+              <div class="form-row">
+                <label
+                  >District/Local Government
+                  <span class="required">*Required</span></label
+                >
+                <input
+                  type="text"
+                  id="facilityDistrict"
+                  placeholder="Enter district/local government"
+                  required
+                />
+              </div>
+
+              <div class="form-row">
+                <label
+                  >Sector/City <span class="required">*Required</span></label
+                >
+                <input
+                  type="text"
+                  id="facilitySector"
+                  placeholder="Enter sector/city"
+                  required
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="form-navigation">
+            <button class="btn btn-prev" onclick="previousStep()" disabled>
+              Previous
+            </button>
+            <button class="btn btn-next" onclick="nextStep()">Next</button>
+          </div>
+        </div>
+
+        <!-- Step 2: Contact Information -->
+        <div class="form-step" data-step="2">
+          <h2 class="form-title">Upload documentation</h2>
+          <p class="form-subtitle">
+            Please upload the appropriate documents for your health facility
+          </p>
+
+          <div class="form-group">
+            <label>Operational license document </label>
+            <span class="required">Optional</span>
+            <div class="upload-wrapper">
+              <label class="upload-box">
+                <input
+                  type="file"
+                  id="licenseDocument"
+                  accept=".png,.jpg,.jpeg"
+                  hidden
+                />
+
+                <div class="upload-content">
+                  <div class="upload-icon">⬆</div>
+                  <p class="upload-title">Upload your file here</p>
+                  <p class="upload-sub">
+                    Supported formats: png, jpeg.<br />
+                    Maximum size 5MB
+                  </p>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Health Facility Logo </label>
+            <span class="required">Optional</span>
+            <div class="upload-wrapper">
+              <label class="upload-box">
+                <input
+                  type="file"
+                  id="facilityLogo"
+                  accept=".png,.jpg,.jpeg"
+                  hidden
+                />
+
+                <div class="upload-content">
+                  <div class="upload-icon">⬆</div>
+                  <p class="upload-title">Upload your file here</p>
+                  <p class="upload-sub">
+                    Supported formats: png, jpeg.<br />
+                    Maximum size 5MB
+                  </p>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-navigation">
+            <button class="btn btn-prev" onclick="previousStep()">
+              Previous
+            </button>
+            <button class="btn btn-next" onclick="nextStep()">Next</button>
+          </div>
+        </div>
+
+        <!-- Step 3: Additional Information -->
+        <div class="form-step" data-step="3">
+          <h2 class="form-title">Summary and Confirmation</h2>
+          <p class="form-subtitle">
+            Please confirm all information before submitting
+          </p>
+
+          <!-- Health Facility Details Summary -->
+          <div class="summary-section">
+            <h3 class="summary-title">Health Facility Details Summary</h3>
+            <div class="summary-table-wrapper">
+              <table class="summary-table" id="facilitySummaryTable">
+                <tbody>
+                  <!-- Table rows will be populated by JavaScript -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="form-navigation">
+            <button class="btn btn-prev" onclick="previousStep()">
+              Previous
+            </button>
+            <button class="btn btn-submit" onclick="submitForm()">
+              Submit
+            </button>
+          </div>
+        </div>
+
+        <!-- Success Message -->
+        <div class="success-message" id="successMessage">
+          <div class="success-icon">✓</div>
+          <h2 class="success-title">Success!</h2>
+          <p class="success-text">
+            Your email address has been successfully verified. Please click on
+            the button below to continue.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Country codes data with flags
+      const countryCodes = [
+        { code: "+250", country: "Rwanda", flag: "🇷🇼" },
+        { code: "+1", country: "USA/Canada", flag: "🇺🇸" },
+        { code: "+44", country: "UK", flag: "🇬🇧" },
+        { code: "+254", country: "Kenya", flag: "🇰🇪" },
+        { code: "+256", country: "Uganda", flag: "🇺🇬" },
+        { code: "+255", country: "Tanzania", flag: "🇹🇿" },
+        { code: "+27", country: "South Africa", flag: "🇿🇦" },
+        { code: "+234", country: "Nigeria", flag: "🇳🇬" },
+        { code: "+91", country: "India", flag: "🇮🇳" },
+        { code: "+86", country: "China", flag: "🇨🇳" },
+      ];
+
+      // Current step tracking
+      let currentStep = 1;
+
+      // Initialize form when DOM is loaded
+      document.addEventListener("DOMContentLoaded", function () {
+        initializeCountryCodeSelect();
+        loadFormData();
+        updateStepProgress();
+        initializeFileUpload();
+
+        // Add event listeners for all form inputs to save data
+        const formInputs = document.querySelectorAll("input, select, textarea");
+        formInputs.forEach((input) => {
+          input.addEventListener("input", saveFormData);
+          input.addEventListener("change", saveFormData);
+        });
+      });
+
+      // Initialize country code dropdown
+      function initializeCountryCodeSelect() {
+        const countryCodeSelect = document.getElementById("countryCode");
+        if (!countryCodeSelect) return;
+
+        countryCodes.forEach((item) => {
+          const option = document.createElement("option");
+          option.value = item.code;
+          option.textContent = `${item.flag} ${item.code}`;
+          option.setAttribute("data-flag", item.flag);
+          countryCodeSelect.appendChild(option);
+        });
+
+        // Set Rwanda as default
+        countryCodeSelect.value = "+250";
+      }
+
+      // Initialize file upload
+      function initializeFileUpload() {
+        const fileInput = document.getElementById("facilityLogo");
+        if (!fileInput) return;
+
+        fileInput.addEventListener("change", handleFileSelect);
+      }
+
+      // Handle file selection
+      function handleFileSelect(event) {
+        const file = event.target.files[0];
+        const preview = document.getElementById("logoPreview");
+
+        if (!file) {
+          preview.classList.remove("active");
+          preview.innerHTML = "";
+          return;
+        }
+
+        // Validate file type
+        const validTypes = ["image/png", "image/jpeg", "image/jpg"];
+        if (!validTypes.includes(file.type)) {
+          alert("Please upload a PNG or JPEG image file.");
+          event.target.value = "";
+          return;
+        }
+
+        // Validate file size (5MB = 5 * 1024 * 1024 bytes)
+        const maxSize = 5 * 1024 * 1024;
+        if (file.size > maxSize) {
+          alert("File size must be less than 5MB.");
+          event.target.value = "";
+          return;
+        }
+
+        // Display preview
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          const fileSize = (file.size / 1024).toFixed(2); // Convert to KB
+          const sizeUnit = file.size > 1024 * 1024 ? "MB" : "KB";
+          const displaySize =
+            file.size > 1024 * 1024
+              ? (file.size / (1024 * 1024)).toFixed(2)
+              : fileSize;
+
+          preview.classList.add("active");
+          preview.innerHTML = `
+      <div class="file-preview-item">
+        <div class="file-info">
+          <img src="${e.target.result}" alt="Logo preview" class="file-thumbnail">
+          <div class="file-details">
+            <div class="file-name">${file.name}</div>
+            <div class="file-size">${displaySize} ${sizeUnit}</div>
+          </div>
+        </div>
+        <button type="button" class="file-remove" onclick="removeFile()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+    `;
+
+          // Save file info to localStorage (as base64)
+          saveFileToStorage(e.target.result, file.name, file.size);
+        };
+
+        reader.readAsDataURL(file);
+      }
+
+      // Remove uploaded file
+      function removeFile() {
+        const fileInput = document.getElementById("facilityLogo");
+        const preview = document.getElementById("logoPreview");
+
+        fileInput.value = "";
+        preview.classList.remove("active");
+        preview.innerHTML = "";
+
+        // Remove from localStorage
+        const savedData = localStorage.getItem("healthFacilityForm");
+        if (savedData) {
+          const formData = JSON.parse(savedData);
+          delete formData.logoData;
+          delete formData.logoName;
+          delete formData.logoSize;
+          localStorage.setItem("healthFacilityForm", JSON.stringify(formData));
+        }
+      }
+
+      // Save file to localStorage
+      function saveFileToStorage(dataUrl, fileName, fileSize) {
+        const savedData = localStorage.getItem("healthFacilityForm");
+        const formData = savedData ? JSON.parse(savedData) : {};
+
+        formData.logoData = dataUrl;
+        formData.logoName = fileName;
+        formData.logoSize = fileSize;
+
+        localStorage.setItem("healthFacilityForm", JSON.stringify(formData));
+      }
+
+      // Load file from localStorage
+      function loadFileFromStorage() {
+        const savedData = localStorage.getItem("healthFacilityForm");
+        if (!savedData) return;
+
+        try {
+          const formData = JSON.parse(savedData);
+          const preview = document.getElementById("logoPreview");
+
+          if (formData.logoData && formData.logoName) {
+            const fileSize = formData.logoSize;
+            const sizeUnit = fileSize > 1024 * 1024 ? "MB" : "KB";
+            const displaySize =
+              fileSize > 1024 * 1024
+                ? (fileSize / (1024 * 1024)).toFixed(2)
+                : (fileSize / 1024).toFixed(2);
+
+            preview.classList.add("active");
+            preview.innerHTML = `
+        <div class="file-preview-item">
+          <div class="file-info">
+            <img src="${formData.logoData}" alt="Logo preview" class="file-thumbnail">
+            <div class="file-details">
+              <div class="file-name">${formData.logoName}</div>
+              <div class="file-size">${displaySize} ${sizeUnit}</div>
+            </div>
+          </div>
+          <button type="button" class="file-remove" onclick="removeFile()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+      `;
+          }
+        } catch (error) {
+          console.error("Error loading file from storage:", error);
+        }
+      }
+
+      // Save form data to localStorage
+      function saveFormData() {
+        const formData = {
+          // Step 1: Health Facility Details
+          facilityName: document.getElementById("facilityName")?.value || "",
+          facilityType: document.getElementById("facilityType")?.value || "",
+          facilityEmail: document.getElementById("facilityEmail")?.value || "",
+          countryCode: document.getElementById("countryCode")?.value || "+250",
+          phoneNumber: document.getElementById("phoneNumber")?.value || "",
+          facilityTIN: document.getElementById("facilityTIN")?.value || "",
+          facilityRegistration:
+            document.getElementById("facilityRegistration")?.value || "",
+          facilityCountry:
+            document.getElementById("facilityCountry")?.value || "",
+
+          // Step 2: Contact Information
+          contactName: document.getElementById("contactName")?.value || "",
+          contactEmail: document.getElementById("contactEmail")?.value || "",
+          contactPhone: document.getElementById("contactPhone")?.value || "",
+
+          // Step 3: Additional Information
+          bedCount: document.getElementById("bedCount")?.value || "",
+          services: document.getElementById("services")?.value || "",
+          operatingHours:
+            document.getElementById("operatingHours")?.value || "",
+
+          // Save current step
+          currentStep: currentStep,
+        };
+
+        localStorage.setItem("healthFacilityForm", JSON.stringify(formData));
+      }
+
+      // Load form data from localStorage
+      function loadFormData() {
+        const savedData = localStorage.getItem("healthFacilityForm");
+        if (!savedData) return;
+
+        try {
+          const formData = JSON.parse(savedData);
+
+          // Restore Step 1 fields
+          if (formData.facilityName)
+            document.getElementById("facilityName").value =
+              formData.facilityName;
+          if (formData.facilityType)
+            document.getElementById("facilityType").value =
+              formData.facilityType;
+          if (formData.facilityEmail)
+            document.getElementById("facilityEmail").value =
+              formData.facilityEmail;
+          if (formData.countryCode)
+            document.getElementById("countryCode").value = formData.countryCode;
+          if (formData.phoneNumber)
+            document.getElementById("phoneNumber").value = formData.phoneNumber;
+          if (formData.facilityTIN)
+            document.getElementById("facilityTIN").value = formData.facilityTIN;
+          if (formData.facilityRegistration)
+            document.getElementById("facilityRegistration").value =
+              formData.facilityRegistration;
+          if (formData.facilityCountry)
+            document.getElementById("facilityCountry").value =
+              formData.facilityCountry;
+
+          // Restore Step 2 fields
+          if (formData.contactName)
+            document.getElementById("contactName").value = formData.contactName;
+          if (formData.contactEmail)
+            document.getElementById("contactEmail").value =
+              formData.contactEmail;
+          if (formData.contactPhone)
+            document.getElementById("contactPhone").value =
+              formData.contactPhone;
+
+          // Restore Step 3 fields
+          if (formData.bedCount)
+            document.getElementById("bedCount").value = formData.bedCount;
+          if (formData.services)
+            document.getElementById("services").value = formData.services;
+          if (formData.operatingHours)
+            document.getElementById("operatingHours").value =
+              formData.operatingHours;
+
+          // Restore uploaded file
+          loadFileFromStorage();
+
+          // Restore current step if saved
+          if (formData.currentStep) {
+            currentStep = formData.currentStep;
+            showStep(currentStep);
+          }
+        } catch (error) {
+          console.error("Error loading form data:", error);
+        }
+      }
+
+      // Validate current step
+      function validateStep(step) {
+        const currentStepElement = document.querySelector(
+          `.form-step[data-step="${step}"]`,
+        );
+        const requiredFields =
+          currentStepElement.querySelectorAll("[required]");
+
+        let isValid = true;
+        requiredFields.forEach((field) => {
+          if (!field.value.trim()) {
+            isValid = false;
+            field.classList.add("error");
+          } else {
+            field.classList.remove("error");
+          }
+        });
+
+        // Email validation
+        const emailFields = currentStepElement.querySelectorAll(
+          'input[type="email"]',
+        );
+        emailFields.forEach((field) => {
+          if (field.required && field.value && !isValidEmail(field.value)) {
+            isValid = false;
+            field.classList.add("error");
+          }
+        });
+
+        return isValid;
+      }
+
+      // Email validation helper
+      function isValidEmail(email) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+      }
+
+      // Show specific step
+      function showStep(stepNumber) {
+        // Hide all steps
+        const allSteps = document.querySelectorAll(".form-step");
+        allSteps.forEach((step) => {
+          step.classList.remove("active");
+        });
+
+        // Show current step
+        const currentStepElement = document.querySelector(
+          `.form-step[data-step="${stepNumber}"]`,
+        );
+        if (currentStepElement) {
+          currentStepElement.classList.add("active");
+        }
+
+        // If showing step 3, populate the summary tables
+        if (stepNumber === 3) {
+          populateSummaryTables();
+        }
+
+        // Update step indicators
+        updateStepProgress();
+
+        // Update navigation buttons
+        updateNavigationButtons();
+      }
+
+      // Populate all summary tables with form data
+      function populateSummaryTables() {
+        populateFacilitySummary();
+        populateContactSummary();
+      }
+
+      // Populate facility summary table
+      function populateFacilitySummary() {
+        const table = document.getElementById("facilitySummaryTable");
+        if (!table) return;
+
+        // Get form values
+        const facilityName =
+          document.getElementById("facilityName")?.value || "";
+        const facilityType =
+          document.getElementById("facilityType")?.value || "";
+        const facilityEmail =
+          document.getElementById("facilityEmail")?.value || "";
+        const countryCode = document.getElementById("countryCode")?.value || "";
+        const phoneNumber = document.getElementById("phoneNumber")?.value || "";
+        const facilityTIN = document.getElementById("facilityTIN")?.value || "";
+        const facilityRegistration =
+          document.getElementById("facilityRegistration")?.value || "";
+        const facilityCountry =
+          document.getElementById("facilityCountry")?.value || "";
+        const facilityProvince =
+          document.getElementById("facilityProvince")?.value || "";
+        const facilityDistrict =
+          document.getElementById("facilityDistrict")?.value || "";
+        const facilitySector =
+          document.getElementById("facilitySector")?.value || "";
+
+        // Get logo from localStorage
+        const savedData = localStorage.getItem("healthFacilityForm");
+        let logoData = "";
+        let logoName = "";
+        if (savedData) {
+          const formData = JSON.parse(savedData);
+          logoData = formData.logoData || "";
+          logoName = formData.logoName || "";
+        }
+
+        // Format facility type
+        const facilityTypeLabels = {
+          "general-clinic": "General Clinic",
+          polyclinic: "Polyclinic",
+          hospital: "Hospital",
+          "health-center": "Health Center",
+        };
+        const facilityTypeDisplay =
+          facilityTypeLabels[facilityType] || facilityType;
+
+        // Build table rows
+        const rows = [
+          { label: "Facility Name", value: facilityName },
+          { label: "Facility Type", value: facilityTypeDisplay },
+          { label: "Email", value: facilityEmail },
+          {
+            label: "Phone Number",
+            value:
+              countryCode && phoneNumber ? `${countryCode} ${phoneNumber}` : "",
+          },
+          { label: "Tax Identification Number", value: facilityTIN },
+          {
+            label: "Business Registration Number",
+            value: facilityRegistration,
+          },
+          { label: "Country", value: facilityCountry },
+          { label: "Province/State", value: facilityProvince },
+          { label: "District/Local Government", value: facilityDistrict },
+          { label: "Sector/City", value: facilitySector },
+        ];
+
+        // Add logo row if exists
+        if (logoData && logoName) {
+          rows.push({
+            label: "Facility Logo",
+            value: `<img src="${logoData}" alt="${logoName}" class="summary-logo-preview">`,
+          });
+        }
+
+        // Generate table HTML
+        let tableHTML = "";
+        rows.forEach((row) => {
+          const value =
+            row.value || '<span class="summary-empty">Not provided</span>';
+          tableHTML += `
+      <tr>
+        <td>${row.label}</td>
+        <td>${value}</td>
+      </tr>
+    `;
+        });
+
+        table.querySelector("tbody").innerHTML = tableHTML;
+      }
+
+      // Populate contact summary table
+      function populateContactSummary() {
+        const table = document.getElementById("contactSummaryTable");
+        if (!table) return;
+
+        // Get form values
+        const contactName = document.getElementById("contactName")?.value || "";
+        const contactEmail =
+          document.getElementById("contactEmail")?.value || "";
+        const contactPhone =
+          document.getElementById("contactPhone")?.value || "";
+
+        // Build table rows
+        const rows = [
+          { label: "Primary Contact Name", value: contactName },
+          { label: "Email Address", value: contactEmail },
+          { label: "Phone Number", value: contactPhone },
+        ];
+
+        // Generate table HTML
+        let tableHTML = "";
+        rows.forEach((row) => {
+          const value =
+            row.value || '<span class="summary-empty">Not provided</span>';
+          tableHTML += `
+      <tr>
+        <td>${row.label}</td>
+        <td>${value}</td>
+      </tr>
+    `;
+        });
+
+        table.querySelector("tbody").innerHTML = tableHTML;
+      }
+
+      // Update step progress indicator
+      function updateStepProgress() {
+        const steps = document.querySelectorAll(".step");
+        const progressLineFill = document.getElementById("progressLineFill");
+
+        steps.forEach((step, index) => {
+          const stepNumber = index + 1;
+          if (stepNumber < currentStep) {
+            step.classList.add("completed");
+            step.classList.remove("active");
+          } else if (stepNumber === currentStep) {
+            step.classList.add("active");
+            step.classList.remove("completed");
+          } else {
+            step.classList.remove("active", "completed");
+          }
+        });
+
+        // Update progress line fill
+        const progressPercentage =
+          ((currentStep - 1) / (steps.length - 1)) * 100;
+        if (progressLineFill) {
+          progressLineFill.style.width = `${progressPercentage}%`;
+        }
+      }
+
+      // Update navigation button states
+      function updateNavigationButtons() {
+        const prevButtons = document.querySelectorAll(".btn-prev");
+        const nextButtons = document.querySelectorAll(".btn-next");
+
+        // Update previous buttons
+        prevButtons.forEach((btn) => {
+          btn.disabled = currentStep === 1;
+        });
+      }
+
+      // Move to next step
+      function nextStep() {
+        // Validate current step before proceeding
+        if (!validateStep(currentStep)) {
+          alert(
+            "Please fill in all required fields correctly before proceeding.",
+          );
+          return;
+        }
+
+        if (currentStep < 3) {
+          currentStep++;
+          showStep(currentStep);
+          saveFormData();
+
+          // Scroll to top
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+      }
+
+      // Move to previous step
+      function previousStep() {
+        if (currentStep > 1) {
+          currentStep--;
+          showStep(currentStep);
+          saveFormData();
+
+          // Scroll to top
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+      }
+
+      // Submit form
+      function submitForm() {
+        // Validate final step
+        if (!validateStep(currentStep)) {
+          alert(
+            "Please fill in all required fields correctly before submitting.",
+          );
+          return;
+        }
+
+        // Get all form data
+        const formData = JSON.parse(localStorage.getItem("healthFacilityForm"));
+
+        // Here you would typically send the data to your server
+        console.log("Form submitted with data:", formData);
+
+        // Show success message
+        const formSteps = document.querySelectorAll(".form-step");
+        formSteps.forEach((step) => step.classList.remove("active"));
+
+        const successMessage = document.getElementById("successMessage");
+        if (successMessage) {
+          successMessage.style.display = "block";
+        }
+
+        // Clear localStorage after successful submission
+        localStorage.removeItem("healthFacilityForm");
+
+        // Optional: Reset form after a delay
+        setTimeout(() => {
+          if (confirm("Would you like to submit another registration?")) {
+            resetForm();
+          }
+        }, 3000);
+      }
+
+      // Reset form to initial state
+      function resetForm() {
+        // Clear all inputs
+        const formInputs = document.querySelectorAll("input, select, textarea");
+        formInputs.forEach((input) => {
+          if (input.type === "checkbox" || input.type === "radio") {
+            input.checked = false;
+          } else {
+            input.value = "";
+          }
+        });
+
+        // Reset to step 1
+        currentStep = 1;
+        showStep(1);
+
+        // Hide success message
+        const successMessage = document.getElementById("successMessage");
+        if (successMessage) {
+          successMessage.style.display = "none";
+        }
+
+        // Clear localStorage
+        localStorage.removeItem("healthFacilityForm");
+
+        // Scroll to top
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+    </script>
+  </body>
+</html>

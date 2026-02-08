@@ -1,0 +1,1051 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>XanaHealth - EMR for Medical Practices</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      :root {
+        --primary: #2a9d8f;
+        --primary-dark: #238276;
+        --primary-light: #e8f5f3;
+        --secondary: #264653;
+        --text-dark: #1a202c;
+        --text-gray: #4a5568;
+        --text-light: #718096;
+        --border: #e2e8f0;
+        --bg-gray: #f7fafc;
+        --white: #ffffff;
+        --success: #2a9d8f;
+        --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+        --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
+        --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+      }
+
+      body {
+        font-family:
+          "Plus Jakarta Sans",
+          -apple-system,
+          BlinkMacSystemFont,
+          sans-serif;
+        line-height: 1.6;
+        color: var(--text-dark);
+        background: var(--bg-gray);
+      }
+
+      /* Navigation */
+      nav {
+        background: var(--white);
+        padding: 1rem 5%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: var(--shadow-sm);
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+      }
+
+      .logo {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: var(--primary);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .logo::before {
+        content: "";
+        width: 8px;
+        height: 8px;
+        background: var(--primary);
+        border-radius: 50%;
+      }
+
+      .nav-menu {
+        display: flex;
+        gap: 2.5rem;
+        list-style: none;
+        align-items: center;
+      }
+
+      .nav-menu a {
+        text-decoration: none;
+        color: var(--text-gray);
+        font-weight: 500;
+        font-size: 0.95rem;
+        transition: color 0.3s;
+      }
+
+      .nav-menu a:hover {
+        color: var(--primary);
+      }
+
+      .nav-buttons {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+      }
+
+      .playback-section {
+        padding: 60px 0;
+      }
+
+      .playback-card {
+        max-width: 700px;
+      }
+
+      .playback-video {
+        margin-top: 30px;
+        height: 250px;
+        background: #eaf6f1;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .play-button {
+        width: 70px;
+        height: 70px;
+        background: #2ecc71;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 28px;
+        cursor: pointer;
+        box-shadow: 0 10px 25px rgba(46, 204, 113, 0.4);
+        transition:
+          transform 0.2s ease,
+          box-shadow 0.2s ease;
+      }
+
+      .play-button:hover {
+        transform: scale(1.1);
+        box-shadow: 0 15px 30px rgba(46, 204, 113, 0.6);
+      }
+
+      .btn-outline {
+        padding: 0.6rem 1.5rem;
+        border: 1.5px solid var(--border);
+        background: transparent;
+        color: var(--text-gray);
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.3s;
+      }
+
+      .btn-outline:hover {
+        border-color: var(--primary);
+        color: var(--primary);
+      }
+
+      .btn-primary {
+        padding: 0.6rem 1.5rem;
+        background: var(--primary);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.3s;
+      }
+
+      .btn-primary:hover {
+        background: var(--primary-dark);
+        transform: translateY(-1px);
+      }
+
+      /* Hero Section */
+      .hero {
+        position: relative;
+        height: 500px;
+        background-image: url("team-young-specialist-doctors-standing-corridor-hospital.jpg");
+        background-size: cover;
+        background-position: center;
+        opacity: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        color: white;
+        overflow: hidden;
+      }
+
+      .hero::before {
+        content: "";
+        position: absolute;
+        top: -50%;
+        right: -10%;
+        width: 500px;
+        height: 500px;
+        background: radial-gradient(
+          circle,
+          rgba(255, 255, 255, 0.1) 0%,
+          transparent 70%
+        );
+        border-radius: 50%;
+      }
+
+      .hero-content {
+        position: relative;
+        z-index: 10;
+        max-width: 800px;
+        padding: 2rem;
+      }
+
+      .hero h1 {
+        font-size: 3.5rem;
+        font-weight: 800;
+        margin-bottom: 1.5rem;
+        line-height: 1.1;
+      }
+
+      .hero p {
+        font-size: 1.15rem;
+        margin-bottom: 2.5rem;
+        line-height: 1.7;
+        opacity: 0.95;
+        font-weight: 400;
+      }
+
+      .hero-buttons {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+      }
+
+      .btn-hero {
+        padding: 1rem 2rem;
+        font-size: 1rem;
+        font-weight: 600;
+        border-radius: 8px;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s;
+      }
+
+      .btn-hero-primary {
+        background: white;
+        color: var(--primary);
+      }
+
+      .btn-hero-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+      }
+
+      .btn-hero-secondary {
+        background: transparent;
+        color: white;
+        border: 2px solid white;
+      }
+
+      .btn-hero-secondary:hover {
+        background: rgba(255, 255, 255, 0.1);
+      }
+
+      /* Dashboard Section */
+      .dashboard-section {
+        padding: 3rem 5%;
+        width: 100%;
+        margin: -100px auto 4rem;
+        position: relative;
+        z-index: 100;
+      }
+
+    .dashboard-card {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow:
+    0 10px 25px rgba(0, 0, 0, 0.08),
+    0 4px 10px rgba(0, 0, 0, 0.04);
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  overflow: hidden;
+}
+
+.dashboard-sidebar {
+  background: #f9fafb;
+  border-right: 1px solid #e5e7eb;
+  padding: 24px;
+  font-size: 14px;
+}
+
+
+.dashboard-content {
+  padding: 24px;
+  background: #ffffff;
+}
+
+
+
+      .dashboard-tabs {
+        border-right: 1px solid #e5e7eb;
+        padding-right: 16px;
+      }
+
+      .dashboard-tabs .tab {
+        display: block;
+        width: 100%;
+        text-align: left;
+      }
+     .dashboard-wrapper {
+  position: relative;
+  width: 100%;
+
+  margin: 60px auto 0;
+  padding: 0 16px;
+}
+
+      .side-decor {
+        width: 40px;
+        background: #16a34a; /* green */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: sticky;
+        top: 40px;
+      }
+
+      .side-left {
+        border-radius: 12px 0 0 12px;
+      }
+
+      .side-right {
+        border-radius: 0 12px 12px 0;
+      }
+
+      .tab {
+        padding: 1.2rem 2rem;
+        background: transparent;
+        border: none;
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: var(--text-gray);
+        cursor: pointer;
+        border-bottom: 3px solid transparent;
+        transition: all 0.3s;
+      }
+
+      .tab.active {
+        color: var(--primary);
+        border-bottom-color: var(--primary);
+        background: white;
+      }
+
+      /* Dashboard Header */
+      .dashboard-header {
+        padding: 1.5rem 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .search-filters {
+        display: flex;
+        gap: 0.75rem;
+        flex: 1;
+        flex-wrap: wrap;
+      }
+
+      .search-input {
+        padding: 0.7rem 1rem;
+        border: 1.5px solid var(--border);
+        border-radius: 8px;
+        font-size: 0.9rem;
+        min-width: 200px;
+        transition: border-color 0.3s;
+      }
+
+      .search-input:focus {
+        outline: none;
+        border-color: var(--primary);
+      }
+
+      .filter-select {
+        padding: 0.7rem 2.5rem 0.7rem 1rem;
+        border: 1.5px solid var(--border);
+        border-radius: 8px;
+        font-size: 0.9rem;
+        background: white;
+        cursor: pointer;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%234a5568' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 1rem center;
+      }
+
+      .header-actions {
+        display: flex;
+        gap: 0.75rem;
+      }
+
+      .btn-secondary {
+        padding: 0.7rem 1.2rem;
+        border: 1.5px solid var(--border);
+        background: white;
+        color: var(--text-gray);
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.3s;
+      }
+
+      .btn-secondary:hover {
+        border-color: var(--primary);
+        color: var(--primary);
+      }
+
+      .btn-add {
+        padding: 0.7rem 1.5rem;
+        background: var(--primary);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .btn-add:hover {
+        background: var(--primary-dark);
+      }
+
+      /* Data Table */
+      .table-container {
+        width: 100%;
+  overflow-x: auto;
+      }
+
+      table {
+        width: 100%;
+ 
+        border-collapse: collapse;
+      }
+
+     
+
+      thead {
+        background: var(--bg-gray);
+      }
+
+      th {
+        padding: 1rem 1.5rem;
+        text-align: left;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--text-gray);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      th input[type="checkbox"] {
+        cursor: pointer;
+      }
+
+      tbody tr {
+        border-bottom: 1px solid var(--border);
+        transition: background-color 0.2s;
+      }
+
+      tbody tr:hover {
+        background: var(--bg-gray);
+      }
+
+      td {
+        padding: 1.2rem 1.5rem;
+        font-size: 0.9rem;
+        color: var(--text-gray);
+      }
+
+      .patient-info {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+
+      .avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: var(--primary-light);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        color: var(--primary);
+        font-size: 0.85rem;
+      }
+
+      .avatar img {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        object-fit: cover;
+      }
+
+      .patient-name {
+        font-weight: 600;
+        color: var(--text-dark);
+      }
+
+      .status-badge {
+        padding: 0.35rem 0.9rem;
+        background: var(--primary-light);
+        color: var(--primary);
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        display: inline-block;
+      }
+
+      .action-buttons {
+        display: flex;
+        gap: 0.5rem;
+      }
+
+      .icon-btn {
+        width: 32px;
+        height: 32px;
+        border: none;
+        background: transparent;
+        cursor: pointer;
+        border-radius: 6px;
+        transition: background 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-light);
+      }
+
+      .icon-btn:hover {
+        background: var(--bg-gray);
+        color: var(--primary);
+      }
+
+      /* Pagination */
+      .pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 2rem;
+      }
+
+      .page-btn {
+        width: 36px;
+        height: 36px;
+        border: 1px solid var(--border);
+        background: white;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: 600;
+        color: var(--text-gray);
+        transition: all 0.3s;
+      }
+
+      .page-btn:hover {
+        border-color: var(--primary);
+        color: var(--primary);
+      }
+
+      .page-btn.active {
+        background: var(--primary);
+        color: white;
+        border-color: var(--primary);
+      }
+
+    
+
+    .dots-decoration {
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  background-image: radial-gradient(#8fdac1 2px, transparent 2px);
+  background-size: 10px 10px;
+}
+
+.dots-left {
+  left: -40px;
+  bottom: -40px;
+}
+
+.dots-right {
+  right: -40px;
+  bottom: -40px;
+}
+
+
+      /* User Info */
+      .user-info {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        background: var(--bg-gray);
+        border-radius: 8px;
+      }
+
+      .user-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: var(--primary);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        font-size: 0.85rem;
+      }
+
+      .user-name {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--text-dark);
+      }
+
+      /* Responsive */
+      @media (max-width: 968px) {
+        .hero h1 {
+          font-size: 2.5rem;
+        }
+
+        .nav-menu {
+          display: none;
+        }
+
+        .dashboard-section {
+          margin-top: -80px;
+        }
+
+        .search-filters {
+          width: 100%;
+        }
+
+        .header-actions {
+          width: 100%;
+        }
+
+        th,
+        td {
+          padding: 1rem;
+          font-size: 0.85rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav>
+      <div class="logo">XanaHealth</div>
+      <ul class="nav-menu">
+        <li><a href="#features">Features</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#careers">Careers</a></li>
+      </ul>
+      <div class="nav-buttons">
+        <a href="login.html">
+          <button class="btn-outline">Log In</button>
+        </a>
+
+        <a href="signup.html">
+          <button class="btn-primary">Get Started</button>
+        </a>
+      </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="hero-content">
+        <h1>The best EMR for your medical practice</h1>
+        <p>
+          Digitize your medical practice in less than 24 hours. Save $2 on each
+          OPD visit, increase transparency, generate important reports, and file
+          insurance claims effortlessly.
+        </p>
+        <div class="hero-buttons">
+          <button class="btn-hero btn-hero-primary">Get Started</button>
+          <button class="btn-hero btn-hero-secondary">Talk to Sales</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Dashboard Section -->
+    <section class="dashboard-section">
+     <div class="dashboard-wrapper">
+
+    <!-- Left decoration -->
+    <div class="side-decor side-left">
+      <div class="dots-decoration"></div>
+    </div>
+
+    <!-- Dashboard card -->
+    <div class="dashboard-card">
+
+      <!-- LEFT SIDEBAR -->
+      <aside class="dashboard-sidebar">
+        <img src="logo.png" alt="Company Logo" style="max-width: 120px; margin-bottom: 2rem;" />
+
+        <div class="dashboard-tabs">
+          <button class="tab active">Reception</button>
+          <button class="tab">Patients</button>
+          <button class="tab">Billing</button>
+
+        </div>
+      </aside>
+
+       <div class="dashboard-content">
+
+        <!-- Dashboard Header -->
+        <div class="dashboard-header">
+          <div>
+            <p>Patients</p>
+          </div>
+          <div class="search-filters">
+            <input type="text" class="search-input" placeholder="🔍Filter by" />
+            <input type="text" class="search-input" placeholder="🔍 Search all patients" />
+            <select class="filter-select">
+              <option>Active ▼</option>
+              <option>Inactive</option>
+              <option>All</option>
+            </select>
+          </div>
+
+          <!-- Dashboard Header -->
+          <div class="header-actions">
+            <div class="user-info">
+              <div class="user-avatar">👤</div>
+              <span class="user-name">Alex Dan</span>
+            </div>
+            <button class="btn-secondary">Export</button>
+            <button class="btn-secondary">Import</button>
+            <button class="btn-add">+ Add New Patient</button>
+          </div>
+        </div>
+
+          <!-- Data Table -->
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th><input type="checkbox" /></th>
+                  <th>IMAGE</th>
+                  <th>FILE NUMBER</th>
+                  <th>FIRST NAME</th>
+                  <th>LAST NAME</th>
+                  <th>GENDER</th>
+                  <th>DATE OF BIRTH</th>
+                  <th>PHONE NUMBER</th>
+                  <th>ACTIONS</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><input type="checkbox" /></td>
+                  <td>
+                    <div class="avatar">
+                      <span>RS</span>
+                    </div>
+                  </td>
+                  <td>00043</td>
+                  <td class="patient-name">Rebecca Shalan</td>
+                  <td>Robinson Sha...</td>
+                  <td>Female</td>
+                  <td>23/04/1990</td>
+                  <td>+254000000000</td>
+                  <td>
+                    <span class="status-badge">INACTIVE</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td><input type="checkbox" /></td>
+                  <td>
+                    <div
+                      class="avatar"
+                      style="background: #fef3c7; color: #f59e0b"
+                    >
+                      <span>PM</span>
+                    </div>
+                  </td>
+                  <td>00044</td>
+                  <td class="patient-name">Peter Miranda</td>
+                  <td>Peter Rogers</td>
+                  <td>Female</td>
+                  <td>01/07/1992</td>
+                  <td>+254000000000</td>
+                  <td>
+                    <span class="status-badge">INACTIVE</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td><input type="checkbox" /></td>
+                  <td>
+                    <div
+                      class="avatar"
+                      style="background: #dbeafe; color: #3b82f6"
+                    >
+                      <span>TA</span>
+                    </div>
+                  </td>
+                  <td>00045</td>
+                  <td class="patient-name">Tammy Adetuya</td>
+                  <td>Tammy Yusuf</td>
+                  <td>Female</td>
+                  <td>12/04/1996</td>
+                  <td>+254000000000</td>
+                  <td>
+                    <span class="status-badge">INACTIVE</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td><input type="checkbox" /></td>
+                  <td>
+                    <div
+                      class="avatar"
+                      style="background: #fee2e2; color: #ef4444"
+                    >
+                      <span>TM</span>
+                    </div>
+                  </td>
+                  <td>00046</td>
+                  <td class="patient-name">Tammy Mkundu</td>
+                  <td>Tammy Yusuf</td>
+                  <td>Male</td>
+                  <td>02/07/1994</td>
+                  <td>+254000000000</td>
+                  <td>
+                    <span class="status-badge">INACTIVE</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td><input type="checkbox" /></td>
+                  <td>
+                    <div
+                      class="avatar"
+                      style="background: #f3e8ff; color: #a855f7"
+                    >
+                      <span>RA</span>
+                    </div>
+                  </td>
+                  <td>00047</td>
+                  <td class="patient-name">Rebecca Achi...</td>
+                  <td>Robinson Sha...</td>
+                  <td>Female</td>
+                  <td>23/04/1998</td>
+                  <td>+254000000000</td>
+                  <td>
+                    <span class="status-badge">INACTIVE</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td><input type="checkbox" /></td>
+                  <td>
+                    <div class="avatar">
+                      <span>SB</span>
+                    </div>
+                  </td>
+                  <td>00048</td>
+                  <td class="patient-name">Sarah Bolu</td>
+                  <td>Sarah Bolu</td>
+                  <td>Female</td>
+                  <td>11/01/1997</td>
+                  <td>+254000000000</td>
+                  <td>
+                    <span class="status-badge">INACTIVE</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td><input type="checkbox" /></td>
+                  <td>
+                    <div
+                      class="avatar"
+                      style="background: #fef3c7; color: #f59e0b"
+                    >
+                      <span>JO</span>
+                    </div>
+                  </td>
+                  <td>00049</td>
+                  <td class="patient-name">Jesus O'bamas</td>
+                  <td>Jesus O'bamas</td>
+                  <td>Male</td>
+                  <td>03/01/1996</td>
+                  <td>+254000000000</td>
+                  <td>
+                    <span class="status-badge">INACTIVE</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td><input type="checkbox" /></td>
+                  <td>
+                    <div
+                      class="avatar"
+                      style="background: #dbeafe; color: #3b82f6"
+                    >
+                      <span>UH</span>
+                    </div>
+                  </td>
+                  <td>00050</td>
+                  <td class="patient-name">Ujuwa love Tom...</td>
+                  <td>Ngolizwe Eze...</td>
+                  <td>Female</td>
+                  <td>05/01/1992</td>
+                  <td>+254000000000</td>
+                  <td>
+                    <span class="status-badge">INACTIVE</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td><input type="checkbox" /></td>
+                  <td>
+                    <div
+                      class="avatar"
+                      style="background: #fee2e2; color: #ef4444"
+                    >
+                      <span>PP</span>
+                    </div>
+                  </td>
+                  <td>00051</td>
+                  <td class="patient-name">Peter Pan</td>
+                  <td>Peterson Pau...</td>
+                  <td>Male</td>
+                  <td>25/04/1995</td>
+                  <td>+254000000000</td>
+                  <td>
+                    <span class="status-badge">INACTIVE</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Pagination -->
+          <div class="pagination">
+            <button class="page-btn">←</button>
+            <button class="page-btn active">1</button>
+            <button class="page-btn">2</button>
+            <button class="page-btn">→</button>
+          </div>
+        </div>
+
+        <div class="side-decor side-right">
+          <div class="dots-decoration"></div>
+        </div>
+      </div>
+    </section>
+
+    <!----Playback Video------->
+    <section class="playback-section">
+      <div class="playback-card">
+        <h1>How XanaHealth Works</h1>
+        <p>
+          See how our initiative EMR helps you record, store and organize
+          patient data digitally
+        </p>
+
+        <div class="play-button">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
+            <polygon points="5,3 19,12 5,21"></polygon>
+          </svg>
+        </div>
+      </div>
+    </section>
+
+    <!-----Features and services section-------->
+    <section class="features-section">
+      <div class="features">
+        <h1>Our features and services</h1>
+      </div>
+    </section>
+
+    <!------Entry form------>
+    <section class="entry-section">
+      <div class="entry-card">
+        <form></form>
+      </div>
+    </section>
+
+    <!-----Testimonials-------->
+    <section class="testimonial-section">
+      <div class="testimonials">
+        <div class="test-image">
+          <img src="" />
+        </div>
+
+        <div class="words">
+          <p></p>
+        </div>
+      </div>
+    </section>
+
+    <script>
+      // Tab switching
+      document.querySelectorAll(".tab").forEach((tab) => {
+        tab.addEventListener("click", function () {
+          document
+            .querySelectorAll(".tab")
+            .forEach((t) => t.classList.remove("active"));
+          this.classList.add("active");
+        });
+      });
+
+      // Table row selection
+      document.querySelectorAll("tbody tr").forEach((row) => {
+        const checkbox = row.querySelector('input[type="checkbox"]');
+        row.addEventListener("click", function (e) {
+          if (e.target.tagName !== "INPUT") {
+            checkbox.checked = !checkbox.checked;
+          }
+        });
+      });
+
+      // Select all checkbox
+      const selectAll = document.querySelector('thead input[type="checkbox"]');
+      const rowCheckboxes = document.querySelectorAll(
+        'tbody input[type="checkbox"]',
+      );
+
+      selectAll.addEventListener("change", function () {
+        rowCheckboxes.forEach((cb) => (cb.checked = this.checked));
+      });
+
+      // Smooth animations on load
+      window.addEventListener("load", function () {
+        const card = document.querySelector(".dashboard-card");
+        card.style.opacity = "0";
+        card.style.transform = "translateY(20px)";
+
+        setTimeout(() => {
+          card.style.transition = "opacity 0.6s ease, transform 0.6s ease";
+          card.style.opacity = "1";
+          card.style.transform = "translateY(0)";
+        }, 100);
+      });
+    </script>
+  </body>
+</html>
