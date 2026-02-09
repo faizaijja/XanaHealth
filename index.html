@@ -24,12 +24,11 @@
 
       /* Header */
       .header {
-        background-color: #fff;
-        padding: 1.5rem 2rem;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-        position: sticky;
-        top: 0;
-        z-index: 100;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px 40px;
+        margin-bottom: 40px;
       }
 
       .logo {
@@ -38,7 +37,7 @@
       }
 
       .logo .xana {
-        color: #2563eb;
+        color: #6fae95;
       }
 
       .logo .health {
@@ -47,7 +46,7 @@
 
       /* Container */
       .container {
-        max-width: 800px;
+        max-width: 1200px;
         margin: 2rem auto;
         padding: 0 1.5rem;
       }
@@ -56,9 +55,8 @@
       .step-progress {
         background-color: #fff;
         padding: 2rem;
-        border-radius: 12px;
+        border-radius: 0px;
         margin-bottom: 2rem;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
       }
 
       .steps-container {
@@ -75,14 +73,14 @@
         top: 20px;
         left: 0;
         right: 0;
-        height: 3px;
+        height: 2px;
         background-color: #e5e7eb;
         z-index: 1;
       }
 
       .progress-line-fill {
         height: 100%;
-        background-color: #2563eb;
+        background-color: #6fae95;
         transition: width 0.3s ease;
         width: 0%;
       }
@@ -108,14 +106,14 @@
       }
 
       .step.active .step-circle {
-        border-color: #2563eb;
-        color: #2563eb;
+        border-color: #6fae95;
+        color: #6fae95;
         background-color: #eff6ff;
       }
 
       .step.completed .step-circle {
-        border-color: #10b981;
-        background-color: #10b981;
+        border-color: #6fae95;
+        background-color: #6fae95;
         color: #fff;
         font-size: 1.2rem;
       }
@@ -136,9 +134,11 @@
       /* Form Content */
       .form-content {
         background-color: #fff;
-        padding: 2.5rem;
         border-radius: 12px;
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        max-width: 800px;
+        margin: 2rem auto;
+        padding: 0 1.5rem;
       }
 
       .form-step {
@@ -166,17 +166,21 @@
         font-weight: 700;
         color: #1f2937;
         margin-bottom: 0.5rem;
+        text-align: center;
       }
 
       .form-subtitle {
         font-size: 0.95rem;
         color: #6b7280;
         margin-bottom: 2rem;
+        text-align: center;
       }
 
       /* Form Groups */
       .form-group {
         margin-bottom: 1.5rem;
+        width: 80%;
+        margin-left: 70px;
       }
 
       .form-group label {
@@ -262,7 +266,7 @@
       }
 
       .phone-input-wrapper:focus-within {
-        border-color: #2563eb;
+        border-color: #6fae95;
         background-color: #fff;
         box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
       }
@@ -347,7 +351,7 @@
       }
 
       .file-input:focus + .file-upload-area {
-        border-color: #2563eb;
+        border-color: #6fae95;
         background-color: #f9fafb;
         box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
       }
@@ -481,13 +485,13 @@
 
       .btn-next,
       .btn-submit {
-        background-color: #2563eb;
+        background-color: #6fae95;
         color: #fff;
       }
 
       .btn-next:hover,
       .btn-submit:hover {
-        background-color: #1d4ed8;
+        background-color: #6fae95;
         transform: translateY(-1px);
         box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
       }
@@ -570,7 +574,7 @@
       .success-icon {
         width: 80px;
         height: 80px;
-        background-color: #10b981;
+        background-color: #6fae95;
         color: #fff;
         border-radius: 50%;
         display: flex;
@@ -673,33 +677,33 @@
     </style>
   </head>
   <body>
-    <div class="header">
-      <div class="logo">
-        <span class="xana">Xana</span><span class="health">Health</span>
-      </div>
-    </div>
-
     <div class="container">
-      <!-- Step Progress Indicator -->
-      <div class="step-progress">
-        <div class="steps-container">
-          <div class="progress-line">
-            <div class="progress-line-fill" id="progressLineFill"></div>
-          </div>
-          <div class="step active" data-step="1">
-            <div class="step-circle">1</div>
-          </div>
-          <div class="step" data-step="2">
-            <div class="step-circle">2</div>
-          </div>
-          <div class="step" data-step="3">
-            <div class="step-circle">3</div>
-          </div>
+      <div class="header">
+        <div class="logo">
+          <span class="xana">Xana</span><span class="health">Health</span>
         </div>
       </div>
+      <!-- Step Progress Indicator -->
 
       <!-- Form Content -->
       <div class="form-content">
+        <div class="step-progress">
+          <div class="steps-container">
+            <div class="progress-line">
+              <div class="progress-line-fill" id="progressLineFill"></div>
+            </div>
+            <div class="step active" data-step="1">
+              <div class="step-circle">1</div>
+            </div>
+            <div class="step" data-step="2">
+              <div class="step-circle">2</div>
+            </div>
+            <div class="step" data-step="3">
+              <div class="step-circle">3</div>
+            </div>
+          </div>
+        </div>
+
         <!-- Step 1: Health Facility Details -->
         <div class="form-step active" data-step="1">
           <h2 class="form-title">Health Facility Details</h2>
@@ -708,10 +712,8 @@
           </p>
 
           <div class="form-group">
-            <label
-              >Health Facility Name
-              <span class="required">*Required</span></label
-            >
+            <label>Health Facility Name</label>
+            <span class="required">*Required</span>
             <input
               type="text"
               id="facilityName"
@@ -721,10 +723,8 @@
           </div>
 
           <div class="form-group">
-            <label
-              >Health Facility Type
-              <span class="required">*Required</span></label
-            >
+            <label>Health Facility Type </label>
+            <span class="required">*Required</span>
             <select id="facilityType" required>
               <option value="">Select health facility type</option>
               <option value="general-clinic">General Clinic</option>
@@ -735,7 +735,8 @@
           </div>
 
           <div class="form-group">
-            <label>Email <span class="required">*Required</span></label>
+            <label>Email </label>
+            <span class="required">*Required</span>
             <input
               type="email"
               id="facilityEmail"
@@ -745,7 +746,8 @@
           </div>
 
           <div class="form-group">
-            <label>Phone Number <span class="required">*Required</span></label>
+            <label>Phone Number </label>
+            <span class="required">*Required</span>
             <div class="phone-input-wrapper">
               <select class="country-code-select" id="countryCode">
                 <!-- Options will be populated by JavaScript -->
@@ -760,10 +762,8 @@
           </div>
 
           <div class="form-group">
-            <label
-              >Tax Identification Number
-              <span class="required">*Required</span></label
-            >
+            <label>Tax Identification Number </label>
+            <span class="required">*Required</span>
             <input
               type="text"
               id="facilityTIN"
@@ -773,10 +773,8 @@
           </div>
 
           <div class="form-group">
-            <label
-              >Business Registration Number
-              <span class="optional">Optional</span></label
-            >
+            <label>Business Registration Number </label>
+            <span class="optional">Optional</span>
             <input
               type="text"
               id="facilityRegistration"
@@ -787,7 +785,8 @@
           <div class="form-group">
             <div class="form-columns">
               <div class="form-row">
-                <label>Country <span class="required">*Required</span></label>
+                <label>Country </label>
+                <span class="required">*Required</span>
                 <input
                   type="text"
                   id="facilityCountry"
@@ -797,9 +796,8 @@
               </div>
 
               <div class="form-row">
-                <label
-                  >Province/State <span class="required">*Required</span></label
-                >
+                <label>Province/State </label>
+                <span class="required">*Required</span>
                 <input
                   type="text"
                   id="facilityProvince"
@@ -813,10 +811,8 @@
           <div class="form-group">
             <div class="form-columns">
               <div class="form-row">
-                <label
-                  >District/Local Government
-                  <span class="required">*Required</span></label
-                >
+                <label>District/Local Government </label>
+                <span class="required">*Required</span>
                 <input
                   type="text"
                   id="facilityDistrict"
@@ -826,9 +822,8 @@
               </div>
 
               <div class="form-row">
-                <label
-                  >Sector/City <span class="required">*Required</span></label
-                >
+                <label>Sector/City </label>
+                <span class="required">*Required</span>
                 <input
                   type="text"
                   id="facilitySector"
@@ -944,9 +939,16 @@
           <div class="success-icon">✓</div>
           <h2 class="success-title">Success!</h2>
           <p class="success-text">
-            Your email address has been successfully verified. Please click on
+            Your have successfully created your Health Facility Account. Click
             the button below to continue.
           </p>
+
+          <a href="dashboard.html">
+            <button>Continue</button>
+          </a>
+          <a href="stylesheet.html">
+            <button>See How XanaHealth Works</button>
+          </a>
         </div>
       </div>
     </div>

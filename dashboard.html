@@ -9,8 +9,153 @@
       href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
       rel="stylesheet"
     />
+    <style>
+      .onboarding-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.4);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+      }
+
+      .onboarding-modal {
+        background: #fff;
+        width: 520px;
+        padding: 40px;
+        border-radius: 14px;
+        position: relative;
+      }
+
+      .close-btn {
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        background: none;
+        border: none;
+        font-size: 20px;
+        cursor: pointer;
+      }
+
+      .subtitle {
+        color: #777;
+        margin-bottom: 30px;
+      }
+
+      .step {
+        display: none;
+      }
+
+      .step.active {
+        display: block;
+      }
+
+      label {
+        display: block;
+        margin: 16px 0 6px;
+      }
+
+      input,
+      textarea {
+        width: 100%;
+        padding: 12px;
+        border-radius: 8px;
+        border: 1px solid #ddd;
+      }
+      input {
+        background: rgba(79, 143, 117, 0.08);
+      }
+
+      textarea {
+        height: 120px;
+      }
+
+      .modal-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 30px;
+      }
+
+      .btn-primary {
+        background: #3f7f63;
+        color: white;
+        padding: 10px 22px;
+        border-radius: 10px;
+        border: none;
+      }
+
+      .btn-outline {
+        background: none;
+        border: 1px solid #3f7f63;
+        color: #3f7f63;
+        padding: 10px 22px;
+        border-radius: 10px;
+      }
+    </style>
   </head>
   <body>
+    <!-- Onboarding Modal -->
+    <div class="onboarding-overlay" id="onboarding">
+      <div class="onboarding-modal">
+        <!-- Close -->
+        <button class="close-btn" onclick="closeOnboarding()">×</button>
+
+        <!-- Header -->
+        <h2 style="text-align: center">Welcome to your dashboard</h2>
+        <p class="subtitle" style="text-align: center">
+          Let’s get you started.
+        </p>
+
+        <!-- STEPS -->
+        <div class="steps">
+          <!-- STEP 1 -->
+          <div class="step active">
+            <h3 style="text-align: center">Add New Department</h3>
+
+            <label>Department Name</label>
+            <input type="text" placeholder="Enter your department name here" />
+
+            <label>Department Description</label>
+            <textarea></textarea>
+          </div>
+
+          <!-- STEP 2 -->
+          <div class="step">
+            <h3>Add Staff</h3>
+            <input type="text" placeholder="Staff name" />
+          </div>
+
+          <!-- STEP 3 -->
+          <div class="step">
+            <h3>Assign Roles</h3>
+            <input type="text" placeholder="Role" />
+          </div>
+
+          <!-- STEP 4 -->
+          <div class="step">
+            <h3 style="text-align: center">Add Insurance Company</h3>
+
+            <label>Insurance Company</label>
+            <input type="text" placeholder="Enter your department name here" />
+
+            <label>Additional Information</label>
+            <textarea></textarea>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="modal-footer">
+          <button class="btn-primary" onclick="nextStep()">Save</button>
+          <span class="step-indicator"
+            >Step <span id="stepNum">1</span> of 4</span
+          >
+          <button class="btn-outline" onclick="closeOnboarding()">Skip</button>
+        </div>
+      </div>
+    </div>
+
     <div class="container">
       <!-- Sidebar -->
       <aside class="sidebar">
@@ -555,6 +700,24 @@
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
+      let currentStep = 0;
+      const steps = document.querySelectorAll(".step");
+      const stepNum = document.getElementById("stepNum");
+
+      function nextStep() {
+        if (currentStep < steps.length - 1) {
+          steps[currentStep].classList.remove("active");
+          currentStep++;
+          steps[currentStep].classList.add("active");
+          stepNum.textContent = currentStep + 1;
+        } else {
+          closeOnboarding();
+        }
+      }
+
+      function closeOnboarding() {
+        document.getElementById("onboarding").style.display = "none";
+      }
       // Revenue Chart (Line Chart)
       const revenueCtx = document
         .getElementById("revenueChart")
