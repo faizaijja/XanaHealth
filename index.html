@@ -4,7 +4,13 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>XanaHealth-Onboarding</title>
-
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.css"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
+    <!-- Optional: include utils.js for formatting and validation -->
+    <script src="https://cdnjs.cloudflare.com"></script>
     <style>
       * {
         margin: 0;
@@ -13,10 +19,7 @@
       }
 
       body {
-        font-family:
-          -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
-          "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
-          sans-serif;
+        font-family: "Poppins", sans-serif;
         background-color: #f5f5f5;
         color: #333;
         line-height: 1.6;
@@ -48,7 +51,10 @@
       .container {
         max-width: 1200px;
         margin: 2rem auto;
-        padding: 0 1.5rem;
+        padding: 2rem;
+        min-height: 900px;
+        background-color: #f4f6f5;
+        border-radius: 16px;
       }
 
       /* Step Progress */
@@ -94,21 +100,21 @@
         width: 40px;
         height: 40px;
         border-radius: 50%;
-        background-color: #fff;
-        border: 3px solid #e5e7eb;
+        background-color: #a8c2bb;
+
         display: flex;
         align-items: center;
         justify-content: center;
         font-weight: 600;
-        color: #9ca3af;
+        color: white;
         transition: all 0.3s ease;
         font-size: 0.9rem;
+        font-weight: bold;
       }
 
       .step.active .step-circle {
-        border-color: #6fae95;
-        color: #6fae95;
-        background-color: #eff6ff;
+        color: white;
+        background-color: #3e7f63;
       }
 
       .step.completed .step-circle {
@@ -138,7 +144,7 @@
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         max-width: 800px;
         margin: 2rem auto;
-        padding: 0 1.5rem;
+        padding: 2rem 1.5rem;
       }
 
       .form-step {
@@ -205,7 +211,15 @@
         font-weight: 400;
       }
 
+      select:focus {
+        border: 1px solid #488063;
+        box-shadow: 0 0 0 2px rgba(72, 128, 99, 0.2);
+      }
+
       /* Input Styles */
+      input {
+        background-color: #a8c2bb;
+      }
       input[type="text"],
       input[type="email"],
       input[type="tel"],
@@ -227,7 +241,7 @@
       select:focus,
       textarea:focus {
         outline: none;
-        border-color: #2563eb;
+        border-color: #a8c2bb;
         background-color: #fff;
         box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
       }
@@ -450,27 +464,31 @@
       /* Buttons */
       .form-navigation {
         display: flex;
-        gap: 1rem;
-        margin-top: 2.5rem;
-        padding-top: 2rem;
-        border-top: 1px solid #e5e7eb;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 1.5rem;
       }
 
       .btn {
         padding: 0.875rem 2rem;
         border-radius: 8px;
         font-size: 0.95rem;
-        font-weight: 600;
+        font-weight: bold;
         cursor: pointer;
         transition: all 0.2s ease;
         border: none;
-        flex: 1;
+
+        flex: none;
       }
 
       .btn-prev {
         background-color: #fff;
-        color: #374151;
-        border: 1px solid #d1d5db;
+        color: #488063;
+        border: 3px solid #488063;
+        margin-left: 70px;
+      }
+      .btn-next {
+        margin-right: 80px;
       }
 
       .btn-prev:hover:not(:disabled) {
@@ -485,7 +503,7 @@
 
       .btn-next,
       .btn-submit {
-        background-color: #6fae95;
+        background-color: #488063;
         color: #fff;
       }
 
@@ -674,6 +692,311 @@
           font-size: 0.875rem;
         }
       }
+      .file-form-group {
+        margin-bottom: 25px;
+      }
+
+      .file-form-group label {
+        font-weight: 600;
+        display: block;
+        margin-bottom: 6px;
+      }
+
+      .required {
+        font-size: 12px;
+        color: #888;
+        margin-left: 8px;
+      }
+
+      /* Wrapper */
+      .upload-wrapper {
+        width: 100%;
+      }
+
+      /* Big Upload Box */
+      .upload-box {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+
+        width: 100%;
+        height: 220px; /* Makes it BIG */
+        border: 2px dashed #cbd5e1; /* Light gray dashed border */
+        border-radius: 16px;
+        background-color: #f8fafc; /* Very light background */
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+      }
+
+      /* Hover Effect */
+      .upload-box:hover {
+        border-color: #22c55e; /* Green border on hover */
+        background-color: #f0fdf4; /* Light green background */
+      }
+
+      /* Upload Content */
+      .upload-content {
+        pointer-events: none; /* So clicking anywhere triggers input */
+      }
+
+      /* Icon */
+      .upload-icon {
+        font-size: 40px;
+        margin-bottom: 10px;
+        color: gray;
+      }
+
+      /* Title */
+      .upload-title {
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 5px;
+      }
+
+      /* Sub text */
+      .upload-sub {
+        font-size: 13px;
+        color: #64748b;
+      }
+      .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+      }
+
+      .modal {
+        background: white;
+        border-radius: 24px;
+        padding: 60px 40px;
+        max-width: 500px;
+        width: 100%;
+        position: relative;
+        text-align: center;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        animation: modalSlideIn 0.3s ease-out;
+      }
+
+      @keyframes modalSlideIn {
+        from {
+          opacity: 0;
+          transform: translateY(-20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .close-btn {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 8px;
+        border-radius: 50%;
+        transition: background 0.2s;
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .close-btn:hover {
+        background: #f3f4f6;
+      }
+
+      .close-btn svg {
+        width: 20px;
+        height: 20px;
+        stroke: #374151;
+        stroke-width: 2;
+      }
+
+      .icon-container {
+        position: relative;
+        display: inline-block;
+        margin-bottom: 30px;
+      }
+
+      .checkmark-circle {
+        width: 140px;
+        height: 140px;
+        background: #94c5b8;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        animation: scaleIn 0.5s ease-out 0.2s both;
+      }
+
+      @keyframes scaleIn {
+        from {
+          transform: scale(0);
+        }
+        to {
+          transform: scale(1);
+        }
+      }
+
+      .checkmark {
+        width: 60px;
+        height: 60px;
+        stroke: white;
+        stroke-width: 6;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        fill: none;
+        animation: checkmark 0.5s ease-out 0.5s both;
+      }
+
+      @keyframes checkmark {
+        from {
+          stroke-dasharray: 100;
+          stroke-dashoffset: 100;
+        }
+        to {
+          stroke-dasharray: 100;
+          stroke-dashoffset: 0;
+        }
+      }
+
+      .sparkle {
+        position: absolute;
+        animation: sparkle 1s ease-in-out infinite;
+      }
+
+      .sparkle-1 {
+        top: 10%;
+        left: 15%;
+        animation-delay: 0s;
+      }
+
+      .sparkle-2 {
+        top: 15%;
+        right: 20%;
+        animation-delay: 0.3s;
+      }
+
+      @keyframes sparkle {
+        0%,
+        100% {
+          opacity: 0;
+          transform: scale(0);
+        }
+        50% {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+
+      .sparkle svg {
+        width: 24px;
+        height: 24px;
+      }
+
+      .sparkle-plus {
+        stroke: #94c5b8;
+        stroke-width: 2;
+        fill: none;
+      }
+
+      .sparkle-circle {
+        fill: #94c5b8;
+      }
+
+      h1 {
+        font-size: 32px;
+        font-weight: 700;
+        color: #111827;
+        margin-bottom: 16px;
+      }
+
+      p {
+        font-size: 16px;
+        line-height: 1.6;
+        color: #6b7280;
+        margin-bottom: 40px;
+        max-width: 380px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .continue-btn {
+        background: #1f2937;
+        color: white;
+        border: none;
+        padding: 18px 80px;
+        border-radius: 12px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      }
+
+      .see-btn {
+        color: #1f2937;
+        border: none;
+        padding: 18px 80px;
+        text-decoration: underline;
+        border-radius: 12px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .continue-btn:hover {
+        background: #111827;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+      }
+
+      .continue-btn:active {
+        transform: translateY(0);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      }
+
+      @media (max-width: 600px) {
+        .modal {
+          padding: 40px 30px;
+        }
+
+        h1 {
+          font-size: 28px;
+        }
+
+        p {
+          font-size: 15px;
+        }
+
+        .continue-btn {
+          padding: 16px 60px;
+          font-size: 15px;
+        }
+
+        .checkmark-circle {
+          width: 120px;
+          height: 120px;
+        }
+
+        .checkmark {
+          width: 50px;
+          height: 50px;
+        }
+      }
     </style>
   </head>
   <body>
@@ -748,16 +1071,11 @@
           <div class="form-group">
             <label>Phone Number </label>
             <span class="required">*Required</span>
-            <div class="phone-input-wrapper">
-              <select class="country-code-select" id="countryCode">
-                <!-- Options will be populated by JavaScript -->
-              </select>
-              <input
-                type="tel"
-                id="phoneNumber"
-                placeholder="Enter phone number"
-                required
-              />
+            <div>
+              <input style="width: 600px" id="phone" type="tel" name="phone" />
+
+              <!-- Add a hidden input to store the full international number -->
+              <input type="hidden" name="full_phone" id="full-phone" />
             </div>
           </div>
 
@@ -836,7 +1154,7 @@
 
           <div class="form-navigation">
             <button class="btn btn-prev" onclick="previousStep()" disabled>
-              Previous
+              Back
             </button>
             <button class="btn btn-next" onclick="nextStep()">Next</button>
           </div>
@@ -898,9 +1216,7 @@
           </div>
 
           <div class="form-navigation">
-            <button class="btn btn-prev" onclick="previousStep()">
-              Previous
-            </button>
+            <button class="btn btn-prev" onclick="previousStep()">Back</button>
             <button class="btn btn-next" onclick="nextStep()">Next</button>
           </div>
         </div>
@@ -925,49 +1241,90 @@
           </div>
 
           <div class="form-navigation">
-            <button class="btn btn-prev" onclick="previousStep()">
-              Previous
-            </button>
+            <button class="btn btn-prev" onclick="previousStep()">Back</button>
             <button class="btn btn-submit" onclick="submitForm()">
               Submit
             </button>
           </div>
         </div>
 
-        <!-- Success Message -->
-        <div class="success-message" id="successMessage">
-          <div class="success-icon">✓</div>
-          <h2 class="success-title">Success!</h2>
-          <p class="success-text">
-            Your have successfully created your Health Facility Account. Click
-            the button below to continue.
-          </p>
+        <!-- Success Message (Initial - Email Verification) -->
+        <div class="overlay" id="overlay">
+          <div class="modal">
+            <button class="close-btn" id="closeBtn">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M6 6L18 18M6 18L18 6"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                />
+              </svg>
+            </button>
 
-          <a href="dashboard.html">
-            <button>Continue</button>
-          </a>
-          <a href="stylesheet.html">
-            <button>See How XanaHealth Works</button>
-          </a>
+            <div class="icon-container">
+              <img src="Group 427318808.png" />
+            </div>
+
+            <h1>Success!</h1>
+            <p>
+              Your email address has been successfully verified. Please click on
+              the button below to continue.
+            </p>
+
+            <button
+              class="continue-btn"
+              id="continueBtn"
+              onclick="closeOverlayAndScroll()"
+            >
+              Continue
+            </button>
+          </div>
+        </div>
+
+        <!-- Success Message (Form Submission) -->
+        <div class="overlay" id="successMessage" style="display: none">
+          <div class="modal">
+            <button class="close-btn" id="closeSubmissionBtn">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M6 6L18 18M6 18L18 6"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                />
+              </svg>
+            </button>
+
+            <div class="icon-container">
+              <img src="Group 427318808.png" />
+            </div>
+
+            <h1>Success!</h1>
+            <p>
+              Your have successfully created your Health Facility Account. Click
+              the button below to continue.
+            </p>
+
+            <a href="dashboard.html">
+              <button class="continue-btn" id="continueBtn">Continue</button>
+            </a>
+            <a href="landing.html">
+              <button class="see-btn" id="seeHowBtn">
+                See how XanaHealth Works
+              </button>
+            </a>
+          </div>
         </div>
       </div>
     </div>
 
-    <script>
-      // Country codes data with flags
-      const countryCodes = [
-        { code: "+250", country: "Rwanda", flag: "🇷🇼" },
-        { code: "+1", country: "USA/Canada", flag: "🇺🇸" },
-        { code: "+44", country: "UK", flag: "🇬🇧" },
-        { code: "+254", country: "Kenya", flag: "🇰🇪" },
-        { code: "+256", country: "Uganda", flag: "🇺🇬" },
-        { code: "+255", country: "Tanzania", flag: "🇹🇿" },
-        { code: "+27", country: "South Africa", flag: "🇿🇦" },
-        { code: "+234", country: "Nigeria", flag: "🇳🇬" },
-        { code: "+91", country: "India", flag: "🇮🇳" },
-        { code: "+86", country: "China", flag: "🇨🇳" },
-      ];
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"
+      defer
+    ></script>
 
+    <script>
       // Current step tracking
       let currentStep = 1;
 
@@ -984,6 +1341,27 @@
           input.addEventListener("input", saveFormData);
           input.addEventListener("change", saveFormData);
         });
+
+        // Add event listener for close button on overlay
+        const closeBtn = document.getElementById("closeBtn");
+        const overlay = document.getElementById("overlay");
+
+        if (closeBtn && overlay) {
+          closeBtn.addEventListener("click", function () {
+            overlay.style.display = "none";
+          });
+        }
+
+        // Add event listener for close button on submission success overlay
+        const closeSubmissionBtn =
+          document.getElementById("closeSubmissionBtn");
+        const successMessage = document.getElementById("successMessage");
+
+        if (closeSubmissionBtn && successMessage) {
+          closeSubmissionBtn.addEventListener("click", function () {
+            successMessage.style.display = "none";
+          });
+        }
       });
 
       // Initialize country code dropdown
@@ -1406,6 +1784,19 @@
         table.querySelector("tbody").innerHTML = tableHTML;
       }
 
+      // Phone number validation
+      const phoneInputField = document.querySelector("#phone");
+      const phoneInput = window.intlTelInput(phoneInputField, {
+        preferredCountries: ["rw", "us", "gb"],
+        separateDialCode: true,
+        utilsScript:
+          "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
+      });
+      const form = document.querySelector("form"); // Replace 'form' with your form selector
+      form.addEventListener("submit", (event) => {
+        const fullNumber = phoneInput.getNumber();
+        document.querySelector("#full-phone").value = fullNumber;
+      });
       // Populate contact summary table
       function populateContactSummary() {
         const table = document.getElementById("contactSummaryTable");

@@ -2,7 +2,8 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login - Health Facility</title>
     <style>
       * {
         margin: 0;
@@ -15,24 +16,6 @@
         height: 100vh;
       }
 
-      h2 {
-        text-align: center;
-      }
-      .logo {
-        font-size: 32px;
-        font-weight: 300;
-        text-align: center;
-        margin-bottom: 100px;
-      }
-
-      .logo .xana {
-        color: #2c3e50;
-      }
-
-      .logo .health {
-        color: #5a9c8e;
-        font-weight: 500;
-      }
       .login-container {
         display: flex;
         flex-direction: row-reverse;
@@ -48,57 +31,198 @@
         justify-content: center;
       }
 
+      .logo {
+        font-size: 32px;
+        font-weight: 300;
+        text-align: center;
+        margin-bottom: 60px;
+      }
+
+      .logo .health {
+        color: #5a9c8e;
+        font-weight: 500;
+      }
+
+      .logo .facility {
+        color: #2c3e50;
+      }
+
       .login-form h2 {
         margin-bottom: 10px;
+        text-align: center;
+        color: #2c3e50;
       }
 
       .login-form p {
         margin-bottom: 30px;
         color: #666;
-      }
-
-      .login-form input {
-        width: 100%;
-        padding: 12px;
-        margin-bottom: 15px;
-        border: 1px solid #ccc;
-        border-radius: 6px;
-      }
-
-      .login-form button {
-        padding: 12px;
-        background: #5a9c8e;
-        color: white;
-        border: none;
-        border-radius: 6px;
-        cursor: pointer;
-        width: 100%;
         text-align: center;
       }
 
-      .login-form button:hover {
+      form {
+        width: 100%;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 6px;
+        color: #2c3e50;
+        font-size: 14px;
+        font-weight: 500;
+      }
+
+      .required {
+        color: #e74c3c;
+        font-size: 12px;
+        margin-left: 4px;
+      }
+
+      .input-group {
+        margin-bottom: 20px;
+      }
+
+      .input-group input,
+      .input-group select {
+        width: 100%;
+        padding: 12px;
+        border-radius: 8px;
+        border: 1px solid #e5e7eb;
+        font-size: 14px;
+        transition: all 0.3s ease;
+      }
+
+      .input-group input:focus,
+      .input-group select:focus {
+        outline: none;
+        border-color: #5a9c8e;
+        box-shadow: 0 0 0 3px rgba(90, 156, 142, 0.1);
+      }
+
+      .input-group select {
+        cursor: pointer;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%232c3e50' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 12px center;
+        padding-right: 36px;
+      }
+
+      .error-message {
+        background: #fee;
+        border: 1px solid #fcc;
+        color: #c33;
+        padding: 12px;
+        border-radius: 6px;
+        margin-bottom: 20px;
+        font-size: 14px;
+        display: none;
+      }
+
+      .error-message.show {
+        display: block;
+      }
+
+      button[type="submit"] {
+        width: 100%;
+        padding: 14px;
         background: #5a9c8e;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: 500;
+        transition: background 0.3s ease;
+        margin-top: 10px;
+      }
+
+      button[type="submit"]:hover {
+        background: #4a8c7e;
+      }
+
+      button[type="submit"]:active {
+        transform: scale(0.98);
+      }
+
+      button[type="submit"]:disabled {
+        background: #ccc;
+        cursor: not-allowed;
       }
 
       .forgot {
         margin-top: 15px;
-        text-align: right;
+        text-align: center;
         display: block;
         color: #5a9c8e;
+        text-decoration: none;
+        font-size: 14px;
+        transition: color 0.3s ease;
+      }
+
+      .forgot:hover {
+        color: #4a8c7e;
         text-decoration: underline;
       }
 
+      /* Image side */
       .login-image {
         width: 60%;
         background-image: url("stethoscope.jpg");
-        background-size: cover; /* fills the div */
-        background-position: center; /* centers the image */
-        background-repeat: no-repeat; /* prevents tiling */
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
         color: white;
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
+        padding: 60px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .login-image-content {
+        position: relative;
+        z-index: 1;
+        text-align: center;
+      }
+
+      .login-image h1 {
+        font-size: 48px;
+        margin-bottom: 20px;
+        font-weight: 300;
+      }
+
+      .login-image p {
+        font-size: 18px;
+        opacity: 0.9;
+        max-width: 400px;
+      }
+
+      /* Loading spinner */
+      .spinner {
+        display: none;
+        width: 20px;
+        height: 20px;
+        border: 3px solid rgba(255, 255, 255, 0.3);
+        border-top-color: white;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+        margin: 0 auto;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      button[type="submit"].loading .spinner {
+        display: block;
+      }
+
+      button[type="submit"].loading .button-text {
+        display: none;
       }
 
       /* Mobile */
@@ -109,6 +233,12 @@
 
         .login-form {
           width: 100%;
+          padding: 40px 30px;
+        }
+
+        .logo {
+          font-size: 28px;
+          margin-bottom: 40px;
         }
       }
     </style>
@@ -116,30 +246,196 @@
   <body>
     <div class="login-container">
       <!-- Login Side -->
-
       <div class="login-form">
-        <div class="logo">Xana<span>Health</span></div>
+        <div class="logo">
+          <span class="health">Health</span
+          ><span class="facility">Facility</span>
+        </div>
         <h2>Login</h2>
 
-        <form>
-          <label>Email</label>
-          <input type="email" placeholder="Enter your email here" required />
+        <div id="errorMessage" class="error-message"></div>
 
-          <label>Password</label>
-          <input
-            type="password"
-            placeholder="Enter your password here"
-            required
-          />
+        <form id="loginForm">
+          <div class="input-group">
+            <label for="username">Username</label>
+            <input
+              type="text"
+              id="username"
+              placeholder="Enter your username"
+              required
+              autocomplete="username"
+            />
+          </div>
 
-          <a href="dashboard.html"> <button type="submit">Log in</button></a>
+          <div class="input-group">
+            <label for="password">Password</label>
+            <input
+              type="password"
+              id="password"
+              placeholder="Enter your password"
+              required
+              autocomplete="current-password"
+            />
+          </div>
 
-          <a href="#" class="forgot">Forgot password?</a>
+          <div class="input-group">
+            <label for="facilityType">
+              Role <span class="required">*</span>
+            </label>
+            <select id="facilityType" required>
+              <option value="">Select your role</option>
+              <option value="reception">Reception</option>
+              <option value="admin">Admin</option>
+              <option value="lab">Laboratory</option>
+              <option value="consultation">Consultation</option>
+              <option value="pharmacy">Pharmacy</option>
+            </select>
+          </div>
+
+          <button type="submit" id="loginBtn">
+            <span class="button-text">Login</span>
+            <div class="spinner"></div>
+          </button>
+
+          <a href="#" class="forgot" id="forgotPassword">Forgot Password?</a>
         </form>
       </div>
 
-      <!-- Empty / Branding Side -->
+      <!-- Branding Side -->
       <div class="login-image"></div>
     </div>
+
+    <script>
+      // Fake users database
+      const users = [
+        { username: "reception", password: "1234", role: "reception" },
+        { username: "admin", password: "1234", role: "admin" },
+        { username: "lab", password: "1234", role: "lab" },
+        { username: "doctor", password: "1234", role: "consultation" },
+        { username: "pharmacy", password: "1234", role: "pharmacy" },
+      ];
+
+      const loginForm = document.getElementById("loginForm");
+      const loginBtn = document.getElementById("loginBtn");
+      const errorMessage = document.getElementById("errorMessage");
+
+      // Show error message
+      function showError(message) {
+        errorMessage.textContent = message;
+        errorMessage.classList.add("show");
+
+        // Hide after 5 seconds
+        setTimeout(() => {
+          errorMessage.classList.remove("show");
+        }, 5000);
+      }
+
+      // Login form submission
+      loginForm.addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        // Clear previous errors
+        errorMessage.classList.remove("show");
+
+        const username = document.getElementById("username").value.trim();
+        const password = document.getElementById("password").value;
+        const facilityType = document.getElementById("facilityType").value;
+
+        // Validate facility type is selected
+        if (!facilityType) {
+          showError("Please select your role!");
+          return;
+        }
+
+        // Show loading state
+        loginBtn.classList.add("loading");
+        loginBtn.disabled = true;
+
+        // Simulate network delay
+        setTimeout(() => {
+          // Find matching user with role
+          const foundUser = users.find(
+            (user) =>
+              user.username === username &&
+              user.password === password &&
+              user.role === facilityType,
+          );
+
+          loginBtn.classList.remove("loading");
+          loginBtn.disabled = false;
+
+          if (!foundUser) {
+            showError("Invalid username, password, or role combination!");
+            return;
+          }
+
+          // Store session in localStorage
+          localStorage.setItem("xanaUser", JSON.stringify(foundUser));
+
+          // Redirect based on role
+          switch (foundUser.role) {
+            case "reception":
+              window.location.href = "reception.html";
+              break;
+            case "admin":
+              window.location.href = "admin_dashboard.html";
+              break;
+            case "lab":
+              window.location.href = "laboratory.html";
+              break;
+            case "consultation":
+              window.location.href = "consuktation.html";
+              break;
+            case "pharmacy":
+              window.location.href = "pharmacy.html";
+              break;
+            default:
+              showError("Role not recognized!");
+          }
+        }, 800); // Simulated delay
+      });
+
+      // Forgot password handler
+      document
+        .getElementById("forgotPassword")
+        .addEventListener("click", function (e) {
+          e.preventDefault();
+          alert("Please contact your administrator to reset your password.");
+        });
+
+      // Check if user is already logged in (optional - commented out by default)
+      // Uncomment if you want auto-redirect for logged-in users
+      /*
+      window.addEventListener("DOMContentLoaded", function () {
+        const storedUser = localStorage.getItem("xanaUser");
+        if (storedUser) {
+          const user = JSON.parse(storedUser);
+          switch (user.role) {
+            case "reception":
+              window.location.href = "reception.html";
+              break;
+            case "admin":
+              window.location.href = "admin.html";
+              break;
+            case "lab":
+              window.location.href = "lab.html";
+              break;
+            case "consultation":
+              window.location.href = "doctor.html";
+              break;
+            case "pharmacy":
+              window.location.href = "pharmacy.html";
+              break;
+          }
+        }
+      });
+      */
+
+      // Global logout function (can be called from other pages)
+      function logout() {
+        localStorage.removeItem("xanaUser");
+        window.location.href = "login.html";
+      }
+    </script>
   </body>
 </html>

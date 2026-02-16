@@ -1,66 +1,49 @@
 <!doctype html>
 <html>
   <head>
-    <style>
-      .main-container {
-        position: relative;
-        z-index: 5;
-        width: 85%;
-        margin: 80px auto;
-        background: #ffffff;
-        border-radius: 16px;
-        height: 300px;
-        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
-      }
+    <meta charset="UTF-8" />
 
-      .decor {
-        position: absolute;
-        bottom: 300px;
-        width: 200px;
-        height: 200px;
-        background: #e3efe9;
-        z-index: 1;
-        overflow: visible;
-      }
-
-      .decor::after {
-        content: "";
-        position: absolute;
-        bottom: -50px;
-
-        width: 180px;
-        height: 180px;
-
-        background-image: radial-gradient(#6fa493 3px, transparent 3px);
-        background-size: 22px 22px;
-
-        z-index: -1;
-      }
-
-      .decor-right::after {
-        left: -30px;
-      }
-
-      .decor-left::after {
-        right: -30px;
-      }
-      .decor-left {
-        left: 20px;
-        border-top-right-radius: 18px;
-      }
-
-      .decor-right {
-        right: 20px;
-        border-top-left-radius: 18px;
-      }
-    </style>
+    <!-- CSS -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.min.css"
+    />
   </head>
-  <body>
-    <div class="page">
-      <div class="decor decor-left"></div>
-      <div class="decor decor-right"></div>
 
-      <div class="main-container"></div>
-    </div>
+  <body>
+    <form id="myForm">
+      <label>Phone number</label>
+
+      <input id="phone" type="tel" name="phone" placeholder="+250" />
+
+      <input type="hidden" name="full_phone" id="full-phone" />
+      <button type="submit">Submit</button>
+    </form>
+
+    <!-- Load scripts at bottom with defer -->
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"
+      defer
+    ></script>
+
+    <script>
+      window.addEventListener("DOMContentLoaded", function () {
+        const phoneInputField = document.querySelector("#phone");
+
+        const phoneInput = window.intlTelInput(phoneInputField, {
+          preferredCountries: ["rw", "us", "gb"],
+          separateDialCode: true,
+          utilsScript:
+            "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
+        });
+
+        const form = document.querySelector("#myForm");
+
+        form.addEventListener("submit", function () {
+          const fullNumber = phoneInput.getNumber();
+          document.querySelector("#full-phone").value = fullNumber;
+        });
+      });
+    </script>
   </body>
 </html>

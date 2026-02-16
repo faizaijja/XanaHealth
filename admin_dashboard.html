@@ -1,20 +1,4 @@
 <!doctype html>
-<!--
-  PERFORMANCE FIXES & ENHANCEMENTS:
-  ✅ Added missing intl-tel-input JavaScript library
-  ✅ Removed broken/empty script tag
-  ✅ Removed duplicate Cloudflare scripts
-  ✅ Reduced loading delay from 3000ms to 100ms (instant loading)
-  
-  CHART ENHANCEMENTS:
-  ✅ Beautiful gradients on all line/area charts
-  ✅ Enhanced tooltips with better formatting
-  ✅ Larger, styled data points with white borders
-  ✅ Smooth animations and hover effects
-  ✅ Better legends and labels
-  ✅ Revenue values formatted as "Rwf XK"
-  ✅ Percentage displays on donut chart
--->
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -29,6 +13,8 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.css"
     />
+
+    <script src="https://cdnjs.cloudflare.com"></script>
     <style>
       /* Loading Screen */
       .loading-screen {
@@ -1318,14 +1304,7 @@
             <div class="user-avatar">DD</div>
             <div class="user-info">
               <div class="user-name">Dr Jane Doe</div>
-              <div class="user-role">
-                <a
-                  href="/cdn-cgi/l/email-protection"
-                  class="__cf_email__"
-                  data-cfemail="dbbfb4b8afb4a99bb6bab2b7f5b8b4b6"
-                  >[email&#160;protected]</a
-                >
-              </div>
+              <div class="user-role">doctor@mail.com</div>
             </div>
           </div>
           <div class="user-actions">
@@ -1735,11 +1714,30 @@
       </main>
     </div>
 
+    <div class="first-form">
+      <h1>Welcome to your Dashboard</h1>
+      <p>Let's get you started</p>
+    </div>
+
+    <div class="second-form">
+      <h1>Welcome to your Dashboard</h1>
+      <p>Let's get you started</p>
+    </div>
+
+    <div class="third-form">
+      <h1>Welcome to your Dashboard</h1>
+      <p>Let's get you started</p>
+    </div>
+
+    <div class="fourth-form">
+      <h1>Welcome to your Dashboard</h1>
+      <p>Let's get you started</p>
+    </div>
+
     <script
       data-cfasync="false"
       src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"
     ></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
       let currentStep = 0;
@@ -1787,23 +1785,10 @@
       function closeOnboarding() {
         document.getElementById("onboarding").style.display = "none";
       }
-      // Revenue Chart (Line Chart) - Enhanced
+      // Revenue Chart (Line Chart)
       const revenueCtx = document
         .getElementById("revenueChart")
         .getContext("2d");
-
-      // Create gradient for 2024
-      const gradient2024 = revenueCtx.createLinearGradient(0, 0, 0, 400);
-      gradient2024.addColorStop(0, "rgba(26, 95, 90, 0.4)");
-      gradient2024.addColorStop(0.5, "rgba(26, 95, 90, 0.2)");
-      gradient2024.addColorStop(1, "rgba(26, 95, 90, 0.0)");
-
-      // Create gradient for 2023
-      const gradient2023 = revenueCtx.createLinearGradient(0, 0, 0, 400);
-      gradient2023.addColorStop(0, "rgba(125, 211, 192, 0.3)");
-      gradient2023.addColorStop(0.5, "rgba(125, 211, 192, 0.15)");
-      gradient2023.addColorStop(1, "rgba(125, 211, 192, 0.0)");
-
       new Chart(revenueCtx, {
         type: "line",
         data: {
@@ -1826,101 +1811,55 @@
               label: "Revenue 2024",
               data: [30, 40, 35, 50, 49, 60, 70, 80, 75, 85, 90, 95],
               borderColor: "#1a5f5a",
-              backgroundColor: gradient2024,
+              backgroundColor: "rgba(26, 95, 90, 0.1)",
               tension: 0.4,
               fill: true,
               pointBackgroundColor: "#1a5f5a",
-              pointBorderColor: "#ffffff",
-              pointBorderWidth: 3,
-              pointRadius: 5,
-              pointHoverRadius: 8,
-              pointHoverBackgroundColor: "#1a5f5a",
-              pointHoverBorderColor: "#ffffff",
-              pointHoverBorderWidth: 3,
-              borderWidth: 3,
+              pointRadius: 4,
+              pointHoverRadius: 6,
             },
             {
               label: "Revenue 2023",
               data: [20, 30, 28, 40, 39, 50, 60, 70, 65, 75, 80, 85],
               borderColor: "#7dd3c0",
-              backgroundColor: gradient2023,
+              backgroundColor: "rgba(125, 211, 192, 0.1)",
               tension: 0.4,
               fill: true,
               pointBackgroundColor: "#7dd3c0",
-              pointBorderColor: "#ffffff",
-              pointBorderWidth: 3,
-              pointRadius: 5,
-              pointHoverRadius: 8,
-              pointHoverBackgroundColor: "#7dd3c0",
-              pointHoverBorderColor: "#ffffff",
-              pointHoverBorderWidth: 3,
-              borderWidth: 3,
+              pointRadius: 4,
+              pointHoverRadius: 6,
             },
           ],
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          interaction: {
-            mode: "index",
-            intersect: false,
-          },
           plugins: {
             legend: {
-              display: true,
-              position: "top",
-              align: "end",
-              labels: {
-                usePointStyle: true,
-                pointStyle: "circle",
-                padding: 20,
-                font: {
-                  size: 12,
-                  weight: "500",
-                },
-              },
+              display: false,
             },
             tooltip: {
-              backgroundColor: "rgba(30, 41, 59, 0.95)",
-              padding: 16,
+              backgroundColor: "#1e293b",
+              padding: 12,
               titleColor: "#fff",
-              titleFont: {
-                size: 14,
-                weight: "bold",
-              },
               bodyColor: "#e2e8f0",
-              bodyFont: {
-                size: 13,
-              },
               borderColor: "#334155",
               borderWidth: 1,
               displayColors: true,
-              boxPadding: 8,
-              cornerRadius: 8,
-              callbacks: {
-                label: function (context) {
-                  return (
-                    context.dataset.label + ": Rwf " + context.parsed.y + "K"
-                  );
-                },
-              },
+              boxPadding: 6,
             },
           },
           scales: {
             y: {
               beginAtZero: true,
               grid: {
-                color: "rgba(226, 232, 240, 0.5)",
+                color: "#e2e8f0",
                 drawBorder: false,
               },
               ticks: {
                 color: "#64748b",
                 font: {
                   size: 11,
-                  weight: "500",
-                },
-                callback: function (value) {
-                  return "Rwf " + value + "K";
                 },
               },
             },
@@ -1933,7 +1872,6 @@
                 color: "#64748b",
                 font: {
                   size: 11,
-                  weight: "500",
                 },
               },
             },
@@ -1941,7 +1879,7 @@
         },
       });
 
-      // Donut Chart (Disease Prevalence) - Enhanced
+      // Donut Chart (Disease Prevalence)
       const donutCtx = document.getElementById("donutChart").getContext("2d");
       new Chart(donutCtx, {
         type: "doughnut",
@@ -1951,11 +1889,8 @@
             {
               data: [40, 25, 20, 15],
               backgroundColor: ["#1a5f5a", "#2d8b83", "#7dd3c0", "#b8e6de"],
-              borderColor: "#ffffff",
-              borderWidth: 4,
-              hoverBorderWidth: 6,
-              hoverBorderColor: "#ffffff",
-              spacing: 3,
+              borderWidth: 0,
+              spacing: 2,
             },
           ],
         },
@@ -1967,48 +1902,18 @@
               display: false,
             },
             tooltip: {
-              backgroundColor: "rgba(30, 41, 59, 0.95)",
-              padding: 16,
+              backgroundColor: "#1e293b",
+              padding: 12,
               titleColor: "#fff",
-              titleFont: {
-                size: 14,
-                weight: "bold",
-              },
               bodyColor: "#e2e8f0",
-              bodyFont: {
-                size: 13,
-              },
-              cornerRadius: 8,
-              callbacks: {
-                label: function (context) {
-                  const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                  const percentage = ((context.parsed / total) * 100).toFixed(
-                    1,
-                  );
-                  return context.label + ": " + percentage + "%";
-                },
-              },
             },
           },
           cutout: "70%",
-          animation: {
-            animateRotate: true,
-            animateScale: true,
-            duration: 1500,
-            easing: "easeInOutQuart",
-          },
         },
       });
 
-      // Area Chart (Patient Visits) - Enhanced
+      // Area Chart (Patient Visits)
       const areaCtx = document.getElementById("areaChart").getContext("2d");
-
-      // Create beautiful gradient
-      const areaGradient = areaCtx.createLinearGradient(0, 0, 0, 300);
-      areaGradient.addColorStop(0, "rgba(26, 95, 90, 0.5)");
-      areaGradient.addColorStop(0.5, "rgba(26, 95, 90, 0.25)");
-      areaGradient.addColorStop(1, "rgba(26, 95, 90, 0.0)");
-
       new Chart(areaCtx, {
         type: "line",
         data: {
@@ -2026,62 +1931,38 @@
               label: "Patient Visits",
               data: [200, 350, 300, 450, 350, 500, 400],
               borderColor: "#1a5f5a",
-              backgroundColor: areaGradient,
+              backgroundColor: "rgba(26, 95, 90, 0.2)",
               tension: 0.4,
               fill: true,
               pointBackgroundColor: "#1a5f5a",
-              pointBorderColor: "#ffffff",
-              pointBorderWidth: 3,
-              pointRadius: 6,
-              pointHoverRadius: 9,
-              pointHoverBackgroundColor: "#1a5f5a",
-              pointHoverBorderColor: "#ffffff",
-              pointHoverBorderWidth: 4,
-              borderWidth: 3,
+              pointRadius: 5,
+              pointHoverRadius: 7,
             },
           ],
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          interaction: {
-            mode: "index",
-            intersect: false,
-          },
           plugins: {
             legend: {
               display: false,
             },
             tooltip: {
-              backgroundColor: "rgba(30, 41, 59, 0.95)",
-              padding: 16,
-              titleFont: {
-                size: 14,
-                weight: "bold",
-              },
-              bodyFont: {
-                size: 13,
-              },
-              cornerRadius: 8,
-              callbacks: {
-                label: function (context) {
-                  return "Visits: " + context.parsed.y.toLocaleString();
-                },
-              },
+              backgroundColor: "#1e293b",
+              padding: 12,
             },
           },
           scales: {
             y: {
               beginAtZero: true,
               grid: {
-                color: "rgba(226, 232, 240, 0.5)",
+                color: "#e2e8f0",
                 drawBorder: false,
               },
               ticks: {
                 color: "#64748b",
                 font: {
                   size: 11,
-                  weight: "500",
                 },
               },
             },
@@ -2094,7 +1975,6 @@
                 color: "#64748b",
                 font: {
                   size: 11,
-                  weight: "500",
                 },
               },
             },
@@ -2128,7 +2008,7 @@
 
       // Run animations on page load
       window.addEventListener("DOMContentLoaded", () => {
-        // Show loading screen briefly, then show onboarding modal
+        // Show loading screen for 3 seconds, then show onboarding modal
         setTimeout(() => {
           document.getElementById("loadingScreen").classList.add("hidden");
 
@@ -2136,7 +2016,12 @@
           setTimeout(() => {
             document.getElementById("onboarding").style.display = "flex";
           }, 500); // Wait for fade-out transition
-        }, 100); // Instant loading
+        }, 100); // Show loading for 3 seconds
+
+        animateValue("totalPatients", 0, 1234, 2000);
+        animateValue("totalRevenue", 0, 45678, 2000);
+
+        updateModalSize(currentStep);
       });
     </script>
   </body>

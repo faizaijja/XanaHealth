@@ -61,7 +61,7 @@
       /* Background Hero Section */
       .hero-section {
         position: relative;
-        height: 600px;
+        height: 700px;
         background-image: url("portrait-woman-working-as-medic-office-healthcare-clinic.jpg");
         background-size: cover;
         background-position: center;
@@ -116,7 +116,7 @@
 
       .btn-get-started {
         padding: 8px 20px;
-        background: #48bb78;
+        background: #488063;
         border: none;
         border-radius: 5px;
         color: white;
@@ -155,7 +155,7 @@
 
       .btn-hero-primary {
         padding: 12px 30px;
-        background: #48bb78;
+        background: #488063;
         border: none;
         border-radius: 5px;
         color: white;
@@ -176,66 +176,17 @@
       }
 
       /* Dashboard Container */
-      .dashboard-container {
+      .main-content {
         position: relative;
-        max-width: 1200px;
-        margin: -100px auto 50px;
-        background: white;
-        border-radius: 10px;
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        margin: -300px auto 50px;
         overflow: hidden;
         z-index: 10;
       }
 
-      /* Sidebar */
-      .sidebar {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 200px;
-        height: 100%;
-        background: #f8f9fa;
-        border-right: 1px solid #e2e8f0;
-        padding: 20px 0;
+      .page{
+         background: white;
       }
-
-      .sidebar-section {
-        margin-bottom: 30px;
-      }
-
-      .sidebar-item {
-        display: flex;
-        align-items: center;
-        padding: 10px 20px;
-        color: #718096;
-        font-size: 14px;
-        cursor: pointer;
-        transition: all 0.2s;
-      }
-
-      .sidebar-item:hover {
-        background: #e2e8f0;
-        color: #2d3748;
-      }
-
-      .sidebar-item.active {
-        background: #48bb78;
-        color: white;
-      }
-
-      .sidebar-icon {
-        width: 20px;
-        height: 20px;
-        margin-right: 10px;
-        display: inline-block;
-      }
-
-      /* Main Content */
-      .main-content {
-        margin-left: 200px;
-        padding: 20px 30px;
-      }
-
+    
       /* Tab Navigation */
       .tab-nav {
         display: flex;
@@ -784,7 +735,10 @@
           reports, and file insurance claims effortlessly.
         </p>
         <div class="hero-buttons">
-          <button class="btn-hero-primary">Get Started</button>
+
+         <a href="signup.html">
+           <button class="btn-hero-primary">Get Started</button>
+         </a>
           <button class="btn-hero-secondary">Talk to Sales</button>
         </div>
       </div>
@@ -792,122 +746,15 @@
 
     <!-- Dashboard Container -->
     <div class="page">
-      <div class="decor decor-left"></div>
-      <div class="decor decor-right"></div>
-
-      <div class="dashboard-container" >
-        <!-- Sidebar -->
-        <div class="sidebar">
-          <div class="logo">
-            <img
-              src="logo.png"
-              alt="Company Logo"
-              style="max-width: 120px; margin-bottom: 2rem"
-            />
-          </div>
-          <div class="sidebar-section">
-            <div class="sidebar-item">
-              <span class="sidebar-icon"></span>
-              <span>Reception</span>
-            </div>
-            <div class="sidebar-item active">
-              <span class="sidebar-icon"></span>
-              <span>Patients</span>
-            </div>
-            <div class="sidebar-item">
-              <span class="sidebar-icon"></span>
-              <span>Billing</span>
-            </div>
-          </div>
-
-          <div class="profile-section">
-            <div class="sidebar-item">
-              <span class="sidebar-icon">👤</span>
-              <span>Profile</span>
-            </div>
-            <div class="sidebar-item">
-              <span class="sidebar-icon">⚙️</span>
-              <span>Settings</span>
-            </div>
-            <div class="sidebar-item">
-              <span class="sidebar-icon">❓</span>
-              <span>Help</span>
-            </div>
-          </div>
-        </div>
-
         <!-- Main Content -->
-        <div class="main-content">
+     
+         <div class="main-content">
           <!-- Tab Navigation -->
-          <div class="tab-nav">
-            <div class="tab active">Patients</div>
-            <div></div>
-            <div class="user-info">
-              <span>🔔</span>
-              <div class="user-avatar"></div>
-              <span class="user-name">Jane Doe</span>
-            </div>
-          </div>
-
-          <!-- Filters and Actions -->
-          <div class="filters-actions">
-            <div class="filters">
-              <select class="filter-select">
-                <option>All Pts by</option>
-              </select>
-              <input
-                type="text"
-                class="filter-input"
-                placeholder="Search pt patients"
-              />
-              <select class="filter-select">
-                <option>Action ▼</option>
-              </select>
-            </div>
-
-            <div class="actions">
-              <button class="btn-action">Export</button>
-              <button class="btn-action">Import</button>
-              <button class="btn-action primary">Add New Patient</button>
-            </div>
-          </div>
-
-          <div>
-            <span style="color: #718096; font-size: 13px"
-              >Applied Filter Recently Added Recently Updated Clear Filter</span
-            >
-          </div>
-
-          <!-- Patient Table -->
-          <table class="patient-table">
-            <thead>
-              <tr>
-                <th>☐</th>
-                <th>Image</th>
-                <th>File Number</th>
-                <th>First Name</th>
-                <th>Last Name</th>
-                <th>Gender</th>
-                <th>Date of Birth</th>
-                <th>Phone Number</th>
-                <th>Actions</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody id="patientTableBody">
-              <!-- Rows will be generated by JavaScript -->
-            </tbody>
-          </table>
-
-          <!-- Pagination -->
-          <div class="pagination">
-            <button class="page-btn">«</button>
-            <button class="page-btn active">1</button>
-            <button class="page-btn">2</button>
-            <button class="page-btn">»</button>
-          </div>
+           <img src="product screen & background.png"/>
+  
         </div>
-      </div>
+     
+     
 
       <!----Playback section------->
       <div class="playback-section">
