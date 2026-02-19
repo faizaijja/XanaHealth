@@ -1,1176 +1,959 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>XanaHealth - Patients List</title>
-    <style>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-
-      body {
-        font-family:
-          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-          "Helvetica Neue", Arial, sans-serif;
-        background-color: #f5f5f5;
-        color: #333;
-      }
-
-      .container {
-        display: flex;
-        min-height: 100vh;
-      }
-
-      /* Sidebar */
-      .sidebar {
-        width: 240px;
-        background-color: #fff;
-        border-right: 1px solid #e5e5e5;
-        display: flex;
-        flex-direction: column;
-      }
-
-      .logo {
-        padding: 20px 24px;
-        font-size: 20px;
-        font-weight: 600;
-      }
-
-      .logo span:first-child {
-        color: #333;
-      }
-
-      .logo span:last-child {
-        color: #059669;
-      }
-
-      .nav-section {
-        padding: 12px 0;
-      }
-
-      .nav-label {
-        padding: 8px 24px;
-        font-size: 11px;
-        font-weight: 600;
-        color: #9ca3af;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-      }
-
-      .nav-item {
-        display: flex;
-        align-items: center;
-        padding: 10px 24px;
-        color: #6b7280;
-        text-decoration: none;
-        font-size: 14px;
-        cursor: pointer;
-        transition: background-color 0.2s;
-      }
-
-      .nav-item:hover {
-        background-color: #f9fafb;
-      }
-
-      .nav-item.active {
-        background-color: #f0fdf4;
-        color: #059669;
-        border-right: 3px solid #059669;
-      }
-
-      .nav-item svg {
-        width: 18px;
-        height: 18px;
-        margin-right: 12px;
-        opacity: 0.6;
-      }
-
-      .user-section {
-        margin-top: auto;
-        padding: 20px 24px;
-        border-top: 1px solid #e5e5e5;
-      }
-
-      .user-profile {
-        display: flex;
-        align-items: center;
-        margin-bottom: 16px;
-      }
-
-      .user-avatar {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        background-color: #fecaca;
-        margin-right: 12px;
-      }
-
-      .user-info h4 {
-        font-size: 14px;
-        font-weight: 600;
-        color: #333;
-      }
-
-      .user-info p {
-        font-size: 12px;
-        color: #9ca3af;
-      }
-
-      .user-actions {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-      }
-
-      .user-action {
-        display: flex;
-        align-items: center;
-        padding: 8px 0;
-        color: #6b7280;
-        text-decoration: none;
-        font-size: 14px;
-        cursor: pointer;
-      }
-
-      .user-action svg {
-        width: 18px;
-        height: 18px;
-        margin-right: 12px;
-        opacity: 0.6;
-      }
-
-      /* Main Content */
-      .main-content {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-      }
-
-      /* Header */
-      .header {
-        background-color: #fff;
-        padding: 16px 32px;
-        border-bottom: 1px solid #e5e5e5;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
-
-      .header h1 {
-        font-size: 24px;
-        font-weight: 600;
-        color: #111827;
-      }
-
-      .header-right {
-        display: flex;
-        align-items: center;
-        gap: 20px;
-      }
-
-      .notification-icon {
-        width: 20px;
-        height: 20px;
-        cursor: pointer;
-      }
-
-      .company-dropdown {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        padding: 8px 16px;
-        background-color: #fff;
-        border: 1px solid #e5e5e5;
-        border-radius: 6px;
-        cursor: pointer;
-        color: #9ca3af;
-      }
-
-      /* Content Area */
-      .content-area {
-        padding: 24px 32px;
-        flex: 1;
-        background-color: #f9fafb;
-      }
-
-      .controls {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 16px;
-        gap: 16px;
-      }
-
-      .controls-left {
-        display: flex;
-        gap: 12px;
-        flex: 1;
-      }
-
-      .filter-btn,
-      .action-btn {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        padding: 10px 16px;
-        background-color: #fff;
-        border: 1px solid #d1d5db;
-        border-radius: 6px;
-        cursor: pointer;
-        font-size: 14px;
-        color: #374151;
-      }
-
-      .search-box {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        padding: 10px 16px;
-        background-color: #fff;
-        border: 1px solid #d1d5db;
-        border-radius: 6px;
-        flex: 1;
-        max-width: 300px;
-      }
-
-      .search-box input {
-        border: none;
-        outline: none;
-        flex: 1;
-        font-size: 14px;
-        color: #6b7280;
-      }
-
-      .controls-right {
-        display: flex;
-        gap: 12px;
-      }
-
-      .export-btn,
-      .import-btn {
-        padding: 10px 20px;
-        background-color: #fff;
-        border: 1px solid #d1d5db;
-        border-radius: 6px;
-        cursor: pointer;
-        font-size: 14px;
-        color: #374151;
-        font-weight: 500;
-      }
-
-      .add-patient-btn {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        padding: 10px 20px;
-        background-color: #059669;
-        border: none;
-        border-radius: 6px;
-        cursor: pointer;
-        font-size: 14px;
-        color: #fff;
-        font-weight: 500;
-      }
-
-      /* Filters */
-      .applied-filters {
-        display: flex;
-        gap: 8px;
-        margin-bottom: 16px;
-        align-items: center;
-        flex-wrap: wrap;
-      }
-
-      .filter-label {
-        font-size: 13px;
-        color: #6b7280;
-      }
-
-      .filter-tag {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        padding: 6px 12px;
-        background-color: #f3f4f6;
-        border-radius: 4px;
-        font-size: 13px;
-        color: #374151;
-      }
-
-      .filter-tag .close {
-        cursor: pointer;
-        opacity: 0.6;
-      }
-
-      .clear-filter {
-        color: #ef4444;
-        font-size: 13px;
-        cursor: pointer;
-        font-weight: 500;
-      }
-
-      /* Table */
-      .table-container {
-        background-color: #fff;
-        border-radius: 8px;
-        overflow: hidden;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-      }
-
-      table {
-        width: 100%;
-        border-collapse: collapse;
-      }
-
-      thead {
-        background-color: #f9fafb;
-        border-bottom: 1px solid #e5e5e5;
-      }
-
-      th {
-        padding: 12px 16px;
-        text-align: left;
-        font-size: 12px;
-        font-weight: 600;
-        color: #6b7280;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-      }
-
-      td {
-        padding: 16px;
-        border-bottom: 1px solid #f3f4f6;
-        font-size: 14px;
-        color: #374151;
-      }
-
-      tbody tr:hover {
-        background-color: #f9fafb;
-      }
-
-      .checkbox {
-        width: 16px;
-        height: 16px;
-        border: 1px solid #d1d5db;
-        border-radius: 3px;
-        cursor: pointer;
-      }
-
-      .patient-image {
-        width: 36px;
-        height: 36px;
-        border-radius: 50%;
-        object-fit: cover;
-      }
-
-      .new-visit-btn {
-        padding: 6px 16px;
-        background-color: #d1fae5;
-        border: 1px solid #a7f3d0;
-        border-radius: 6px;
-        cursor: pointer;
-        font-size: 13px;
-        color: #065f46;
-        font-weight: 500;
-      }
-
-      .action-icons {
-        display: flex;
-        gap: 12px;
-      }
-
-      .action-icon {
-        width: 18px;
-        height: 18px;
-        opacity: 0.5;
-        cursor: pointer;
-      }
-
-      .action-icon:hover {
-        opacity: 1;
-      }
-
-      /* Pagination */
-      .pagination {
-        display: flex;
-        justify-content: flex-end;
-        align-items: center;
-        padding: 16px 24px;
-        gap: 8px;
-      }
-
-      .page-btn {
-        padding: 8px 12px;
-        border: 1px solid #d1d5db;
-        background-color: #fff;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 14px;
-        color: #374151;
-      }
-
-      .page-btn.active {
-        background-color: #059669;
-        color: #fff;
-        border-color: #059669;
-      }
-
-      .page-btn:disabled {
-        opacity: 0.4;
-        cursor: not-allowed;
-      }
-
-      .page-info {
-        font-size: 14px;
-        color: #9ca3af;
-        margin-left: 8px;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="container">
-      <!-- Sidebar -->
-      <aside class="sidebar">
-        <div class="logo"><span>Xana</span><span>Health</span></div>
-
-        <nav class="nav-section">
-          <div class="nav-label">RECEPTION/CASHIER</div>
-          <a href="#" class="nav-item">
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-            >
-              <rect x="3" y="3" width="7" height="7"></rect>
-              <rect x="14" y="3" width="7" height="7"></rect>
-              <rect x="14" y="14" width="7" height="7"></rect>
-              <rect x="3" y="14" width="7" height="7"></rect>
-            </svg>
-            Dashboard
-          </a>
-          <a href="#" class="nav-item">
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-            >
-              <path
-                d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
-              ></path>
-              <polyline points="14 2 14 8 20 8"></polyline>
-            </svg>
-            New Patient File
-          </a>
-          <a href="#" class="nav-item active">
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-            >
-              <path
-                d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
-              ></path>
-              <polyline points="14 2 14 8 20 8"></polyline>
-              <line x1="16" y1="13" x2="8" y2="13"></line>
-              <line x1="16" y1="17" x2="8" y2="17"></line>
-              <polyline points="10 9 9 9 8 9"></polyline>
-            </svg>
-            Patients List
-          </a>
-          <a href="patient_visits.html" class="nav-item">
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-            >
-              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-              <circle cx="9" cy="7" r="4"></circle>
-              <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-            </svg>
-            Patient Visits
-          </a>
-          <a href="#" class="nav-item">
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-            >
-              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-              <line x1="16" y1="2" x2="16" y2="6"></line>
-              <line x1="8" y1="2" x2="8" y2="6"></line>
-              <line x1="3" y1="10" x2="21" y2="10"></line>
-            </svg>
-            Appointments
-          </a>
-          <a href="#" class="nav-item">
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-            >
-              <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
-              <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
-            </svg>
-            DigitalRx
-          </a>
-          <a href="#" class="nav-item">
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-            >
-              <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
-              <line x1="1" y1="10" x2="23" y2="10"></line>
-            </svg>
-            Billing
-          </a>
-        </nav>
-
-        <div class="user-section">
-          <div class="user-profile">
-            <div class="user-avatar"></div>
-            <div class="user-info">
-              <h4>Jane Doe</h4>
-              <p>Receptionist</p>
-            </div>
-          </div>
-          <div class="user-actions">
-            <a href="#" class="user-action">
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-              >
-                <circle cx="12" cy="12" r="10"></circle>
-                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
-                <line x1="12" y1="17" x2="12.01" y2="17"></line>
-              </svg>
-              Help
-            </a>
-            <a href="#" class="user-action">
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-              >
-                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-                <polyline points="16 17 21 12 16 7"></polyline>
-                <line x1="21" y1="12" x2="9" y2="12"></line>
-              </svg>
-              Logout
-            </a>
-          </div>
-        </div>
-      </aside>
-
-      <!-- Main Content -->
-      <main class="main-content">
-        <!-- Header -->
-        <header class="header">
-          <h1>Billing</h1>
-          <div class="header-right">
-            <svg
-              class="notification-icon"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-            >
-              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-              <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
-            </svg>
-            <div class="company-dropdown">
-              <span>Company Logo</span>
-              <svg
-                width="12"
-                height="12"
-                viewBox="0 0 12 12"
-                fill="currentColor"
-              >
-                <path d="M6 9L1 4h10z"></path>
-              </svg>
-            </div>
-          </div>
-        </header>
-
-        <!-- Content Area -->
-        <div class="content-area">
-          <!-- Controls -->
-          <div class="controls">
-            <div class="controls-left">
-              <button class="filter-btn">
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                >
-                  <line x1="4" y1="21" x2="4" y2="14"></line>
-                  <line x1="4" y1="10" x2="4" y2="3"></line>
-                  <line x1="12" y1="21" x2="12" y2="12"></line>
-                  <line x1="12" y1="8" x2="12" y2="3"></line>
-                  <line x1="20" y1="21" x2="20" y2="16"></line>
-                  <line x1="20" y1="12" x2="20" y2="3"></line>
-                  <line x1="1" y1="14" x2="7" y2="14"></line>
-                  <line x1="9" y1="8" x2="15" y2="8"></line>
-                  <line x1="17" y1="16" x2="23" y2="16"></line>
-                </svg>
-                Filter by
-              </button>
-              <div class="search-box">
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                >
-                  <circle cx="11" cy="11" r="8"></circle>
-                  <path d="m21 21-4.35-4.35"></path>
-                </svg>
-                <input type="text" placeholder="Search all patients" />
-              </div>
-              <button class="action-btn">
-                Action
-                <svg
-                  width="12"
-                  height="12"
-                  viewBox="0 0 12 12"
-                  fill="currentColor"
-                >
-                  <path d="M6 9L1 4h10z"></path>
-                </svg>
-              </button>
-            </div>
-            <div class="controls-right"></div>
-          </div>
-
-          <!-- Applied Filters -->
-          <div class="applied-filters">
-            <span class="filter-label">Applied Filter</span>
-            <div class="filter-tag">
-              Recently added
-              <span class="close">✕</span>
-            </div>
-            <div class="filter-tag">
-              Recently Updated
-              <span class="close">✕</span>
-            </div>
-            <span class="clear-filter">Clear filter</span>
-          </div>
-
-          <!-- Table -->
-          <div class="table-container">
-            <table>
-              <thead>
-                <tr>
-                  <th><input type="checkbox" class="checkbox" /></th>
-                  <th>Image</th>
-                  <th>File Number</th>
-                  <th>First Name</th>
-                  <th>Last Name</th>
-                  <th>Gender</th>
-                  <th>Date of Birth</th>
-                  <th>Phone Number</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><input type="checkbox" class="checkbox" /></td>
-                  <td>
-                    <img
-                      src="https://i.pravatar.cc/150?img=1"
-                      alt="Patient"
-                      class="patient-image"
-                    />
-                  </td>
-                  <td>112/001</td>
-                  <td>Raekwon Gbeho</td>
-                  <td>Raekwon Gb...</td>
-                  <td>Female</td>
-                  <td>23/05/1992</td>
-                  <td>+250000000000</td>
-                  <td>
-                    <div style="display: flex; align-items: center; gap: 12px">
-                      <div class="action-icons">
-                        <button class="new-visit-btn">New Visit</button>
-                      </div>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td><input type="checkbox" class="checkbox" /></td>
-                  <td>
-                    <img
-                      src="https://i.pravatar.cc/150?img=5"
-                      alt="Patient"
-                      class="patient-image"
-                    />
-                  </td>
-                  <td>112/001</td>
-                  <td>Milani Mostafa</td>
-                  <td>Milani Mostafa</td>
-                  <td>Female</td>
-                  <td>23/05/1998</td>
-                  <td>+250000000000</td>
-                  <td>
-                    <div style="display: flex; align-items: center; gap: 12px">
-                      <button class="new-visit-btn">New Visit</button>
-                      <div class="action-icons">
-                        <svg
-                          class="action-icon"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          stroke-width="2"
-                        >
-                          <path
-                            d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"
-                          ></path>
-                          <path
-                            d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"
-                          ></path>
-                        </svg>
-                        <svg
-                          class="action-icon"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          stroke-width="2"
-                        >
-                          <path
-                            d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"
-                          ></path>
-                          <circle cx="12" cy="12" r="3"></circle>
-                        </svg>
-                      </div>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td><input type="checkbox" class="checkbox" /></td>
-                  <td>
-                    <img
-                      src="https://i.pravatar.cc/150?img=9"
-                      alt="Patient"
-                      class="patient-image"
-                    />
-                  </td>
-                  <td>112/001</td>
-                  <td>Tawana Adébáyò</td>
-                  <td>Tawana Adé...</td>
-                  <td>Female</td>
-                  <td>13/04/1999</td>
-                  <td>+250000000000</td>
-                  <td>
-                    <div style="display: flex; align-items: center; gap: 12px">
-                      <button class="new-visit-btn">New Visit</button>
-                      <div class="action-icons">
-                        <svg
-                          class="action-icon"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          stroke-width="2"
-                        >
-                          <path
-                            d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"
-                          ></path>
-                          <path
-                            d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"
-                          ></path>
-                        </svg>
-                        <svg
-                          class="action-icon"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          stroke-width="2"
-                        >
-                          <path
-                            d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"
-                          ></path>
-                          <circle cx="12" cy="12" r="3"></circle>
-                        </svg>
-                      </div>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td><input type="checkbox" class="checkbox" /></td>
-                  <td>
-                    <img
-                      src="https://i.pravatar.cc/150?img=12"
-                      alt="Patient"
-                      class="patient-image"
-                    />
-                  </td>
-                  <td>112/001</td>
-                  <td>Tamira Mostafa</td>
-                  <td>Tamira Mosta...</td>
-                  <td>Male</td>
-                  <td>01/09/1962</td>
-                  <td>+250000000000</td>
-                  <td>
-                    <div style="display: flex; align-items: center; gap: 12px">
-                      <button class="new-visit-btn">New Visit</button>
-                      <div class="action-icons">
-                        <svg
-                          class="action-icon"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          stroke-width="2"
-                        >
-                          <path
-                            d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"
-                          ></path>
-                          <path
-                            d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"
-                          ></path>
-                        </svg>
-                        <svg
-                          class="action-icon"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          stroke-width="2"
-                        >
-                          <path
-                            d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"
-                          ></path>
-                          <circle cx="12" cy="12" r="3"></circle>
-                        </svg>
-                      </div>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td><input type="checkbox" class="checkbox" /></td>
-                  <td>
-                    <img
-                      src="https://i.pravatar.cc/150?img=20"
-                      alt="Patient"
-                      class="patient-image"
-                    />
-                  </td>
-                  <td>112/001</td>
-                  <td>Raekwon Adimb...</td>
-                  <td>Raekwon Adi...</td>
-                  <td>Female</td>
-                  <td>23/05/2002</td>
-                  <td>+250000000000</td>
-                  <td>
-                    <div style="display: flex; align-items: center; gap: 12px">
-                      <button class="new-visit-btn">New Visit</button>
-                      <div class="action-icons">
-                        <svg
-                          class="action-icon"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          stroke-width="2"
-                        >
-                          <path
-                            d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"
-                          ></path>
-                          <path
-                            d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"
-                          ></path>
-                        </svg>
-                        <svg
-                          class="action-icon"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          stroke-width="2"
-                        >
-                          <path
-                            d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"
-                          ></path>
-                          <circle cx="12" cy="12" r="3"></circle>
-                        </svg>
-                      </div>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td><input type="checkbox" class="checkbox" /></td>
-                  <td>
-                    <img
-                      src="https://i.pravatar.cc/150?img=33"
-                      alt="Patient"
-                      class="patient-image"
-                    />
-                  </td>
-                  <td>112/001</td>
-                  <td>Imani Badu</td>
-                  <td>Imani Badu</td>
-                  <td>Male</td>
-                  <td>23/05/1992</td>
-                  <td>+250000000000</td>
-                  <td>
-                    <div style="display: flex; align-items: center; gap: 12px">
-                      <button class="new-visit-btn">New Visit</button>
-                      <div class="action-icons">
-                        <svg
-                          class="action-icon"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          stroke-width="2"
-                        >
-                          <path
-                            d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"
-                          ></path>
-                          <path
-                            d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"
-                          ></path>
-                        </svg>
-                        <svg
-                          class="action-icon"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          stroke-width="2"
-                        >
-                          <path
-                            d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"
-                          ></path>
-                          <circle cx="12" cy="12" r="3"></circle>
-                        </svg>
-                      </div>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td><input type="checkbox" class="checkbox" /></td>
-                  <td>
-                    <img
-                      src="https://i.pravatar.cc/150?img=47"
-                      alt="Patient"
-                      class="patient-image"
-                    />
-                  </td>
-                  <td>112/001</td>
-                  <td>Jelani Chidubem</td>
-                  <td>Jelani Chidu...</td>
-                  <td>Female</td>
-                  <td>13/02/1940</td>
-                  <td>+250000000000</td>
-                  <td>
-                    <div style="display: flex; align-items: center; gap: 12px">
-                      <button class="new-visit-btn">New Visit</button>
-                      <div class="action-icons">
-                        <svg
-                          class="action-icon"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          stroke-width="2"
-                        >
-                          <path
-                            d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"
-                          ></path>
-                          <path
-                            d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"
-                          ></path>
-                        </svg>
-                        <svg
-                          class="action-icon"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          stroke-width="2"
-                        >
-                          <path
-                            d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"
-                          ></path>
-                          <circle cx="12" cy="12" r="3"></circle>
-                        </svg>
-                      </div>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td><input type="checkbox" class="checkbox" /></td>
-                  <td>
-                    <img
-                      src="https://i.pravatar.cc/150?img=52"
-                      alt="Patient"
-                      class="patient-image"
-                    />
-                  </td>
-                  <td>112/001</td>
-                  <td>Jelani Kasongo</td>
-                  <td>Jelani Kason...</td>
-                  <td>Male</td>
-                  <td>07/10/1996</td>
-                  <td>+250000000000</td>
-                  <td>
-                    <div style="display: flex; align-items: center; gap: 12px">
-                      <button class="new-visit-btn">New Visit</button>
-                      <div class="action-icons">
-                        <svg
-                          class="action-icon"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          stroke-width="2"
-                        >
-                          <path
-                            d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"
-                          ></path>
-                          <path
-                            d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"
-                          ></path>
-                        </svg>
-                        <svg
-                          class="action-icon"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          stroke-width="2"
-                        >
-                          <path
-                            d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"
-                          ></path>
-                          <circle cx="12" cy="12" r="3"></circle>
-                        </svg>
-                      </div>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td><input type="checkbox" class="checkbox" /></td>
-                  <td>
-                    <img
-                      src="https://i.pravatar.cc/150?img=44"
-                      alt="Patient"
-                      class="patient-image"
-                    />
-                  </td>
-                  <td>112/001</td>
-                  <td>Ogechukwu Ezel...</td>
-                  <td>Ogechukwu E...</td>
-                  <td>Female</td>
-                  <td>03/09/1992</td>
-                  <td>+250000000000</td>
-                  <td>
-                    <div style="display: flex; align-items: center; gap: 12px">
-                      <button class="new-visit-btn">New Visit</button>
-                      <div class="action-icons">
-                        <svg
-                          class="action-icon"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          stroke-width="2"
-                        >
-                          <path
-                            d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"
-                          ></path>
-                          <path
-                            d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"
-                          ></path>
-                        </svg>
-                        <svg
-                          class="action-icon"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          stroke-width="2"
-                        >
-                          <path
-                            d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"
-                          ></path>
-                          <circle cx="12" cy="12" r="3"></circle>
-                        </svg>
-                      </div>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td><input type="checkbox" class="checkbox" /></td>
-                  <td>
-                    <img
-                      src="https://i.pravatar.cc/150?img=60"
-                      alt="Patient"
-                      class="patient-image"
-                    />
-                  </td>
-                  <td>112/001</td>
-                  <td>Mohammed Chi...</td>
-                  <td>Mohammed...</td>
-                  <td>Male</td>
-                  <td>23/05/1992</td>
-                  <td>+250000000000</td>
-                  <td>
-                    <div style="display: flex; align-items: center; gap: 12px">
-                      <button class="new-visit-btn">New Visit</button>
-                      <div class="action-icons">
-                        <svg
-                          class="action-icon"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          stroke-width="2"
-                        >
-                          <path
-                            d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"
-                          ></path>
-                          <path
-                            d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"
-                          ></path>
-                        </svg>
-                        <svg
-                          class="action-icon"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          stroke-width="2"
-                        >
-                          <path
-                            d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"
-                          ></path>
-                          <circle cx="12" cy="12" r="3"></circle>
-                        </svg>
-                      </div>
-                    </div>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-
-            <!-- Pagination -->
-            <div class="pagination">
-              <button class="page-btn" disabled>Previous</button>
-              <button class="page-btn active">1</button>
-              <button class="page-btn">2</button>
-              <button class="page-btn">3</button>
-              <button class="page-btn">Next</button>
-              <span class="page-info">1/03</span>
-            </div>
-          </div>
-        </div>
-      </main>
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>XanaHealth - Billing</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+
+    body{font-family: 'Inter', sans-serif;background:#f5f5f5;color:#333}
+
+    .container{display:flex;min-height:100vh}
+
+    /* Sidebar */
+    .sidebar{width:240px;background:#fff;border-right:1px solid #e5e5e5;display:flex;flex-direction:column;flex-shrink:0}
+    .logo{padding:20px 24px;font-size:20px;font-weight:600}
+    .logo span:first-child{color:#333}
+    .logo span:last-child{color:#059669}
+    .nav-section{padding:12px 0}
+    .nav-label{padding:8px 24px;font-size:11px;font-weight:600;color:#9ca3af;text-transform:uppercase;letter-spacing:.5px}
+    .nav-item{display:flex;align-items:center;padding:10px 24px;color:#6b7280;text-decoration:none;font-size:14px;cursor:pointer;transition:background .2s}
+    .nav-item.active{color:#3C8066;border-right:3px solid #3C8066}
+    .nav-item svg{width:18px;height:18px;margin-right:12px;opacity:.6}
+    .user-section{margin-top:auto;padding:20px 24px;}
+    .user-profile{display:flex;align-items:center;margin-bottom:16px}
+    .user-avatar{width:40px;height:40px;border-radius:50%;background:#fecaca;margin-right:12px;overflow:hidden}
+    .user-avatar img{width:100%;height:100%;object-fit:cover}
+    .user-info h4{font-size:14px;font-weight:600;color:#333}
+    .user-info p{font-size:12px;color:#9ca3af}
+    .user-actions{display:flex;flex-direction:column;gap:8px}
+    .user-action{display:flex;align-items:center;padding:8px 0;color:#6b7280;text-decoration:none;font-size:14px;cursor:pointer}
+    .user-action svg{width:18px;height:18px;margin-right:12px;opacity:.6}
+
+    /* Main */
+    .main-content{flex:1;display:flex;flex-direction:column;overflow:hidden}
+    .header{background:#fff;padding:16px 32px;border-bottom:1px solid #e5e5e5;display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
+    .header h1{font-size:24px;font-weight:600;color:#111827}
+    .header-right{display:flex;align-items:center;gap:20px}
+    .notification-icon{width:20px;height:20px;cursor:pointer}
+    .company-dropdown{display:flex;align-items:center;gap:8px;padding:8px 16px;background:#fff;border:1px solid #e5e5e5;border-radius:6px;cursor:pointer;color:#9ca3af;font-size:14px}
+    .content-area{padding:24px 32px;flex:1;background:#F4F6F5;overflow-y:auto}
+    .controls{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;gap:16px}
+    .controls-left{display:flex;gap:12px;flex:1}
+    .filter-btn,.action-btn{display:flex;align-items:center;gap:8px;padding:10px 16px;background:#fff;border:1px solid #d1d5db;border-radius:6px;cursor:pointer;font-size:14px;color:#374151;white-space:nowrap}
+    .search-box{display:flex;align-items:center;gap:8px;padding:10px 16px;background:#fff;border:1px solid #d1d5db;border-radius:6px;flex:1;max-width:300px}
+    .search-box input{border:none;outline:none;flex:1;font-size:14px;color:#6b7280}
+    .applied-filters{display:flex;gap:8px;margin-bottom:16px;align-items:center;flex-wrap:wrap}
+    .filter-label{font-size:13px;color:#6b7280}
+    .filter-tag{display:flex;align-items:center;gap:6px;padding:6px 12px;background:#f3f4f6;border-radius:4px;font-size:13px;color:#374151}
+    .filter-tag .close{cursor:pointer;opacity:.6}
+    .clear-filter{color:#ef4444;font-size:13px;cursor:pointer;font-weight:500}
+    .table-container{background:#fff;border-radius:8px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.1)}
+    table{width:100%;border-collapse:collapse}
+    thead{background:#dfe5e5;border-bottom:1px solid #e5e5e5}
+    th{padding:12px 16px;text-align:left;font-size:12px;font-weight:600;color:#6b7280;text-transform:uppercase;letter-spacing:.5px;white-space:nowrap}
+    td{padding:14px 16px;border-bottom:1px solid #f3f4f6;font-size:14px;color:#374151}
+    tbody tr{cursor:pointer;transition:background .15s}
+  
+    .checkbox{width:16px;height:16px;border:1px solid #d1d5db;border-radius:3px;cursor:pointer}
+    .patient-image{width:36px;height:36px;border-radius:50%;object-fit:cover}
+    .pagination{display:flex;justify-content:flex-end;align-items:center;padding:16px 24px;gap:8px}
+    .page-btn{padding:8px 12px;border:1px solid #d1d5db;background:#fff;border-radius:4px;cursor:pointer;font-size:14px;color:#374151}
+    .page-btn.active{background:#3C8066;color:#fff;border-color:#059669}
+    .page-btn:disabled{opacity:.4;cursor:not-allowed}
+    .page-info{font-size:14px;color:#9ca3af;margin-left:8px}
+
+    /* ── EBM Dropdown ── */
+    .ebm-wrapper{position:relative;display:inline-block}
+
+    .ebm-btn{
+      display:flex;align-items:center;gap:6px;
+      padding:6px 14px;
+      background:#3C8066;border:1px solid #a7f3d0;
+      border-radius:6px;cursor:pointer;
+      font-size:13px;color:white;font-weight:200;
+      transition:all .2s;white-space:nowrap;
+    }
+    
+    .ebm-btn svg{width:12px;height:12px;transition:transform .25s;flex-shrink:0}
+    .ebm-btn.open svg{transform:rotate(180deg)}
+
+    .ebm-menu{
+      position:absolute;top:calc(100% + 6px);right:0;left:auto;z-index:500;
+      background:#fff;border:1px solid #e5e5e5;
+      border-radius:10px;box-shadow:0 8px 30px rgba(0,0,0,.14);
+      min-width:210px;overflow:hidden;
+      opacity:0;transform:translateY(-6px) scale(.97);
+      pointer-events:none;
+      transition:opacity .18s ease,transform .2s cubic-bezier(.34,1.56,.64,1);
+    }
+    .ebm-menu.open{opacity:1;transform:translateY(0) scale(1);pointer-events:all}
+
+    .ebm-menu-header{padding:10px 16px 6px;font-size:10px;font-weight:700;color:#9ca3af;letter-spacing:.1em;text-transform:uppercase;font-family:'IBM Plex Mono',monospace;border-bottom:1px solid #f3f4f6}
+
+    .ebm-option{
+      display:flex;align-items:center;gap:12px;
+      padding:10px 16px;cursor:pointer;
+      transition:background .15s;
+      border-left:3px solid transparent;
+    }
+    .ebm-option:hover{background:#f0fdf4;border-left-color:#059669}
+
+    .ebm-option-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+    .dot-sale{background:#059669}
+    .dot-refund{background:#ef4444}
+    .dot-proforma{background:#f59e0b}
+    .dot-training{background:#6366f1}
+
+    .ebm-option-info strong{display:block;font-size:13px;color:#111827;font-weight:500}
+    .ebm-option-info span{font-size:11px;color:#9ca3af;font-family:'IBM Plex Mono',monospace}
+
+    /* ── Invoice Overlay ── */
+    .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:100;overflow-y:auto;padding:24px}
+    .overlay.open{display:flex;align-items:flex-start;justify-content:center}
+    .invoice-page{background:#f9fafb;width:100%;max-width:960px;border-radius:10px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.3);animation:slideIn .25s ease}
+    @keyframes slideIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+
+    .invoice-topbar{background:#fff;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #e5e5e5}
+    .inv-topbar-left{display:flex;align-items:center;gap:16px}
+    .back-btn{display:flex;align-items:center;gap:6px;color:#6b7280;font-size:14px;cursor:pointer;background:none;border:none}
+    .back-btn:hover{color:#111}
+    .inv-title{font-size:18px;font-weight:600;color:#111}
+    .inv-topbar-right{display:flex;gap:10px;align-items:center}
+    .inv-btn{display:flex;align-items:center;gap:6px;padding:8px 16px;border-radius:6px;font-size:13px;font-weight:500;cursor:pointer;border:1px solid #d1d5db;background:#fff;color:#374151}
+    .inv-btn.green{background:#059669;color:#fff;border-color:#059669}
+    .inv-btn.red{background:#fff;color:#ef4444;border-color:#fca5a5}
+
+    /* EBM inside invoice topbar */
+    .inv-ebm-wrapper{position:relative;display:inline-block}
+    .inv-ebm-btn{display:flex;align-items:center;gap:6px;padding:8px 16px;border-radius:6px;font-size:13px;font-weight:500;cursor:pointer;border:1px solid #a7f3d0;background:#d1fae5;color:#065f46}
+    .inv-ebm-btn svg{width:12px;height:12px;transition:transform .25s}
+    .inv-ebm-btn.open svg{transform:rotate(180deg)}
+    .inv-ebm-menu{position:absolute;top:calc(100% + 6px);right:0;left:auto;z-index:600;background:#fff;border:1px solid #e5e5e5;border-radius:10px;box-shadow:0 8px 30px rgba(0,0,0,.14);min-width:210px;overflow:hidden;opacity:0;transform:translateY(-6px) scale(.97);pointer-events:none;transition:opacity .18s ease,transform .2s cubic-bezier(.34,1.56,.64,1)}
+    .inv-ebm-menu.open{opacity:1;transform:translateY(0) scale(1);pointer-events:all}
+
+    .invoice-body{display:grid;grid-template-columns:1fr 220px;gap:16px;padding:16px}
+    .inv-card{background:#fff;border-radius:8px;border:1px solid #e5e5e5;overflow:hidden;margin-bottom:14px}
+    .inv-card-header{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;border-bottom:1px solid #f3f4f6}
+    .inv-card-header h3{font-size:15px;font-weight:600;color:#111}
+    .inv-number{font-size:13px;color:#6b7280}
+    .clinic-patient-info{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:14px 18px;border-bottom:1px solid #f3f4f6}
+    .clinic-col h4,.patient-col h4{font-size:14px;font-weight:600;color:#111;margin-bottom:6px}
+    .info-row{font-size:12px;color:#6b7280;margin-bottom:3px}
+    .info-row span{color:#374151;font-weight:500}
+    .patient-meta{display:flex;gap:24px;padding:10px 18px;border-bottom:1px solid #f3f4f6;font-size:12px;color:#6b7280;flex-wrap:wrap}
+    .patient-meta span{color:#374151;font-weight:500}
+    .items-search{display:flex;align-items:center;gap:8px;padding:10px 18px;border-bottom:1px solid #f3f4f6}
+    .items-search input{border:none;outline:none;font-size:13px;color:#6b7280;flex:1}
+    .items-table{width:100%;border-collapse:collapse}
+    .items-table th{padding:10px 14px;text-align:left;font-size:11px;font-weight:600;color:#6b7280;text-transform:uppercase;letter-spacing:.4px;background:#f9fafb;border-bottom:1px solid #e5e5e5}
+    .items-table td{padding:12px 14px;font-size:13px;color:#374151;border-bottom:1px solid #f3f4f6}
+    .del-icon{color:#ef4444;cursor:pointer;opacity:.7}
+    .del-icon:hover{opacity:1}
+    .items-table-footer{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;border-top:1px solid #f3f4f6}
+    .add-item-btn{display:flex;align-items:center;gap:6px;padding:8px 14px;background:#fff;border:1px solid #d1d5db;border-radius:6px;cursor:pointer;font-size:13px;color:#374151;font-weight:500}
+    .item-pagination{display:flex;align-items:center;gap:6px;font-size:13px;color:#6b7280}
+    .item-pg-btn{padding:4px 10px;border:1px solid #e5e5e5;border-radius:4px;background:#fff;cursor:pointer;font-size:12px;color:#6b7280}
+    .item-pg-btn.active{background:#059669;color:#fff;border-color:#059669}
+    .totals-bar{display:grid;grid-template-columns:repeat(5,1fr);padding:14px 18px;background:#f9fafb;border-top:1px solid #e5e5e5;border-bottom:1px solid #e5e5e5;gap:12px}
+    .total-col label{font-size:11px;color:#6b7280;text-transform:uppercase;letter-spacing:.3px;display:block;margin-bottom:4px}
+    .total-col .val{font-size:14px;font-weight:600;color:#111}
+    .total-col .val.red{color:#ef4444}
+    .balance-due-row{text-align:center;padding:10px;font-size:13px;color:#6b7280;border-bottom:1px solid #f3f4f6}
+    .balance-due-row span{font-weight:600;color:#111}
+    .payment-row{display:flex;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid #f3f4f6}
+    .payment-input{flex:1;padding:9px 14px;border:1px solid #d1d5db;border-radius:6px;font-size:13px;color:#374151;outline:none}
+    .payment-input:focus{border-color:#059669}
+    .cash-select{padding:9px 14px;border:1px solid #d1d5db;border-radius:6px;font-size:13px;color:#374151;background:#fff;outline:none}
+    .submit-btn{padding:9px 20px;background:#059669;color:#fff;border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer}
+    .submit-btn:hover{background:#047857}
+    .balance-checkbox{padding:10px 18px;font-size:12px;color:#6b7280;display:flex;align-items:center;gap:8px;border-bottom:1px solid #f3f4f6}
+    .initiated-by{padding:10px 18px;font-size:12px;color:#6b7280;text-align:right}
+    .cash-paid-title{padding:14px 18px 10px;font-size:14px;font-weight:600;color:#111;border-bottom:1px solid #f3f4f6}
+    .cash-table{width:100%;border-collapse:collapse}
+    .cash-table th{padding:10px 14px;text-align:left;font-size:12px;font-weight:500;color:#9ca3af;border-bottom:1px solid #f3f4f6}
+    .cash-table td{padding:12px 14px;font-size:13px;color:#374151}
+    .lab-orders-card{background:#fff;border-radius:8px;border:1px solid #e5e5e5;overflow:hidden}
+    .lab-header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid #f3f4f6}
+    .lab-header h4{font-size:14px;font-weight:600;color:#111}
+    .lab-count{background:#f3f4f6;border-radius:10px;padding:2px 8px;font-size:12px;color:#6b7280;margin-left:6px}
+    .actions-btn{display:flex;align-items:center;gap:4px;font-size:12px;color:#6b7280;cursor:pointer;background:none;border:none}
+    .lab-item{display:flex;align-items:center;padding:10px 16px;border-bottom:1px solid #f9fafb;gap:10px}
+    .lab-item input[type="checkbox"]{flex-shrink:0}
+    .lab-item-name{flex:1;font-size:13px;color:#374151}
+    .lab-item-price{font-size:13px;color:#6b7280;width:40px;text-align:right}
+    .lab-add-btn{padding:5px 14px;border-radius:5px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid #d1d5db;background:#fff;color:#374151}
+    .lab-add-btn.added{background:#f3f4f6;color:#9ca3af;cursor:default}
+    .lab-add-btn.primary{background:#059669;color:#fff;border-color:#059669}
+    .lab-totals{padding:12px 16px;border-top:1px solid #f3f4f6;font-size:12px;color:#6b7280;line-height:1.8}
+    .lab-totals strong{color:#111}
+
+    /* ── Receipt Modal ── */
+    .receipt-modal-overlay{
+      position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:900;
+      display:flex;align-items:center;justify-content:center;
+      opacity:0;pointer-events:none;transition:opacity .3s;
+      backdrop-filter:blur(4px);
+    }
+    .receipt-modal-overlay.open{opacity:1;pointer-events:all}
+
+    .receipt-modal-box{
+      background:#fff;border-radius:16px;
+      width:420px;max-width:95vw;max-height:90vh;
+      overflow:hidden;display:flex;flex-direction:column;
+      box-shadow:0 24px 60px rgba(0,0,0,.3);
+      transform:scale(.94) translateY(16px);
+      transition:transform .35s cubic-bezier(.34,1.2,.64,1);
+    }
+    .receipt-modal-overlay.open .receipt-modal-box{transform:scale(1) translateY(0)}
+
+    .receipt-topbar{
+      display:flex;align-items:center;justify-content:space-between;
+      padding:14px 20px;border-bottom:1px solid #f0f0f0;background:#fff;flex-shrink:0;
+    }
+    .receipt-topbar-left{display:flex;align-items:center;gap:10px}
+
+    .rtype-badge{font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.1em;padding:3px 10px;border-radius:20px}
+    .badge-sale{background:#d1fae5;color:#065f46;border:1px solid #a7f3d0}
+    .badge-refund{background:#fee2e2;color:#991b1b;border:1px solid #fca5a5}
+    .badge-proforma{background:#fef3c7;color:#92400e;border:1px solid #fcd34d}
+    .badge-training{background:#e0e7ff;color:#3730a3;border:1px solid #a5b4fc}
+
+    .receipt-topbar h3{font-size:15px;font-weight:600;color:#111}
+
+    .modal-close-btn{
+      width:32px;height:32px;border-radius:8px;border:1px solid #e5e5e5;
+      background:#f9fafb;cursor:pointer;display:flex;align-items:center;justify-content:center;
+      color:#6b7280;font-size:16px;transition:all .2s;
+    }
+    .modal-close-btn:hover{background:#fee2e2;color:#ef4444;border-color:#fca5a5}
+
+    .receipt-scroll{overflow-y:auto;flex:1}
+
+    /* Receipt paper */
+    .receipt-paper{
+      padding:24px;
+      font-family:'IBM Plex Mono',monospace;
+      font-size:12px;color:#1a1a1a;line-height:1.65;
+      background:#fafaf7;
+    }
+    .rp-header{text-align:center;padding-bottom:14px;margin-bottom:14px;border-bottom:1px dashed #d0d0c0}
+    .rp-header h1{font-size:16px;font-weight:700;letter-spacing:.04em}
+    .rp-header .sub{font-size:11px;color:#666;margin-top:2px}
+    .rp-clinic{text-align:center;padding-bottom:12px;margin-bottom:12px;border-bottom:1px dashed #d0d0c0}
+    .rp-clinic p{font-size:12px}
+    .rp-stamp{display:inline-block;padding:2px 14px;border-radius:3px;font-size:10px;font-weight:700;letter-spacing:.1em;margin-top:6px}
+    .stamp-copy{background:#1a1a1a;color:#fff}
+    .stamp-official{background:#059669;color:#fff}
+    .stamp-draft{background:#f59e0b;color:#fff}
+    .stamp-training{background:#6366f1;color:#fff}
+    .rp-section{padding-bottom:12px;margin-bottom:12px;border-bottom:1px dashed #d0d0c0}
+    .rp-section:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
+    .rp-title{text-align:center;font-weight:700;font-size:12px;letter-spacing:.08em;margin-bottom:6px;text-decoration:underline}
+    .rp-warn{text-align:center;font-size:11px;font-style:italic;color:#666;padding:4px 0}
+    .rp-row{display:flex;justify-content:space-between;padding:2px 0;font-size:12px}
+    .rp-row.total{font-weight:700;font-size:13px;padding:4px 0}
+    .rp-row.sub{color:#666;font-size:11px}
+    .not-official{text-align:center;font-weight:700;font-size:11px;padding:6px 0;border-top:1px solid #d0d0c0;border-bottom:1px solid #d0d0c0;margin:8px 0}
+    .rp-databox{background:#f0f0e8;border:1px solid #d5d5c0;border-radius:5px;padding:7px 10px;margin:8px 0;font-size:10px;color:#555;word-break:break-all}
+    .rp-databox strong{display:block;font-size:11px;color:#222;margin-bottom:2px}
+    .rp-thank{text-align:center;font-weight:700;font-size:13px;letter-spacing:.15em;padding-top:14px;color:#222}
+    .watermark-proforma{text-align:center;color:#92400e;border:2px solid #f59e0b;border-radius:4px;display:inline-block;padding:2px 16px;margin:8px 0;font-size:11px;font-weight:600;letter-spacing:.08em;width:100%}
+    .watermark-training{text-align:center;color:#3730a3;border:2px solid #6366f1;border-radius:4px;display:inline-block;padding:2px 16px;margin:8px 0;font-size:11px;font-weight:600;letter-spacing:.08em;width:100%}
+
+    .receipt-footer{display:flex;gap:8px;padding:14px 20px;border-top:1px solid #f0f0f0;background:#fff;flex-shrink:0}
+    .rfooter-btn{flex:1;padding:9px 14px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;border:1px solid #d1d5db;background:#f9fafb;color:#6b7280;display:flex;align-items:center;justify-content:center;gap:6px;transition:all .2s}
+    .rfooter-btn:hover{border-color:#059669;color:#059669;background:#f0fdf4}
+    .rfooter-btn.primary{background:#059669;color:#fff;border-color:#059669;font-weight:600}
+    .rfooter-btn.primary:hover{background:#047857;border-color:#047857;color:#fff}
+
+    /* ── Print Preview Overlay ── */
+    .print-preview-overlay{
+      position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:1100;
+      display:flex;flex-direction:column;align-items:center;
+      opacity:0;pointer-events:none;transition:opacity .25s;
+    }
+    .print-preview-overlay.open{opacity:1;pointer-events:all}
+
+    .print-preview-toolbar{
+      width:100%;background:#1f1f1f;padding:12px 24px;
+      display:flex;align-items:center;justify-content:space-between;
+      flex-shrink:0;
+    }
+    .print-preview-toolbar span{color:#ccc;font-size:13px;font-family:'IBM Plex Mono',monospace;letter-spacing:.05em}
+    .print-preview-toolbar-right{display:flex;gap:10px}
+
+    .pp-btn{
+      display:flex;align-items:center;gap:6px;
+      padding:8px 18px;border-radius:6px;font-size:13px;font-weight:600;
+      cursor:pointer;border:none;transition:all .2s;
+    }
+    .pp-btn-close{background:#3a3a3a;color:#ccc}
+    .pp-btn-close:hover{background:#555;color:#fff}
+    .pp-btn-print{background:#fff;color:#1a1a1a}
+    .pp-btn-print:hover{background:#e5e5e5}
+
+    .print-preview-body{
+      flex:1;overflow-y:auto;width:100%;
+      display:flex;justify-content:center;
+      padding:32px 24px;
+    }
+
+    .print-preview-paper{
+      background:#fff;
+      width:80mm;
+      padding:16px;
+      font-family:'IBM Plex Mono',monospace;
+      font-size:11px;color:#000;line-height:1.6;
+      box-shadow:0 4px 40px rgba(0,0,0,.5);
+      border-radius:2px;
+      filter:grayscale(100%);
+    }
+
+    /* Override all receipt styles inside print preview to B&W */
+    .print-preview-paper .rp-header{text-align:center;padding-bottom:12px;margin-bottom:12px;border-bottom:1px dashed #000}
+    .print-preview-paper .rp-header h1{font-size:15px;font-weight:700;letter-spacing:.04em;color:#000}
+    .print-preview-paper .rp-header .sub{font-size:10px;color:#333;margin-top:2px}
+    .print-preview-paper .rp-clinic{text-align:center;padding-bottom:10px;margin-bottom:10px;border-bottom:1px dashed #000}
+    .print-preview-paper .rp-clinic p{font-size:11px;color:#000}
+    .print-preview-paper .rp-stamp{display:inline-block;padding:2px 12px;border-radius:2px;font-size:9px;font-weight:700;letter-spacing:.1em;margin-top:4px;background:#000!important;color:#fff!important;border:none!important}
+    .print-preview-paper .rp-section{padding-bottom:10px;margin-bottom:10px;border-bottom:1px dashed #000}
+    .print-preview-paper .rp-section:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
+    .print-preview-paper .rp-title{text-align:center;font-weight:700;font-size:11px;letter-spacing:.08em;margin-bottom:5px;text-decoration:underline;color:#000}
+    .print-preview-paper .rp-warn{text-align:center;font-size:10px;font-style:italic;color:#333;padding:3px 0}
+    .print-preview-paper .rp-row{display:flex;justify-content:space-between;padding:2px 0;font-size:11px;color:#000}
+    .print-preview-paper .rp-row.total{font-weight:700;font-size:12px;padding:3px 0;color:#000}
+    .print-preview-paper .rp-row.sub{color:#333;font-size:10px}
+    .print-preview-paper .not-official{text-align:center;font-weight:700;font-size:10px;padding:5px 0;border-top:1px solid #000;border-bottom:1px solid #000;margin:6px 0;color:#000}
+    .print-preview-paper .rp-databox{background:#f0f0f0;border:1px solid #ccc;border-radius:2px;padding:6px 8px;margin:6px 0;font-size:9px;color:#333;word-break:break-all}
+    .print-preview-paper .rp-databox strong{display:block;font-size:10px;color:#000;margin-bottom:1px}
+    .print-preview-paper .rp-thank{text-align:center;font-weight:700;font-size:12px;letter-spacing:.15em;padding-top:12px;color:#000}
+    .print-preview-paper .watermark-proforma,.print-preview-paper .watermark-training{color:#000!important;border:2px solid #000!important;border-radius:2px;display:block;padding:2px;margin:6px 0;font-size:10px;font-weight:700;letter-spacing:.08em;text-align:center;width:100%}
+
+    @media print{
+      body > *{display:none!important}
+      .printable-frame{display:block!important;position:fixed;inset:0;z-index:9999;background:#fff}
+    }
+    .printable-frame{display:none}
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="logo"><span>Xana</span><span>Health</span></div>
+    <nav class="nav-section">
+      <div class="nav-label">RECEPTION/CASHIER</div>
+      <a href="#" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard
+      </a>
+      <a href="new_patient.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>New Patient File
+      </a>
+      <a href="patient_list.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>Patients List
+      </a>
+      <a href="patient_visits.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Patient Visits
+      </a>
+      <a href="appointments.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Appointments
+      </a>
+     
+      <a href="billing.html" class="nav-item active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>Billing
+      </a>
+    </nav>
+    <div class="user-section">
+      <div class="user-profile">
+        <div class="user-avatar"><img src="https://i.pravatar.cc/150?img=47" alt="User"/></div>
+        <div class="user-info"><h4>Jane Doe</h4><p>Receptionist</p></div>
+      </div>
+      <div class="user-actions">
+        <a href="#" class="user-action">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Help
+        </a>
+        <a href="#" class="user-action">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Logout
+        </a>
+      </div>
     </div>
-  </body>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <header class="header">
+      <h1>Billing</h1>
+      <div class="header-right">
+        <svg class="notification-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+        </svg>
+        <div class="company-dropdown">
+          <span>Company Logo</span>
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M6 9L1 4h10z"/></svg>
+        </div>
+      </div>
+    </header>
+
+    <div class="content-area">
+      <div class="controls">
+        <div class="controls-left">
+          <button class="filter-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/>
+              <line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/>
+              <line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/>
+            </svg>Filter by
+          </button>
+          <div class="search-box">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input type="text" placeholder="Search all patients"/>
+          </div>
+          <button class="action-btn">Action <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M6 9L1 4h10z"/></svg></button>
+        </div>
+      </div>
+
+      <div class="applied-filters">
+        <span class="filter-label">Applied Filter</span>
+        <div class="filter-tag">Recently added <span class="close">✕</span></div>
+        <div class="filter-tag">Recently Updated <span class="close">✕</span></div>
+        <span class="clear-filter">Clear filter</span>
+      </div>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th><input type="checkbox" class="checkbox"/></th>
+              <th>Date</th>
+              <th>Patient Name</th>
+              <th>Invoice</th>
+              <th>Department</th>
+              <th>Insurance</th>
+              <th>Insurance Cont.</th>
+              <th>Patient Cont.</th>
+              <th>Total</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr onclick="openInvoice('raekwon')">
+              <td><input type="checkbox" class="checkbox" onclick="event.stopPropagation()"/></td>
+           
+              <td>23/05/2023</td>
+              <td>Raekwon Gbeho</td>
+              <td>#03336/2021</td>
+              <td>Consultation</td>
+              <td>RSSB</td>
+              <td>Rwf 10,322</td>
+              <td>Rwf 1,822</td>
+              <td>Rwf 12,144</td>
+              <td onclick="event.stopPropagation()">
+                <div class="ebm-wrapper" id="t-ebm-raekwon">
+                  <button class="ebm-btn" onclick="toggleEbm('t-ebm-raekwon')">
+                    EBM <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                  </button>
+                  <div class="ebm-menu" id="t-ebm-raekwon-menu">
+                    <div class="ebm-menu-header">Select Receipt Type</div>
+                    <div class="ebm-option" onclick="openReceipt('sale','Raekwon Gbeho','#03336/2021','152','Rwf 12,144')"><span class="ebm-option-dot dot-sale"></span><div class="ebm-option-info"><strong>Sale Receipt</strong><span>Normal / Official</span></div></div>
+                    <div class="ebm-option" onclick="openReceipt('refund','Raekwon Gbeho','#03336/2021','152','Rwf 12,144')"><span class="ebm-option-dot dot-refund"></span><div class="ebm-option-info"><strong>Refund Receipt</strong><span>Copy Refund (CR)</span></div></div>
+                    <div class="ebm-option" onclick="openReceipt('proforma','Raekwon Gbeho','#03336/2021','152','Rwf 12,144')"><span class="ebm-option-dot dot-proforma"></span><div class="ebm-option-info"><strong>Proforma Invoice</strong><span>Not Official</span></div></div>
+                    <div class="ebm-option" onclick="openReceipt('training','Raekwon Gbeho','#03336/2021','152','Rwf 12,144')"><span class="ebm-option-dot dot-training"></span><div class="ebm-option-info"><strong>Training Receipt</strong><span>Simulation Only</span></div></div>
+                  </div>
+                </div>
+              </td>
+            </tr>
+            <tr onclick="openInvoice('milani')">
+              <td><input type="checkbox" class="checkbox" onclick="event.stopPropagation()"/></td>
+            
+              <td>24/05/2023</td>
+              <td>Milani Mostafa</td>
+              <td>#03337/2021</td>
+              <td>Laboratory</td>
+              <td>MMI</td>
+              <td>Rwf 8,000</td>
+              <td>Rwf 2,000</td>
+              <td>Rwf 10,000</td>
+              <td onclick="event.stopPropagation()">
+                <div class="ebm-wrapper" id="t-ebm-milani">
+                  <button class="ebm-btn" onclick="toggleEbm('t-ebm-milani')">
+                    EBM <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                  </button>
+                  <div class="ebm-menu" id="t-ebm-milani-menu">
+                    <div class="ebm-menu-header">Select Receipt Type</div>
+                    <div class="ebm-option" onclick="openReceipt('sale','Milani Mostafa','#03337/2021','153','Rwf 10,000')"><span class="ebm-option-dot dot-sale"></span><div class="ebm-option-info"><strong>Sale Receipt</strong><span>Normal / Official</span></div></div>
+                    <div class="ebm-option" onclick="openReceipt('refund','Milani Mostafa','#03337/2021','153','Rwf 10,000')"><span class="ebm-option-dot dot-refund"></span><div class="ebm-option-info"><strong>Refund Receipt</strong><span>Copy Refund (CR)</span></div></div>
+                    <div class="ebm-option" onclick="openReceipt('proforma','Milani Mostafa','#03337/2021','153','Rwf 10,000')"><span class="ebm-option-dot dot-proforma"></span><div class="ebm-option-info"><strong>Proforma Invoice</strong><span>Not Official</span></div></div>
+                    <div class="ebm-option" onclick="openReceipt('training','Milani Mostafa','#03337/2021','153','Rwf 10,000')"><span class="ebm-option-dot dot-training"></span><div class="ebm-option-info"><strong>Training Receipt</strong><span>Simulation Only</span></div></div>
+                  </div>
+                </div>
+              </td>
+            </tr>
+            <tr onclick="openInvoice('imani')">
+              <td><input type="checkbox" class="checkbox" onclick="event.stopPropagation()"/></td>
+             
+              <td>25/05/2023</td>
+              <td>Imani Adimbaki</td>
+              <td>#03338/2021</td>
+              <td>Pharmacy</td>
+              <td>RSSB</td>
+              <td>Rwf 5,500</td>
+              <td>Rwf 1,419</td>
+              <td>Rwf 6,919</td>
+              <td onclick="event.stopPropagation()">
+                <div class="ebm-wrapper" id="t-ebm-imani">
+                  <button class="ebm-btn" onclick="toggleEbm('t-ebm-imani')">
+                    EBM <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                  </button>
+                  <div class="ebm-menu" id="t-ebm-imani-menu">
+                    <div class="ebm-menu-header">Select Receipt Type</div>
+                    <div class="ebm-option" onclick="openReceipt('sale','Imani Adimbaki','#03338/2021','154','Rwf 6,919')"><span class="ebm-option-dot dot-sale"></span><div class="ebm-option-info"><strong>Sale Receipt</strong><span>Normal / Official</span></div></div>
+                    <div class="ebm-option" onclick="openReceipt('refund','Imani Adimbaki','#03338/2021','154','Rwf 6,919')"><span class="ebm-option-dot dot-refund"></span><div class="ebm-option-info"><strong>Refund Receipt</strong><span>Copy Refund (CR)</span></div></div>
+                    <div class="ebm-option" onclick="openReceipt('proforma','Imani Adimbaki','#03338/2021','154','Rwf 6,919')"><span class="ebm-option-dot dot-proforma"></span><div class="ebm-option-info"><strong>Proforma Invoice</strong><span>Not Official</span></div></div>
+                    <div class="ebm-option" onclick="openReceipt('training','Imani Adimbaki','#03338/2021','154','Rwf 6,919')"><span class="ebm-option-dot dot-training"></span><div class="ebm-option-info"><strong>Training Receipt</strong><span>Simulation Only</span></div></div>
+                  </div>
+                </div>
+              </td>
+            </tr>
+            <tr onclick="openInvoice('kwame')">
+              <td><input type="checkbox" class="checkbox" onclick="event.stopPropagation()"/></td>
+           
+              <td>26/05/2023</td>
+              <td>Kwame Mensah</td>
+              <td>#03339/2021</td>
+              <td>Radiology</td>
+              <td>Activa</td>
+              <td>Rwf 14,000</td>
+              <td>Rwf 3,500</td>
+              <td>Rwf 17,500</td>
+              <td onclick="event.stopPropagation()">
+                <div class="ebm-wrapper" id="t-ebm-kwame">
+                  <button class="ebm-btn" onclick="toggleEbm('t-ebm-kwame')">
+                    EBM <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                  </button>
+                  <div class="ebm-menu" id="t-ebm-kwame-menu">
+                    <div class="ebm-menu-header">Select Receipt Type</div>
+                    <div class="ebm-option" onclick="openReceipt('sale','Kwame Mensah','#03339/2021','155','Rwf 17,500')"><span class="ebm-option-dot dot-sale"></span><div class="ebm-option-info"><strong>Sale Receipt</strong><span>Normal / Official</span></div></div>
+                    <div class="ebm-option" onclick="openReceipt('refund','Kwame Mensah','#03339/2021','155','Rwf 17,500')"><span class="ebm-option-dot dot-refund"></span><div class="ebm-option-info"><strong>Refund Receipt</strong><span>Copy Refund (CR)</span></div></div>
+                    <div class="ebm-option" onclick="openReceipt('proforma','Kwame Mensah','#03339/2021','155','Rwf 17,500')"><span class="ebm-option-dot dot-proforma"></span><div class="ebm-option-info"><strong>Proforma Invoice</strong><span>Not Official</span></div></div>
+                    <div class="ebm-option" onclick="openReceipt('training','Kwame Mensah','#03339/2021','155','Rwf 17,500')"><span class="ebm-option-dot dot-training"></span><div class="ebm-option-info"><strong>Training Receipt</strong><span>Simulation Only</span></div></div>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="pagination">
+          <button class="page-btn" disabled>Previous</button>
+          <button class="page-btn active">1</button>
+          <button class="page-btn">2</button>
+          <button class="page-btn">3</button>
+          <button class="page-btn">Next</button>
+          <span class="page-info">1/03</span>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- ── Invoice Overlay ── -->
+<div class="overlay" id="invoiceOverlay" onclick="handleInvoiceOverlayClick(event)">
+  <div class="invoice-page" id="invoicePage">
+    <div class="invoice-topbar">
+      <div class="inv-topbar-left">
+        <button class="back-btn" onclick="closeInvoice()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>Back
+        </button>
+        <span class="inv-title">Invoice</span>
+      </div>
+      <div class="inv-topbar-right">
+        <button class="inv-btn green">Send <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M6 9L1 4h10z"/></svg></button>
+        <button class="inv-btn">Print</button>
+
+        <!-- EBM dropdown inside invoice -->
+        <div class="inv-ebm-wrapper" id="inv-ebm">
+          <button class="inv-ebm-btn" onclick="toggleEbm('inv-ebm')">
+            EBM Receipt
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="ebm-menu inv-ebm-menu" id="inv-ebm-menu">
+            <div class="ebm-menu-header">Select Receipt Type</div>
+            <div class="ebm-option" id="inv-opt-sale"   onclick="openReceiptFromInvoice('sale')"><div class="ebm-option-info"><strong>Generate EBM(Sale)</strong></div></div>
+            <div class="ebm-option" id="inv-opt-refund" onclick="openReceiptFromInvoice('refund')"><div class="ebm-option-info"><strong>Refund Receipt</strong></div></div>
+            <div class="ebm-option" id="inv-opt-proforma" onclick="openReceiptFromInvoice('proforma')"><div class="ebm-option-info"><strong>Proforma Invoice</strong></div></div>
+            <div class="ebm-option" id="inv-opt-training" onclick="openReceiptFromInvoice('training')"><div class="ebm-option-info"><strong>Training Receipt</strong></div></div>
+          </div>
+        </div>
+
+        <button class="inv-btn red">Delete</button>
+      </div>
+    </div>
+
+    <div class="invoice-body">
+      <div class="invoice-main">
+        <div class="inv-card">
+          <div class="inv-card-header">
+            <h3>Patient Invoice</h3>
+            <span class="inv-number" id="invNumber">#03336/2021</span>
+          </div>
+          <div class="clinic-patient-info">
+            <div class="clinic-col">
+              <h4>Shema Clinic</h4>
+              <div class="info-row">Phone: <span>+250000000000</span></div>
+              <div class="info-row">TIN: <span>111111111111</span></div>
+              <div class="info-row">Kigali, Rwanda</div>
+            </div>
+            <div class="patient-col">
+              <h4>Patient Information</h4>
+              <div class="info-row">Patient: <span id="invPatientName">—</span></div>
+              <div class="info-row">Phone: <span>+250000000000</span></div>
+              <div class="info-row">Visit Number: <span>057/2023</span> &nbsp;<span style="color:#059669;font-size:11px">Edit</span></div>
+              <div class="info-row">Date: <span id="invDate">—</span></div>
+              <div class="info-row">File Number: <span>001/7</span></div>
+            </div>
+          </div>
+          <div class="patient-meta">
+            <div>In-Patient: <span id="invInpatient">—</span></div>
+            <div>Insurance: <span id="invInsurance">—</span></div>
+          </div>
+          <div class="items-search">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input type="text" placeholder="Search"/>
+          </div>
+          <table class="items-table">
+            <thead>
+              <tr><th>ID</th><th>Item</th><th>Quantity</th><th>Cost</th><th>Total</th><th>Copay</th><th>Patient</th><th>Insurance</th><th></th></tr>
+            </thead>
+            <tbody>
+              <tr><td>1</td><td>Paramedic Cons...</td><td>01</td><td>2,690</td><td>2,690</td><td>15%</td><td>404</td><td>404</td><td><span class="del-icon">🗑</span></td></tr>
+              <tr><td>2</td><td>Paramedic Cons...</td><td>01</td><td>2,690</td><td>2,690</td><td>15%</td><td>404</td><td>404</td><td><span class="del-icon">🗑</span></td></tr>
+              <tr><td>3</td><td>Paramedic Cons...</td><td>01</td><td>2,690</td><td>2,690</td><td>15%</td><td>404</td><td>404</td><td><span class="del-icon">🗑</span></td></tr>
+            </tbody>
+          </table>
+          <div class="items-table-footer">
+            <button class="add-item-btn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Item
+            </button>
+            <div class="item-pagination">
+              <button class="item-pg-btn">Previous</button>
+              <button class="item-pg-btn active">1</button>
+              <button class="item-pg-btn">Next</button>
+            </div>
+          </div>
+          <div class="totals-bar">
+            <div class="total-col"><label>Total</label><div class="val" id="invTotal">Rwf 12,144</div></div>
+            <div class="total-col"><label>Insurance Cont.</label><div class="val">Rwf 10,322</div></div>
+            <div class="total-col"><label>Patient Cont.</label><div class="val">Rwf 1,822</div></div>
+            <div class="total-col"><label>Paid</label><div class="val">Rwf 1,419</div></div>
+            <div class="total-col"><label>Balance</label><div class="val red">-403</div></div>
+          </div>
+          <div class="balance-due-row">Balance Due: <span>597</span></div>
+          <div class="payment-row">
+            <input class="payment-input" type="number" placeholder="Amount Paid"/>
+            <select class="cash-select"><option>Cash</option><option>Card</option><option>Mobile</option></select>
+            <button class="submit-btn">Submit</button>
+          </div>
+          <div class="balance-checkbox"><input type="checkbox" id="balGiven"/><label for="balGiven">Balance is given to client</label></div>
+          <div class="initiated-by">Visit initiated by: <strong>Mrs. Agathe Amina Uwera</strong></div>
+        </div>
+
+        <div class="inv-card">
+          <div class="cash-paid-title">Cash Paid</div>
+          <table class="cash-table">
+            <thead><tr><th>Date</th><th>Amount</th><th>Name</th><th>Method</th></tr></thead>
+            <tbody><tr><td>23/05/2023 &nbsp; 12:23</td><td>Rwf 10,322</td><td>Mrs. Agathe Amina Uwera</td><td>Cash</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="invoice-side">
+        <div class="lab-orders-card">
+          <div class="lab-header">
+            <div style="display:flex;align-items:center"><h4>Laboratory Orders</h4><span class="lab-count">5</span></div>
+            <button class="actions-btn">Actions <svg width="10" height="10" viewBox="0 0 12 12" fill="currentColor"><path d="M6 9L1 4h10z"/></svg></button>
+          </div>
+          <div class="lab-item"><input type="checkbox" checked/><span class="lab-item-name">NFS</span><span class="lab-item-price">500</span><button class="lab-add-btn primary">Add</button></div>
+          <div class="lab-item"><input type="checkbox"/><span class="lab-item-name">Malaria</span><span class="lab-item-price">200</span><button class="lab-add-btn added">Added</button></div>
+          <div class="lab-item"><input type="checkbox"/><span class="lab-item-name">Test 3</span><span class="lab-item-price">300</span><button class="lab-add-btn added">Added</button></div>
+          <div class="lab-item"><input type="checkbox"/><span class="lab-item-name">Test 4</span><span class="lab-item-price">600</span><button class="lab-add-btn added">Added</button></div>
+          <div class="lab-item"><input type="checkbox" checked/><span class="lab-item-name">Test 5</span><span class="lab-item-price">1000</span><button class="lab-add-btn primary">Add</button></div>
+          <div class="lab-totals">
+            <div>Grand Total: <strong>2,600</strong></div>
+            <div>Added: <strong>1,100</strong></div>
+            <div>Selected: <strong>1,500</strong></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Print Preview Overlay ── -->
+<div class="print-preview-overlay" id="printPreview">
+  <div class="print-preview-toolbar">
+    <span id="ppTitle">EBM Receipt — Sale Receipt</span>
+    <div class="print-preview-toolbar-right">
+      <button class="pp-btn pp-btn-close" onclick="closePrintPreview()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        Close
+      </button>
+      <button class="pp-btn pp-btn-print" onclick="doPrint()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+        Print / Save PDF
+      </button>
+    </div>
+  </div>
+  <div class="print-preview-body">
+    <div class="print-preview-paper" id="ppPaper"></div>
+  </div>
+</div>
+
+<!-- Hidden printable frame (used by doPrint) -->
+<div class="printable-frame" id="printableFrame"></div>
+<div class="receipt-modal-overlay" id="receiptModal" onclick="handleReceiptOverlayClick(event)">
+  <div class="receipt-modal-box">
+    <div class="receipt-topbar">
+      <div class="receipt-topbar-left">
+        <span class="rtype-badge" id="receiptBadge"></span>
+        <h3 id="receiptTitle"></h3>
+      </div>
+      <button class="modal-close-btn" onclick="closeReceipt()">✕</button>
+    </div>
+    <div class="receipt-scroll">
+      <div class="receipt-paper" id="receiptContent"></div>
+    </div>
+    <div class="receipt-footer">
+      <button class="rfooter-btn" onclick="openPrintPreview()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+        Print / Save PDF
+      </button>
+      <button class="rfooter-btn primary" onclick="closeReceipt()">Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ── Patient data ──
+  const patients = {
+    raekwon: { name:'Raekwon Gbeho', invoice:'#03336/2021', total:'Rwf 12,144', recNum:'152', date:'23/05/2023 - 10:14', inpatient:'23/05/2023 – 25/05/2023 (2 nights)', insurance:'RSSB, 85%' },
+    milani:  { name:'Milani Mostafa', invoice:'#03337/2021', total:'Rwf 10,000', recNum:'153', date:'24/05/2023 - 11:05', inpatient:'24/05/2023 – 27/05/2023 (3 nights)', insurance:'MMI, 80%' },
+    imani:   { name:'Imani Adimbaki', invoice:'#03338/2021', total:'Rwf 6,919',  recNum:'154', date:'05/12/2023 - 12:34', inpatient:'05/12/2023 – 09/12/2023 (4 nights)', insurance:'RSSB, 85%' },
+    kwame:   { name:'Kwame Mensah',   invoice:'#03339/2021', total:'Rwf 17,500', recNum:'155', date:'26/05/2023 - 09:22', inpatient:'26/05/2023 – 29/05/2023 (3 nights)', insurance:'Activa, 75%' },
+  };
+
+  let currentPatientId = null;
+  let currentReceiptHTML = '';
+  let currentReceiptTitle = '';
+
+  // ── Receipt meta ──
+  const receiptMeta = {
+    sale:     { title:'Sale Receipt',     badgeClass:'badge-sale',     badgeText:'SALE',     stamp:'<span class="rp-stamp stamp-official">OFFICIAL</span>', typeLabel:'Normal Receipt (NR)',    section:'SALE',     notOfficial:false, watermark:'' },
+    refund:   { title:'Refund Receipt',   badgeClass:'badge-refund',   badgeText:'CR',       stamp:'<span class="rp-stamp stamp-copy">COPY</span>',          typeLabel:'Copy Refund (CR)',        section:'REFUND',   notOfficial:true,  watermark:'' },
+    proforma: { title:'Proforma Invoice', badgeClass:'badge-proforma', badgeText:'PROFORMA', stamp:'<span class="rp-stamp stamp-draft">PROFORMA</span>',      typeLabel:'Proforma Invoice (PI)',   section:'PROFORMA', notOfficial:true,  watermark:'<div style="text-align:center;margin:8px 0"><span class="watermark-proforma">⚠ PROFORMA — NOT VALID FOR TAX</span></div>' },
+    training: { title:'Training Receipt', badgeClass:'badge-training', badgeText:'TRAINING', stamp:'<span class="rp-stamp stamp-training">TRAINING</span>',   typeLabel:'Training / Simulation',  section:'TRAINING', notOfficial:true,  watermark:'<div style="text-align:center;margin:8px 0"><span class="watermark-training">⚠ TRAINING MODE — NOT OFFICIAL</span></div>' },
+  };
+
+  function buildReceiptHTML(type, patientName, invoice, recNum, total) {
+    const m = receiptMeta[type];
+    const refundExtra = type === 'refund'
+      ? `<div class="rp-row"><span>REF. NORMAL RECEIPT#:</span><span>${recNum}</span></div>
+         <div class="rp-warn">REFUND IS APPROVED ONLY<br>FOR ORIGINAL SALES RECEIPT</div>`
+      : '';
+
+    return `
+      <div class="rp-header">
+        <h1>EBM Receipt</h1>
+        <div class="sub">${m.typeLabel}</div>
+      </div>
+      <div class="rp-clinic">
+        <p>Shema Clinic</p><p>Kigali, Rwanda</p><p>TIN: 0000000000</p>
+        ${m.stamp}
+      </div>
+      <div class="rp-section">
+        <div class="rp-title">${m.section}</div>
+        ${refundExtra}
+        <div class="rp-row"><span>Patient Name:</span><span>${patientName}</span></div>
+        <div class="rp-row"><span>Invoice:</span><span>${invoice}</span></div>
+        <div class="rp-row"><span>Patient File:</span><span>001/17</span></div>
+      </div>
+      <div class="rp-section">
+        <div class="rp-row"><span>Medical Services</span><span></span></div>
+        <div class="rp-row sub"><span>1.00 × ${total}</span><span>${total} A-EX</span></div>
+        ${m.watermark}
+        ${m.notOfficial ? '<div class="not-official">THIS IS NOT AN OFFICIAL RECEIPT</div>' : ''}
+        <div class="rp-row total"><span>TOTAL</span><span>${total}</span></div>
+        <div class="rp-row sub"><span>TOTAL A-EX</span><span>${total}</span></div>
+        <div class="rp-row sub"><span>TOTAL TAX</span><span>0.00</span></div>
+        <div class="rp-row sub" style="margin-top:6px"><span>CASH</span><span>${total}</span></div>
+        <div class="rp-row sub"><span>ITEMS NUMBER</span><span>1</span></div>
+      </div>
+      <div class="rp-section">
+        <div class="rp-title">SDC INFORMATION</div>
+        <div class="rp-row"><span>Date: 25/12/2023</span><span>Time: 11:07:35</span></div>
+        <div class="rp-row"><span>SDC ID</span><span>SDC001000001</span></div>
+        <div class="rp-row"><span>RECEIPT NUMBER:</span><span>168/258 NS</span></div>
+        <div class="rp-databox"><strong>Internal Data:</strong>TE68-SLA2-34J5-EAV3-N569-88LJ-Q7</div>
+        <div class="rp-databox"><strong>Receipt Signature:</strong>V249-J39C-FJ48-HE2W</div>
+      </div>
+      <div class="rp-section">
+        <div class="rp-row"><span>RECEIPT NUMBER:</span><span>${recNum}</span></div>
+        <div class="rp-row"><span>DATE: 25/05/2023</span><span>TIME: 11:09:32</span></div>
+        <div class="rp-row"><span>MRC:</span><span>AAACCI23456</span></div>
+      </div>
+      <div class="rp-thank">— THANK YOU —</div>
+    `;
+  }
+
+  // ── Open/close receipt modal ──
+  function openReceipt(type, patientName, invoice, recNum, total) {
+    closeAllEbmMenus();
+    const m = receiptMeta[type];
+    currentReceiptHTML = buildReceiptHTML(type, patientName, invoice, recNum, total);
+    currentReceiptTitle = 'EBM Receipt — ' + m.title;
+
+    const badge = document.getElementById('receiptBadge');
+    badge.textContent = m.badgeText;
+    badge.className = 'rtype-badge ' + m.badgeClass;
+    document.getElementById('receiptTitle').textContent = m.title;
+    document.getElementById('receiptContent').innerHTML = currentReceiptHTML;
+    document.getElementById('receiptModal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function openReceiptFromInvoice(type) {
+    if (!currentPatientId) return;
+    const p = patients[currentPatientId];
+    openReceipt(type, p.name, p.invoice, p.recNum, p.total);
+  }
+
+  function closeReceipt() {
+    document.getElementById('receiptModal').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  function handleReceiptOverlayClick(e) {
+    if (e.target === document.getElementById('receiptModal')) closeReceipt();
+  }
+
+  // ── Print Preview ──
+  function openPrintPreview() {
+    document.getElementById('ppPaper').innerHTML = currentReceiptHTML;
+    document.getElementById('ppTitle').textContent = currentReceiptTitle || 'EBM Receipt';
+    document.getElementById('printPreview').classList.add('open');
+  }
+
+  function closePrintPreview() {
+    document.getElementById('printPreview').classList.remove('open');
+  }
+
+  function doPrint() {
+    const paperHTML = document.getElementById('ppPaper').innerHTML;
+    const printWin = window.open('', '_blank', 'width=500,height=750');
+    printWin.document.write(`<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8"/>
+  <title>EBM Receipt</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{background:#fff;display:flex;justify-content:center;padding:20px;font-family:'IBM Plex Mono',monospace;color:#000}
+    .receipt-print{width:80mm;padding:16px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#000;line-height:1.6}
+    .rp-header{text-align:center;padding-bottom:12px;margin-bottom:12px;border-bottom:1px dashed #000}
+    .rp-header h1{font-size:15px;font-weight:700;letter-spacing:.04em}
+    .rp-header .sub{font-size:10px;margin-top:2px}
+    .rp-clinic{text-align:center;padding-bottom:10px;margin-bottom:10px;border-bottom:1px dashed #000}
+    .rp-clinic p{font-size:11px}
+    .rp-stamp{display:inline-block;padding:2px 12px;font-size:9px;font-weight:700;letter-spacing:.1em;margin-top:4px;background:#000!important;color:#fff!important}
+    .rp-section{padding-bottom:10px;margin-bottom:10px;border-bottom:1px dashed #000}
+    .rp-section:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
+    .rp-title{text-align:center;font-weight:700;font-size:11px;letter-spacing:.08em;margin-bottom:5px;text-decoration:underline}
+    .rp-warn{text-align:center;font-size:10px;font-style:italic;padding:3px 0}
+    .rp-row{display:flex;justify-content:space-between;padding:2px 0;font-size:11px}
+    .rp-row.total{font-weight:700;font-size:12px;padding:3px 0}
+    .rp-row.sub{color:#444;font-size:10px}
+    .not-official{text-align:center;font-weight:700;font-size:10px;padding:5px 0;border-top:1px solid #000;border-bottom:1px solid #000;margin:6px 0}
+    .rp-databox{background:#f0f0f0;border:1px solid #ccc;padding:6px 8px;margin:6px 0;font-size:9px;word-break:break-all}
+    .rp-databox strong{display:block;font-size:10px;color:#000;margin-bottom:1px}
+    .rp-thank{text-align:center;font-weight:700;font-size:12px;letter-spacing:.15em;padding-top:12px}
+    .watermark-proforma,.watermark-training{color:#000!important;border:2px solid #000!important;display:block;padding:2px;margin:6px 0;font-size:10px;font-weight:700;text-align:center;width:100%}
+    @media print{body{padding:0}@page{margin:8mm;size:80mm auto}}
+  </style>
+</head>
+<body>
+  <div class="receipt-print">${paperHTML}</div>
+  <script>window.onload=function(){window.print();setTimeout(function(){window.close();},800);}<\/script>
+</body>
+</html>`);
+    printWin.document.close();
+  }
+
+
+  function openInvoice(id) {
+    currentPatientId = id;
+    const p = patients[id];
+    document.getElementById('invNumber').textContent = p.invoice;
+    document.getElementById('invPatientName').textContent = p.name;
+    document.getElementById('invDate').textContent = p.date;
+    document.getElementById('invInpatient').textContent = p.inpatient;
+    document.getElementById('invInsurance').textContent = p.insurance;
+    document.getElementById('invTotal').textContent = p.total;
+    document.getElementById('invoiceOverlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeInvoice() {
+    document.getElementById('invoiceOverlay').classList.remove('open');
+    document.body.style.overflow = '';
+    currentPatientId = null;
+  }
+
+  function handleInvoiceOverlayClick(e) {
+    if (e.target === document.getElementById('invoiceOverlay')) closeInvoice();
+  }
+
+  // ── EBM dropdown logic ──
+  let openEbmId = null;
+
+  function toggleEbm(id) {
+    const menu = document.getElementById(id + '-menu');
+    const btn = document.querySelector('#' + id + ' .ebm-btn, #' + id + ' .inv-ebm-btn');
+    if (!menu) return;
+
+    const isOpen = menu.classList.contains('open');
+    closeAllEbmMenus();
+    if (!isOpen) {
+      menu.classList.add('open');
+      if (btn) btn.classList.add('open');
+      openEbmId = id;
+    }
+  }
+
+  function closeAllEbmMenus() {
+    document.querySelectorAll('.ebm-menu').forEach(m => m.classList.remove('open'));
+    document.querySelectorAll('.ebm-btn, .inv-ebm-btn').forEach(b => b.classList.remove('open'));
+    openEbmId = null;
+  }
+
+  document.addEventListener('click', function(e) {
+    if (openEbmId && !e.target.closest('.ebm-wrapper') && !e.target.closest('.inv-ebm-wrapper')) {
+      closeAllEbmMenus();
+    }
+  });
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+      if (document.getElementById('printPreview').classList.contains('open')) { closePrintPreview(); return; }
+      closeReceipt();
+      closeInvoice();
+      closeAllEbmMenus();
+    }
+  });
+</script>
+</body>
 </html>

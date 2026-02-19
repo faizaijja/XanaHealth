@@ -3,562 +3,579 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>XanaHealth - Patients List</title>
+    <title>XanaHealth - Dashboard</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 
     <style>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
+      :root {
+        --green: #059669;
+        --green-light: #d1fae5;
+        --green-mid: #10b981;
+        --green-dark: #065f46;
+        --bg: #f5f7fa;
+        --white: #fff;
+        --border: #e5e7eb;
+        --text: #111827;
+        --muted: #6b7280;
+        --muted-light: #9ca3af;
+        --red: #ef4444;
+        --amber: #f59e0b;
+        --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.06);
+        --shadow-lg: 0 8px 32px rgba(0,0,0,0.1);
       }
+
+      * { margin: 0; padding: 0; box-sizing: border-box; }
 
       body {
-        font-family:
-          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu,
-          Cantarell, sans-serif;
-        background-color: #f5f5f5;
-        color: #333;
+        font-family: 'Inter', sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        overflow-x: hidden;
       }
 
-      .container {
-        display: flex;
-        min-height: 100vh;
-      }
-
-      /* Sidebar */
+      /* ── Sidebar ── */
       .sidebar {
         width: 240px;
-        background-color: #fff;
-        border-right: 1px solid #e5e5e5;
+        background: var(--white);
+        border-right: 1px solid var(--border);
         display: flex;
         flex-direction: column;
+        position: fixed;
+        top: 0; left: 0;
+        height: 100vh;
+        z-index: 100;
+        transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
       }
 
-      .logo {
-        padding: 20px 24px;
-        font-size: 20px;
-        font-weight: 600;
+    .logo { padding: 20px 24px; font-size: 20px; font-weight: 600; }
+      .logo span:first-child { color: #333; }
+      .logo span:last-child { color: #059669; }
+      @keyframes pulse-dot {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.5; transform: scale(0.8); }
       }
 
-      .logo span:first-child {
-        color: #333;
-      }
-
-      .logo span:last-child {
-        color: #059669;
-      }
-
-      .nav-section {
-        padding: 12px 0;
-      }
+      .nav-section { padding: 8px 0; }
 
       .nav-label {
         padding: 8px 24px;
-        font-size: 11px;
+        font-size: 10px;
         font-weight: 600;
-        color: #9ca3af;
+        color: var(--muted-light);
         text-transform: uppercase;
-        letter-spacing: 0.5px;
+        letter-spacing: 1px;
       }
 
       .nav-item {
         display: flex;
         align-items: center;
         padding: 10px 24px;
-        color: #6b7280;
+        color: var(--muted);
         text-decoration: none;
         font-size: 14px;
+        font-weight: 500;
         cursor: pointer;
-        transition: background-color 0.2s;
+        position: relative;
+        transition: color 0.2s;
       }
-
-      .nav-item:hover {
-        background-color: #f9fafb;
+      .nav-item::before {
+        content: '';
+        position: absolute;
+        left: 0; top: 50%;
+        transform: translateY(-50%) scaleY(0);
+        width: 3px; height: 60%;
+        background: var(--green);
+        border-radius: 0 2px 2px 0;
+        transition: transform 0.2s cubic-bezier(0.34,1.56,0.64,1);
       }
+      .nav-item:hover { color: var(--text); }
+      .nav-item.active { color: var(--green);  font-weight: 600; }
+      .nav-item.active::before { transform: translateY(-50%) scaleY(1); }
 
-      .nav-item.active {
-        background-color: #f0fdf4;
-        color: #059669;
-        border-right: 3px solid #059669;
-      }
+      .nav-item svg { width: 17px; height: 17px; margin-right: 12px; flex-shrink: 0; }
 
-      .nav-item svg {
-        width: 18px;
-        height: 18px;
-        margin-right: 12px;
-        opacity: 0.6;
-      }
+      .user-section { margin-top: auto; padding: 20px 24px; }
+      .user-profile { display: flex; align-items: center; margin-bottom: 16px; }
+      .user-avatar { width: 40px; height: 40px; border-radius: 50%; background-color: #fecaca; margin-right: 12px; }
+      .user-info h4 { font-size: 14px; font-weight: 600; color: #333; }
+      .user-info p { font-size: 12px; color: #9ca3af; }
+      .user-actions { display: flex; flex-direction: column; gap: 8px; }
+      .user-action { display: flex; align-items: center; padding: 8px 0; color: #6b7280; text-decoration: none; font-size: 14px; cursor: pointer; }
+      .user-action svg { width: 18px; height: 18px; margin-right: 12px; opacity: 0.6; }
 
-      .user-section {
-        margin-top: auto;
-        padding: 20px 24px;
-        border-top: 1px solid #e5e5e5;
-      }
-
-      .user-profile {
-        display: flex;
-        align-items: center;
-        margin-bottom: 16px;
-      }
-
-      .user-avatar {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        background-color: #fecaca;
-        margin-right: 12px;
-      }
-
-      .user-info h4 {
-        font-size: 14px;
-        font-weight: 600;
-        color: #333;
-      }
-
-      .user-info p {
-        font-size: 12px;
-        color: #9ca3af;
-      }
-
-      .user-actions {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-      }
-
-      .user-action {
-        display: flex;
-        align-items: center;
-        padding: 8px 0;
-        color: #6b7280;
-        text-decoration: none;
-        font-size: 14px;
-        cursor: pointer;
-      }
-
-      .user-action svg {
-        width: 18px;
-        height: 18px;
-        margin-right: 12px;
-        opacity: 0.6;
-      }
-
-      /* Main Content */
+      /* ── Main ── */
+      .container { display: flex; min-height: 100vh; }
       .main-content {
         flex: 1;
+        margin-left: 240px;
         display: flex;
         flex-direction: column;
-      }
-      .chart-container {
-        background: white;
-        border-radius: 20px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        padding: 40px;
-        max-width: 1200px;
-        width: 100%;
+        min-height: 100vh;
       }
 
-      .header {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        margin-bottom: 40px;
-      }
+      .header { background-color: #fff; padding: 16px 32px; border-bottom: 1px solid #e5e5e5; display: flex; justify-content: space-between; align-items: center; }
+      .header h1 { font-size: 24px; font-weight: 600; color: #111827; }
+      .header-right { display: flex; align-items: center; gap: 20px; }
+      .notification-icon { width: 20px; height: 20px; cursor: pointer; }
+      .company-dropdown { display: flex; align-items: center; gap: 8px; padding: 8px 16px; background-color: #fff; border: 1px solid #e5e5e5; border-radius: 6px; cursor: pointer; color: #9ca3af; }
 
-      .header-left h2 {
-        font-size: 24px;
-        font-weight: 600;
-        color: #1f2937;
-        margin-bottom: 16px;
-      }
-
-      .stats {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-      }
-
-      .total-visits {
-        font-size: 48px;
-        font-weight: 700;
-        color: #111827;
-      }
-
-      .growth-indicator {
-        display: flex;
-        align-items: center;
-        gap: 4px;
-        color: #10b981;
-        font-size: 14px;
-        font-weight: 500;
-      }
-
-      .growth-indicator svg {
-        width: 16px;
-        height: 16px;
-      }
-
-      .header-right {
-        display: flex;
-        gap: 8px;
-        align-items: center;
-      }
-
-      .dropdown-btn {
-        padding: 10px 16px;
-        border: 1px solid #d1d5db;
-        border-radius: 8px;
-        background: white;
-        color: #374151;
-        font-size: 14px;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        transition: background 0.2s;
-      }
-
-      .dropdown-btn:hover {
-        background: #f9fafb;
-      }
-
-      .menu-btn {
-        padding: 10px;
-        border: none;
-        background: transparent;
-        color: #6b7280;
-        cursor: pointer;
-        border-radius: 8px;
-        transition: background 0.2s;
-      }
-
-      .menu-btn:hover {
-        background: #f3f4f6;
-      }
-
-      .chart-wrapper {
+      .notif-btn {
         position: relative;
-        height: 400px;
-        width: 100%;
-      }
-
-      #tooltip {
-        position: absolute;
-        background: #1f2937;
-        color: white;
-        padding: 12px 16px;
+        width: 36px; height: 36px;
+        border: 1px solid var(--border);
         border-radius: 8px;
-        font-size: 14px;
-        pointer-events: none;
-        opacity: 0;
-        transition: opacity 0.2s;
-        z-index: 1000;
+        background: var(--white);
+        cursor: pointer;
+        display: flex; align-items: center; justify-content: center;
+        transition: background 0.15s, border-color 0.15s;
       }
-
-      #tooltip.active {
-        opacity: 1;
-      }
-
-      #tooltip .value {
-        font-size: 24px;
+      .notif-btn:hover { background: #f9fafb; border-color: #d1d5db; }
+      .notif-badge {
+        position: absolute; top: -4px; right: -4px;
+        width: 16px; height: 16px;
+        background: var(--red);
+        border-radius: 50%;
+        border: 2px solid var(--white);
+        font-size: 9px;
         font-weight: 700;
-        margin-bottom: 4px;
+        color: white;
+        display: flex; align-items: center; justify-content: center;
+        animation: bounce-in 0.4s cubic-bezier(0.34,1.56,0.64,1);
+      }
+      @keyframes bounce-in {
+        0% { transform: scale(0); }
+        100% { transform: scale(1); }
       }
 
-      #tooltip .date {
-        font-size: 12px;
-        color: #d1d5db;
+      /* Notification Panel */
+      .notif-panel {
+        position: absolute;
+        top: calc(100% + 8px);
+        right: 32px;
+        width: 320px;
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        box-shadow: var(--shadow-lg);
+        z-index: 200;
+        opacity: 0;
+        transform: translateY(-8px) scale(0.97);
+        pointer-events: none;
+        transition: opacity 0.2s, transform 0.2s cubic-bezier(0.34,1.56,0.64,1);
       }
-
-      /* Header */
-      .header {
-        background-color: #fff;
-        padding: 16px 32px;
-        border-bottom: 1px solid #e5e5e5;
+      .notif-panel.open {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        pointer-events: all;
+      }
+      .notif-panel-header {
+        padding: 14px 16px;
+        border-bottom: 1px solid var(--border);
         display: flex;
         justify-content: space-between;
         align-items: center;
-      }
-
-      .header h1 {
-        font-size: 24px;
         font-weight: 600;
-        color: #111827;
-      }
-
-      .header-right {
-        display: flex;
-        align-items: center;
-        gap: 20px;
-      }
-
-      .notification-icon {
-        width: 20px;
-        height: 20px;
-        cursor: pointer;
-      }
-
-      .company-dropdown {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        padding: 8px 16px;
-        background-color: #fff;
-        border: 1px solid #e5e5e5;
-        border-radius: 6px;
-        cursor: pointer;
-        color: #9ca3af;
-      }
-
-      /* Content Area */
-      .content-area {
-        padding: 24px 32px;
-        flex: 1;
-        background-color: #f9fafb;
-      }
-
-      .controls {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 16px;
-        gap: 16px;
-      }
-
-      .controls-left {
-        display: flex;
-        gap: 12px;
-        flex: 1;
-      }
-
-      .filter-btn,
-      .action-btn {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        padding: 10px 16px;
-        background-color: #fff;
-        border: 1px solid #d1d5db;
-        border-radius: 6px;
-        cursor: pointer;
         font-size: 14px;
-        color: #374151;
       }
-
-      .search-box {
+      .notif-mark-all { font-size: 12px; color: var(--green); cursor: pointer; font-weight: 500; }
+      .notif-item {
+        padding: 12px 16px;
+        border-bottom: 1px solid #f9fafb;
         display: flex;
-        align-items: center;
-        gap: 8px;
-        padding: 10px 16px;
-        background-color: #fff;
-        border: 1px solid #d1d5db;
-        border-radius: 6px;
-        flex: 1;
-        max-width: 300px;
-      }
-
-      .search-box input {
-        border: none;
-        outline: none;
-        flex: 1;
-        font-size: 14px;
-        color: #6b7280;
-      }
-
-      .controls-right {
-        display: flex;
-        gap: 12px;
-      }
-
-      .export-btn,
-      .import-btn {
-        padding: 10px 20px;
-        background-color: #fff;
-        border: 1px solid #d1d5db;
-        border-radius: 6px;
+        gap: 10px;
         cursor: pointer;
-        font-size: 14px;
-        color: #374151;
-        font-weight: 500;
+        transition: background 0.15s;
       }
-
-      .add-patient-btn {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        padding: 10px 20px;
-        background-color: #059669;
-        border: none;
-        border-radius: 6px;
-        cursor: pointer;
-        font-size: 14px;
-        color: #fff;
-        font-weight: 500;
+      .notif-item:hover { background: #f9fafb; }
+      .notif-item:last-child { border-bottom: none; }
+      .notif-dot {
+        width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+        margin-top: 4px;
       }
+      .notif-dot.green { background: var(--green); }
+      .notif-dot.amber { background: var(--amber); }
+      .notif-dot.red { background: var(--red); }
+      .notif-text { font-size: 13px; color: var(--text); line-height: 1.4; }
+      .notif-time { font-size: 11px; color: var(--muted-light); margin-top: 2px; }
 
-      /* Filters */
-      .applied-filters {
-        display: flex;
-        gap: 8px;
-        margin-bottom: 16px;
-        align-items: center;
-        flex-wrap: wrap;
-      }
-
-      .filter-label {
-        font-size: 13px;
-        color: #6b7280;
-      }
-
-      .filter-tag {
+      .today-badge {
         display: flex;
         align-items: center;
         gap: 6px;
-        padding: 6px 12px;
-        background-color: #f3f4f6;
-        border-radius: 4px;
-        font-size: 13px;
-        color: #374151;
-      }
-
-      .filter-tag .close {
-        cursor: pointer;
-        opacity: 0.6;
-      }
-
-      .clear-filter {
-        color: #ef4444;
-        font-size: 13px;
-        cursor: pointer;
-        font-weight: 500;
-      }
-
-      .report-container {
-        background: white;
-        border-radius: 20px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        padding: 40px;
-        max-width: 1200px;
-        width: 100%;
-        margin-top: 50px;
-      }
-      /* Table */
-      .table-container {
-        background-color: #fff;
+        padding: 7px 14px;
+        background: var(--bg);
+        border: 1px solid var(--border);
         border-radius: 8px;
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--muted);
+      }
+      .today-badge .live-dot {
+        width: 6px; height: 6px;
+        background: var(--green);
+        border-radius: 50%;
+        animation: live-pulse 1.5s ease-in-out infinite;
+      }
+      @keyframes live-pulse {
+        0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(5,150,105,0.4); }
+        50% { opacity: 0.8; box-shadow: 0 0 0 4px rgba(5,150,105,0); }
+      }
+
+      /* ── Content ── */
+      .content-area { padding: 28px 32px; flex: 1; }
+
+      /* ── KPI Cards ── */
+      .kpi-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+        margin-bottom: 24px;
+      }
+
+      .kpi-card {
+        background: var(--white);
+        border-radius: 14px;
+        padding: 20px;
+        box-shadow: var(--shadow);
+        border: 1px solid var(--border);
+        cursor: pointer;
+        position: relative;
         overflow: hidden;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s, box-shadow 0.2s;
+        animation: slide-up 0.4s ease both;
+      }
+      .kpi-card:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+      }
+
+      @keyframes slide-up {
+        from { opacity: 0; transform: translateY(16px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      .kpi-card:nth-child(1) { animation-delay: 0.05s; }
+      .kpi-card:nth-child(2) { animation-delay: 0.1s; }
+      .kpi-card:nth-child(3) { animation-delay: 0.15s; }
+      .kpi-card:nth-child(4) { animation-delay: 0.2s; }
+
+      .kpi-card::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: var(--accent-color, var(--green));
+        opacity: 0;
+        transition: opacity 0.3s;
+        border-radius: 14px;
+        pointer-events: none;
+      }
+      .kpi-card:hover::after { opacity: 0.03; }
+
+      .kpi-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+      .kpi-icon {
+        width: 38px; height: 38px;
+        border-radius: 10px;
+        display: flex; align-items: center; justify-content: center;
+        flex-shrink: 0;
+      }
+      .kpi-icon svg { width: 18px; height: 18px; }
+
+      .kpi-badge {
+        font-size: 11px; font-weight: 600;
+        padding: 3px 8px;
+        border-radius: 20px;
+        display: flex; align-items: center; gap: 3px;
+      }
+      .kpi-badge.up { background: #d1fae5; color: var(--green-dark); }
+      .kpi-badge.down { background: #fee2e2; color: #991b1b; }
+      .kpi-badge.neutral { background: #fef3c7; color: #92400e; }
+
+      .kpi-value {
+        font-size: 32px;
+        font-weight: 700;
+        letter-spacing: -1px;
+        color: var(--text);
+        line-height: 1;
+        margin-bottom: 4px;
+        font-family: 'DM Mono', monospace;
+        transition: all 0.3s;
+      }
+      .kpi-label { font-size: 13px; color: var(--muted); font-weight: 500; }
+
+      /* ── Chart Section ── */
+      .chart-section {
+        display: grid;
+        grid-template-columns: 1fr 320px;
+        gap: 16px;
+        margin-bottom: 24px;
+        animation: slide-up 0.4s ease 0.25s both;
+      }
+
+      .chart-card {
+        background: var(--white);
+        border-radius: 14px;
+        padding: 24px;
+        box-shadow: var(--shadow);
+        border: 1px solid var(--border);
+      }
+
+      .chart-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 24px;
+      }
+
+      .chart-title { font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+      .chart-subtitle { font-size: 13px; color: var(--muted); }
+
+      .chart-controls { display: flex; gap: 4px; }
+      .period-btn {
+        padding: 6px 12px;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        background: var(--white);
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--muted);
+        cursor: pointer;
+        transition: all 0.15s;
+        font-family: 'DM Sans', sans-serif;
+      }
+      .period-btn:hover { border-color: var(--green); color: var(--green); }
+      .period-btn.active {
+        background: var(--green);
+        border-color: var(--green);
+        color: white;
+      }
+
+      .chart-wrapper { position: relative; height: 280px; }
+
+      /* Mini sparkline on KPI */
+      .kpi-sparkline { height: 32px; margin-top: 10px; }
+
+      /* ── Dept breakdown ── */
+      .dept-card {
+        background: var(--white);
+        border-radius: 14px;
+        padding: 24px;
+        box-shadow: var(--shadow);
+        border: 1px solid var(--border);
+      }
+      .dept-title { font-size: 15px; font-weight: 700; margin-bottom: 20px; }
+
+      .dept-row {
+        margin-bottom: 14px;
+        cursor: pointer;
+      }
+      .dept-row:last-child { margin-bottom: 0; }
+      .dept-row-top {
+        display: flex;
+        justify-content: space-between;
+        font-size: 13px;
+        margin-bottom: 6px;
+      }
+      .dept-name { font-weight: 500; color: var(--text); }
+      .dept-count { font-weight: 600; color: var(--text); font-family: 'DM Mono', monospace; }
+      .dept-bar-bg {
+        height: 6px;
+        background: #f3f4f6;
+        border-radius: 99px;
+        overflow: hidden;
+      }
+      .dept-bar-fill {
+        height: 100%;
+        border-radius: 99px;
+        width: 0;
+        transition: width 1s cubic-bezier(0.34,1.2,0.64,1);
+      }
+
+      /* ── Revenue Report ── */
+      .report-card {
+        background: var(--white);
+        border-radius: 14px;
+        box-shadow: var(--shadow);
+        border: 1px solid var(--border);
+        overflow: hidden;
+        animation: slide-up 0.4s ease 0.35s both;
+        margin-bottom: 24px;
+      }
+
+      .report-header {
+        background: #dfe5e5;
+        padding: 18px 24px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        color: black;
+      }
+      .report-header h2 { font-size: 16px; font-weight: 700; }
+      .report-date { font-size: 13px; opacity: 0.8; margin-top: 1px; }
+      .report-print-btn {
+        padding: 7px 16px;
+        background: rgba(255,255,255,0.15);
+        border: 1px solid rgba(255,255,255,0.3);
+        border-radius: 8px;
+        color: black;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        font-family: 'DM Sans', sans-serif;
+        transition: background 0.15s;
+        display: flex; gap: 6px; align-items: center;
+      }
+      .report-print-btn:hover { background: rgba(255,255,255,0.25); }
+
+      .report-tabs {
+        display: flex;
+        gap: 0;
+        border-bottom: 1px solid var(--border);
+        padding: 0 24px;
+      }
+      .report-tab {
+        padding: 14px 18px;
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--muted);
+        cursor: pointer;
+        border-bottom: 2px solid transparent;
+        margin-bottom: -1px;
+        transition: color 0.15s, border-color 0.15s;
+      }
+      .report-tab.active { color: var(--green); border-bottom-color: var(--green); }
+      .report-tab:hover { color: var(--text); }
+
+      .report-body { padding: 0 24px 24px; }
+      .tab-panel { display: none; }
+      .tab-panel.active { display: block; }
+
+      .section-label {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--muted-light);
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+        padding: 20px 0 12px;
       }
 
       table {
         width: 100%;
         border-collapse: collapse;
       }
-
-      thead {
-        background-color: rgb(214, 211, 211);
-        height: 50px;
-        border-bottom: 1px solid #e5e5e5;
+      thead tr {
+        background: #f9fafb;
       }
-
       th {
-        padding: 12px 16px;
+        padding: 10px 14px;
         text-align: left;
-        font-size: 16px;
-        font-weight: 600;
-        color: #6b7280;
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--muted);
         text-transform: uppercase;
         letter-spacing: 0.5px;
+        border-bottom: 1px solid var(--border);
       }
-
       td {
-        padding: 16px;
-        border-bottom: 1px solid #f3f4f6;
-        font-size: 16px;
-        color: #374151;
+        padding: 13px 14px;
+        border-bottom: 1px solid #f9fafb;
+        font-size: 14px;
+        color: var(--text);
+        transition: background 0.15s;
       }
-
-      tbody tr:hover {
-        background-color: #f9fafb;
-      }
-
-      .checkbox {
-        width: 16px;
-        height: 16px;
-        border: 1px solid #d1d5db;
-        border-radius: 3px;
+      tbody tr {
+        animation: fade-in 0.3s ease both;
         cursor: pointer;
       }
+      tbody tr:hover td { background: #f9fafb; }
+      tbody tr:last-child td { border-bottom: none; }
 
-      .patient-image {
-        width: 36px;
-        height: 36px;
-        border-radius: 50%;
-        object-fit: cover;
+      @keyframes fade-in {
+        from { opacity: 0; }
+        to { opacity: 1; }
       }
 
-      .new-visit-btn {
-        padding: 6px 16px;
-        background-color: #d1fae5;
-        border: 1px solid #a7f3d0;
-        border-radius: 6px;
-        cursor: pointer;
-        font-size: 13px;
-        color: #065f46;
-        font-weight: 500;
-      }
-
-      .action-icons {
-        display: flex;
-        gap: 12px;
-      }
-
-      .action-icon {
-        width: 18px;
-        height: 18px;
-        opacity: 0.5;
-        cursor: pointer;
-      }
-
-      .action-icon:hover {
-        opacity: 1;
-      }
-
-      /* Pagination */
-      .pagination {
-        display: flex;
-        justify-content: flex-end;
+      .status-pill {
+        display: inline-flex;
         align-items: center;
-        padding: 16px 24px;
-        gap: 8px;
+        gap: 5px;
+        padding: 3px 10px;
+        border-radius: 99px;
+        font-size: 12px;
+        font-weight: 600;
+      }
+      .status-pill.paid { background: #d1fae5; color: var(--green-dark); }
+      .status-pill.pending { background: #fef3c7; color: #92400e; }
+      .status-pill.overdue { background: #fee2e2; color: #991b1b; }
+
+      .summary-bar {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 0;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        overflow: hidden;
+        margin-top: 20px;
+      }
+      .summary-cell {
+        padding: 16px 20px;
+        border-right: 1px solid var(--border);
+        transition: background 0.2s;
+        cursor: default;
+      }
+      .summary-cell:last-child { border-right: none; }
+      .summary-cell:hover { background: #f9fafb; }
+      .summary-cell-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; font-weight: 600; }
+      .summary-cell-value { font-size: 20px; font-weight: 700; color: var(--text); letter-spacing: -0.5px; font-family: 'DM Mono', monospace; }
+      .summary-cell-value.green { color: var(--green); }
+      .summary-cell-value.red { color: var(--red); }
+
+      
+      .dots-btn.active span { background: var(--green); }
+.content-area { padding: 24px 32px; flex: 1; background-color: #F4F6F5; }
+      .controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; gap: 16px; }
+      .controls-left { display: flex; gap: 12px; flex: 1; }
+      .filter-btn, .action-btn { display: flex; align-items: center; gap: 8px; padding: 10px 16px; background-color: #fff; border: 1px solid #d1d5db; border-radius: 6px; cursor: pointer; font-size: 14px; color: #374151; }
+      .search-box { display: flex; align-items: center; gap: 8px; padding: 10px 16px; background-color: #fff; border: 1px solid #d1d5db; border-radius: 6px; flex: 1; max-width: 300px; }
+      .search-box input { border: none; outline: none; flex: 1; font-size: 14px; color: #6b7280; }
+      .controls-right { display: flex; gap: 12px; }
+      .export-btn, .import-btn { padding: 10px 20px; background-color: #fff; border: 1px solid #d1d5db; border-radius: 6px; cursor: pointer; font-size: 14px; color: #374151; font-weight: 500; }
+      .add-patient-btn { display: flex; align-items: center; gap: 8px; padding: 10px 20px; background-color: #3C8066; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; color: #fff; font-weight: 500; }
+      .applied-filters { display: flex; gap: 8px; margin-bottom: 16px; align-items: center; flex-wrap: wrap; }
+      .filter-label { font-size: 13px; color: #6b7280; }
+      .filter-tag { display: flex; align-items: center; gap: 6px; padding: 6px 12px; background-color: #f3f4f6; border-radius: 4px; font-size: 13px; color: #374151; }
+      .filter-tag .close { cursor: pointer; opacity: 0.6; }
+      .clear-filter { color: #ef4444; font-size: 13px; cursor: pointer; font-weight: 500; }
+      
+
+     
+
+      
+
+    
+      
+      
+      /* Skeleton loading */
+      .skeleton {
+        background: linear-gradient(90deg, #f3f4f6 25%, #e9eaec 50%, #f3f4f6 75%);
+        background-size: 200% 100%;
+        animation: shimmer 1.5s infinite;
+        border-radius: 6px;
+      }
+      @keyframes shimmer {
+        from { background-position: 200% 0; }
+        to { background-position: -200% 0; }
       }
 
-      .page-btn {
-        padding: 8px 12px;
-        border: 1px solid #d1d5db;
-        background-color: #fff;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 14px;
-        color: #374151;
+      /* Scroll animations */
+      .animate-on-scroll {
+        opacity: 0;
+        transform: translateY(20px);
+        transition: opacity 0.5s ease, transform 0.5s ease;
       }
-
-      .page-btn.active {
-        background-color: #059669;
-        color: #fff;
-        border-color: #059669;
-      }
-
-      .page-btn:disabled {
-        opacity: 0.4;
-        cursor: not-allowed;
-      }
-
-      .page-info {
-        font-size: 14px;
-        color: #9ca3af;
-        margin-left: 8px;
+      .animate-on-scroll.visible {
+        opacity: 1;
+        transform: translateY(0);
       }
     </style>
   </head>
@@ -566,102 +583,55 @@
     <div class="container">
       <!-- Sidebar -->
       <aside class="sidebar">
-        <div class="logo"><span>Xana</span><span>Health</span></div>
+        <div class="logo">
+          <span class="logo-x">Xana</span><span class="logo-h">Health</span>
+          <span class="logo-dot"></span>
+        </div>
 
         <nav class="nav-section">
-          <div class="nav-label">RECEPTION/CASHIER</div>
-          <a href="reception.html" class="nav-item">
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-            >
-              <rect x="3" y="3" width="7" height="7"></rect>
-              <rect x="14" y="3" width="7" height="7"></rect>
-              <rect x="14" y="14" width="7" height="7"></rect>
-              <rect x="3" y="14" width="7" height="7"></rect>
+          <div class="nav-label">Reception / Cashier</div>
+          <a href="reception.html" class="nav-item active">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect>
+              <rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect>
             </svg>
             Dashboard
           </a>
           <a href="#" class="nav-item">
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-            >
-              <path
-                d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
-              ></path>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
               <polyline points="14 2 14 8 20 8"></polyline>
             </svg>
             New Patient File
           </a>
-          <a href="patient_list.html" class="nav-item active">
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-            >
-              <path
-                d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
-              ></path>
+          <a href="#" class="nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
               <polyline points="14 2 14 8 20 8"></polyline>
-              <line x1="16" y1="13" x2="8" y2="13"></line>
-              <line x1="16" y1="17" x2="8" y2="17"></line>
+              <line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line>
               <polyline points="10 9 9 9 8 9"></polyline>
             </svg>
             Patients List
           </a>
-          <a href="patient_visits.html" class="nav-item">
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-            >
+          <a href="#" class="nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
               <circle cx="9" cy="7" r="4"></circle>
-              <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
             </svg>
             Patient Visits
           </a>
-          <a href="appointments.html" class="nav-item">
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-            >
+          <a href="#" class="nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-              <line x1="16" y1="2" x2="16" y2="6"></line>
-              <line x1="8" y1="2" x2="8" y2="6"></line>
+              <line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line>
               <line x1="3" y1="10" x2="21" y2="10"></line>
             </svg>
             Appointments
           </a>
+         
           <a href="#" class="nav-item">
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-            >
-              <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
-              <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
-            </svg>
-            DigitalRx
-          </a>
-          <a href="billing.html" class="nav-item">
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-            >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
               <line x1="1" y1="10" x2="23" y2="10"></line>
             </svg>
@@ -669,342 +639,516 @@
           </a>
         </nav>
 
-        <div class="user-section">
-          <div class="user-profile">
-            <div class="user-avatar"></div>
-            <div class="user-info">
-              <h4>Jane Doe</h4>
-              <p>Receptionist</p>
-            </div>
-          </div>
-          <div class="user-actions">
-            <a href="#" class="user-action">
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-              >
-                <circle cx="12" cy="12" r="10"></circle>
-                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
-                <line x1="12" y1="17" x2="12.01" y2="17"></line>
-              </svg>
-              Help
-            </a>
-            <a href="login.html" class="user-action">
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-              >
-                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-                <polyline points="16 17 21 12 16 7"></polyline>
-                <line x1="21" y1="12" x2="9" y2="12"></line>
-              </svg>
-              Logout
-            </a>
-          </div>
-        </div>
+       <div class="user-section">
+      <div class="user-profile">
+       
+        <div class="user-info"><h4>Jane Doe</h4><p>Receptionist</p></div>
+      </div>
+      <div class="user-actions">
+        <a href="#" class="user-action">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Help
+        </a>
+        <a href="#" class="user-action">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Logout
+        </a>
+      </div>
+    </div>
       </aside>
 
-      <!-- Main Content -->
+      <!-- Main -->
       <main class="main-content">
-        <!-- Header -->
-        <header class="header">
-          <h1>Dashboard</h1>
+         <header class="header">
+          <h1 id="page-title">Reception</h1>
           <div class="header-right">
-            <svg
-              class="notification-icon"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-            >
+            <svg class="notification-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
               <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
             </svg>
             <div class="company-dropdown">
               <span>Company Logo</span>
-              <svg
-                width="12"
-                height="12"
-                viewBox="0 0 12 12"
-                fill="currentColor"
-              >
-                <path d="M6 9L1 4h10z"></path>
-              </svg>
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M6 9L1 4h10z"></path></svg>
             </div>
           </div>
         </header>
 
-        <!-- Content Area -->
         <div class="content-area">
-          <div class="chart-container">
-            <div class="header">
-              <div class="header-left">
-                <h2>Total Patient Visits</h2>
-                <div class="stats">
-                  <span class="total-visits">2500</span>
-                  <div class="growth-indicator">
-                    <svg viewBox="0 0 16 16" fill="currentColor">
-                      <path d="M8 3l5 5H3l5-5z" />
-                    </svg>
-                    <span>+9% from last month</span>
-                  </div>
+           <div class="controls">
+              <div class="controls-left">
+                <button class="filter-btn">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line>
+                    <line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line>
+                    <line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line>
+                    <line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line>
+                    <line x1="17" y1="16" x2="23" y2="16"></line>
+                  </svg>Filter by
+                </button>
+                <div class="search-box">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path>
+                  </svg>
+                  <input type="text" placeholder="Search all patients" />
+                </div>
+                <button class="action-btn">Action <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M6 9L1 4h10z"></path></svg></button>
+              </div>
+            
+            </div>
+            <div class="applied-filters">
+              <span class="filter-label">Applied Filter</span>
+              <div class="filter-tag">Recently added <span class="close">✕</span></div>
+              <div class="filter-tag">Recently Updated <span class="close">✕</span></div>
+              <span class="clear-filter">Clear filter</span>
+            </div>
+
+
+       
+          <!-- Chart + Dept -->
+       
+
+          <!-- Revenue Report -->
+          <div class="report-card animate-on-scroll">
+            <div class="report-header" >
+              <div>
+                <h2 style="text-align:center;">Daily Revenue Report</h2>
+           
+              </div>
+              <button class="report-print-btn" onclick="showToast('Opening print preview...')">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                  <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                  <rect x="6" y="14" width="12" height="8"></rect>
+                </svg>
+                Print Report
+              </button>
+            </div>
+
+            <div class="report-tabs">
+              <div class="report-tab active" data-tab="dept">By Department</div>
+              <div class="report-tab" data-tab="insurance">By Insurance</div>
+              <div class="report-tab" data-tab="summary">Summary</div>
+            </div>
+
+            <div class="report-body">
+              <!-- Dept tab -->
+              <div class="tab-panel active" id="tab-dept">
+                <div class="section-label">Department Breakdown</div>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Department</th>
+                      <th>Patients</th>
+                      <th>Patient Cont.</th>
+                      <th>Insurance Cont.</th>
+                      <th>Total</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr onclick="showToast('Opening Dental department detail...')">
+                      <td><strong>Dental</strong></td>
+                      <td>8</td>
+                      <td>Rwf 24,000</td>
+                      <td>Rwf 96,000</td>
+                      <td><strong>Rwf 120,000</strong></td>
+                      <td><span class="status-pill paid">● Paid</span></td>
+                    </tr>
+                    <tr onclick="showToast('Opening General Medicine detail...')">
+                      <td><strong>General Medicine</strong></td>
+                      <td>14</td>
+                      <td>Rwf 42,000</td>
+                      <td>Rwf 168,000</td>
+                      <td><strong>Rwf 210,000</strong></td>
+                      <td><span class="status-pill paid">● Paid</span></td>
+                    </tr>
+                    <tr onclick="showToast('Opening Pediatrics detail...')">
+                      <td><strong>Pediatrics</strong></td>
+                      <td>5</td>
+                      <td>Rwf 0</td>
+                      <td>Rwf 75,000</td>
+                      <td><strong>Rwf 75,000</strong></td>
+                      <td><span class="status-pill pending">◐ Pending</span></td>
+                    </tr>
+                    <tr onclick="showToast('Opening Orthopedics detail...')">
+                      <td><strong>Orthopedics</strong></td>
+                      <td>3</td>
+                      <td>Rwf 18,000</td>
+                      <td>Rwf 0</td>
+                      <td><strong>Rwf 18,000</strong></td>
+                      <td><span class="status-pill overdue">✕ Overdue</span></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <!-- Insurance tab -->
+              <div class="tab-panel" id="tab-insurance">
+                <div class="section-label">Insurance Provider Breakdown</div>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Provider</th>
+                      <th>Patients</th>
+                      <th>Covered Amount</th>
+                      <th>Uncovered</th>
+                      <th>Total Claimed</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr onclick="showToast('Opening RSSB detail...')">
+                      <td><strong>RSSB</strong></td>
+                      <td>18</td>
+                      <td>Rwf 270,000</td>
+                      <td>Rwf 30,000</td>
+                      <td><strong>Rwf 300,000</strong></td>
+                      <td><span class="status-pill paid">● Paid</span></td>
+                    </tr>
+                    <tr onclick="showToast('Opening MMI detail...')">
+                      <td><strong>MMI</strong></td>
+                      <td>7</td>
+                      <td>Rwf 84,000</td>
+                      <td>Rwf 21,000</td>
+                      <td><strong>Rwf 105,000</strong></td>
+                      <td><span class="status-pill pending">◐ Pending</span></td>
+                    </tr>
+                    <tr onclick="showToast('Opening Self-Pay detail...')">
+                      <td><strong>Self-Pay</strong></td>
+                      <td>5</td>
+                      <td>—</td>
+                      <td>Rwf 45,000</td>
+                      <td><strong>Rwf 45,000</strong></td>
+                      <td><span class="status-pill overdue">✕ Overdue</span></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <!-- Summary tab -->
+              <div class="tab-panel" id="tab-summary">
+                <div class="section-label">Financial Summary</div>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Category</th>
+                      <th>Amount</th>
+                      <th>vs Yesterday</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr><td>Cash Received</td><td>Rwf 12,000</td><td style="color:var(--green)">↑ 20%</td></tr>
+                    <tr><td>Insurance Claims Submitted</td><td>Rwf 339,000</td><td style="color:var(--green)">↑ 12%</td></tr>
+                    <tr><td>Total Due</td><td>Rwf 450,000</td><td style="color:var(--muted)">→ 0%</td></tr>
+                    <tr><td>Total Paid</td><td>Rwf 405,000</td><td style="color:var(--green)">↑ 9%</td></tr>
+                    <tr><td>Outstanding</td><td style="color:var(--red)">Rwf 45,000</td><td style="color:var(--red)">↑ 3%</td></tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="summary-bar">
+                <div class="summary-cell">
+                  <div class="summary-cell-label">Cash Received</div>
+                  <div class="summary-cell-value green">Rwf 12k</div>
+                </div>
+                <div class="summary-cell">
+                  <div class="summary-cell-label">Total Paid</div>
+                  <div class="summary-cell-value">Rwf 405k</div>
+                </div>
+                <div class="summary-cell">
+                  <div class="summary-cell-label">Total Due</div>
+                  <div class="summary-cell-value">Rwf 450k</div>
+                </div>
+                <div class="summary-cell">
+                  <div class="summary-cell-label">Outstanding</div>
+                  <div class="summary-cell-value red">Rwf 45k</div>
                 </div>
               </div>
-              <div class="header-right">
-                <button class="dropdown-btn">
-                  Monthly
-                  <svg
-                    width="16"
-                    height="16"
-                    viewBox="0 0 16 16"
-                    fill="currentColor"
-                  >
-                    <path d="M4 6l4 4 4-4H4z" />
-                  </svg>
-                </button>
-                <button class="menu-btn">
-                  <svg
-                    width="20"
-                    height="20"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                  >
-                    <circle cx="10" cy="4" r="1.5" />
-                    <circle cx="10" cy="10" r="1.5" />
-                    <circle cx="10" cy="16" r="1.5" />
-                  </svg>
-                </button>
-              </div>
-            </div>
-
-            <div class="chart-wrapper">
-              <div id="tooltip">
-                <div class="value">200</div>
-                <div class="date">5 January 2020</div>
-              </div>
-              <canvas id="patientChart"></canvas>
             </div>
           </div>
 
-          <!-----------------Table------------------------>
-          <div class="report-container">
-            <div style="background: rgb(214, 211, 211); height: 50px">
-              <p
-                style="
-                  text-align: center;
-                  padding-top: 15px;
-                  font-weight: 600;
-                  font-size: 18px;
-                "
-              >
-                Daily Revenue Report (23/05/2023)
-              </p>
-            </div>
-            <div style="margin-top: 40px">
-              <p style="text-align: center; font-size: 18px">By Department</p>
-            </div>
-            <div class="table-container" style="margin-top: 40px">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Department</th>
-                    <th>Patient</th>
-                    <th>Patient Cont.</th>
-                    <th>Insurance Cont.</th>
-                    <th>Total</th>
-                  </tr>
-                </thead>
-
-                <tbody>
-                  <tr>
-                    <td>Dental</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                  </tr>
-                </tbody>
-              </table>
-
-                <div style="margin-top: 40px">
-              <p style="text-align: center; font-size: 18px">By Insurance</p>
-            </div>
-            <div class="table-container" style="margin-top: 40px">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Department</th>
-                    <th>Patient</th>
-                    <th>Patient Cont.</th>
-                    <th>Insurance Cont.</th>
-                    <th>Total</th>
-                  </tr>
-                </thead>
-
-                <tbody>
-                  <tr>
-                    <td>Dental</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-             <div class="table-container" style="margin-top: 40px">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Cash Received</th>
-                    <th>Total Due</th>
-                    <th>Total Paid</th>
-                    <th>Outstanding</th>
-                   
-                  </tr>
-                </thead>
-
-                <tbody>
-                  <tr>
-                    <td>Rwf 12,000</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                  
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
         </div>
       </main>
     </div>
 
-    <script>
-      const ctx = document.getElementById("patientChart").getContext("2d");
-      const tooltip = document.getElementById("tooltip");
+   
 
-      const data = {
-        labels: [
-          "August",
-          "September",
-          "October",
-          "November",
-          "December",
-          "January",
-          "February",
-        ],
-        datasets: [
-          {
-            label: "Patient Visits",
-            data: [550, 350, 480, 620, 430, 700, 650],
-            backgroundColor: (context) => {
-              const ctx = context.chart.ctx;
-              const gradient = ctx.createLinearGradient(0, 0, 0, 400);
-              gradient.addColorStop(0, "rgba(45, 122, 107, 0.9)");
-              gradient.addColorStop(1, "rgba(45, 122, 107, 0.7)");
-              return gradient;
-            },
-            borderColor: "rgba(45, 122, 107, 1)",
-            borderWidth: 0,
+    <script>
+      // ── Clock ──
+      function updateClock() {
+        const now = new Date();
+        const h = String(now.getHours()).padStart(2, '0');
+        const m = String(now.getMinutes()).padStart(2, '0');
+        document.getElementById('live-clock').textContent = h + ':' + m;
+      }
+      updateClock();
+      setInterval(updateClock, 30000);
+
+      // ── Toast ──
+      let toastTimer;
+      function showToast(msg) {
+        const t = document.getElementById('toast');
+        document.getElementById('toast-msg').textContent = msg;
+        t.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+      }
+
+      // ── Notification panel ──
+      const notifBtn = document.getElementById('notif-btn');
+      const notifPanel = document.getElementById('notif-panel');
+      notifBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        notifPanel.classList.toggle('open');
+      });
+      document.addEventListener('click', () => notifPanel.classList.remove('open'));
+      notifPanel.addEventListener('click', e => e.stopPropagation());
+
+      document.getElementById('notif-mark-all').addEventListener('click', () => {
+        const badge = document.querySelector('.notif-badge');
+        badge.style.transform = 'scale(0)';
+        badge.style.transition = 'transform 0.3s cubic-bezier(0.34,1.56,0.64,1)';
+        setTimeout(() => badge.remove(), 300);
+        notifPanel.classList.remove('open');
+        showToast('All notifications marked as read');
+      });
+
+      // ── Count-up animation ──
+      function countUp(el) {
+        const target = parseInt(el.dataset.target);
+        const prefix = el.dataset.prefix || '';
+        const duration = 1200;
+        const start = performance.now();
+        function step(now) {
+          const progress = Math.min((now - start) / duration, 1);
+          const eased = 1 - Math.pow(1 - progress, 3);
+          const value = Math.floor(eased * target);
+          el.textContent = prefix + value.toLocaleString();
+          if (progress < 1) requestAnimationFrame(step);
+        }
+        requestAnimationFrame(step);
+      }
+      document.querySelectorAll('.kpi-value').forEach(el => {
+        setTimeout(() => countUp(el), 200);
+      });
+
+      // ── Sparklines ──
+      function sparkline(id, data, color) {
+        const canvas = document.getElementById(id);
+        if (!canvas) return;
+        new Chart(canvas, {
+          type: 'line',
+          data: {
+            labels: data.map((_, i) => i),
+            datasets: [{ data, borderColor: color, borderWidth: 2, fill: false, tension: 0.4, pointRadius: 0 }]
+          },
+          options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { display: false }, tooltip: { enabled: false } },
+            scales: { x: { display: false }, y: { display: false } },
+            animation: { duration: 1000 }
+          }
+        });
+      }
+      sparkline('spark1', [380, 420, 390, 480, 510, 490, 560, 610, 580, 650], '#059669');
+      sparkline('spark2', [12, 15, 11, 18, 14, 20, 17, 22, 19, 18], '#3b82f6');
+      sparkline('spark3', [220000, 280000, 250000, 310000, 290000, 340000, 320000, 370000, 348000, 348000], '#d97706');
+      sparkline('spark4', [30000, 42000, 35000, 28000, 50000, 38000, 45000, 32000, 41000, 45000], '#ef4444');
+
+      // ── Main chart ──
+      const chartData = {
+        monthly: {
+          labels: ['Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb'],
+          data: [550, 350, 480, 620, 430, 700, 650]
+        },
+        weekly: {
+          labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+          data: [82, 95, 110, 88, 120, 65, 40]
+        },
+        quarterly: {
+          labels: ['Q1 2022', 'Q2 2022', 'Q3 2022', 'Q4 2022', 'Q1 2023', 'Q2 2023'],
+          data: [1400, 1650, 1820, 1950, 2100, 2400]
+        }
+      };
+
+      const ctx = document.getElementById('patientChart').getContext('2d');
+      const ttEl = document.getElementById('chart-tooltip');
+
+      function makeGradient() {
+        const g = ctx.createLinearGradient(0, 0, 0, 280);
+        g.addColorStop(0, 'rgba(5,150,105,0.3)');
+        g.addColorStop(1, 'rgba(5,150,105,0)');
+        return g;
+      }
+
+      const chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: chartData.monthly.labels,
+          datasets: [{
+            label: 'Patient Visits',
+            data: chartData.monthly.data,
+            backgroundColor: makeGradient(),
+            borderColor: '#059669',
+            borderWidth: 2.5,
             fill: true,
             tension: 0.4,
             pointRadius: 0,
             pointHoverRadius: 6,
-            pointHoverBackgroundColor: "white",
-            pointHoverBorderColor: "#2D7A6B",
-            pointHoverBorderWidth: 3,
-          },
-        ],
-      };
-
-      const config = {
-        type: "line",
-        data: data,
+            pointHoverBackgroundColor: 'white',
+            pointHoverBorderColor: '#059669',
+            pointHoverBorderWidth: 2.5
+          }]
+        },
         options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          interaction: {
-            mode: "index",
-            intersect: false,
-          },
+          responsive: true, maintainAspectRatio: false,
+          interaction: { mode: 'index', intersect: false },
+          animation: { duration: 600, easing: 'easeInOutQuart' },
           plugins: {
-            legend: {
-              display: false,
-            },
+            legend: { display: false },
             tooltip: {
               enabled: false,
-              external: function (context) {
-                const tooltipEl = tooltip;
-                const tooltipModel = context.tooltip;
-
-                if (tooltipModel.opacity === 0) {
-                  tooltipEl.classList.remove("active");
-                  return;
+              external: ({ tooltip, chart: c }) => {
+                if (tooltip.opacity === 0) { ttEl.classList.remove('active'); return; }
+                ttEl.classList.add('active');
+                if (tooltip.dataPoints) {
+                  const dp = tooltip.dataPoints[0];
+                  ttEl.querySelector('.tt-value').textContent = dp.raw.toLocaleString();
+                  ttEl.querySelector('.tt-label').textContent = dp.label;
                 }
-
-                tooltipEl.classList.add("active");
-
-                if (tooltipModel.body) {
-                  const dataPoint = tooltipModel.dataPoints[0];
-                  const value = dataPoint.raw;
-
-                  tooltipEl.querySelector(".value").textContent = value;
-                  tooltipEl.querySelector(".date").textContent =
-                    "5 January 2020";
-                }
-
-                const position = context.chart.canvas.getBoundingClientRect();
-                tooltipEl.style.left = tooltipModel.caretX + "px";
-                tooltipEl.style.top = tooltipModel.caretY - 60 + "px";
-              },
-            },
+                ttEl.style.left = tooltip.caretX + 'px';
+                ttEl.style.top = (tooltip.caretY - 70) + 'px';
+              }
+            }
           },
           scales: {
-            x: {
-              grid: {
-                display: false,
-              },
-              ticks: {
-                color: "#9CA3AF",
-                font: {
-                  size: 14,
-                },
-              },
-              border: {
-                display: false,
-              },
-            },
+            x: { grid: { display: false }, ticks: { color: '#9ca3af', font: { family: "'DM Sans'" } }, border: { display: false } },
             y: {
               min: 0,
-              max: 1000,
-              ticks: {
-                stepSize: 200,
-                color: "#9CA3AF",
-                font: {
-                  size: 14,
-                },
-                callback: function (value) {
-                  return value / 100 + "00k";
-                },
-              },
-              grid: {
-                color: "#f3f4f6",
-                drawBorder: false,
-              },
-              border: {
-                display: false,
-              },
-            },
-          },
-        },
-      };
+              grid: { color: '#f3f4f6' },
+              ticks: { color: '#9ca3af', font: { family: "'DM Sans'" }, callback: v => v >= 1000 ? (v/1000) + 'k' : v },
+              border: { display: false }
+            }
+          }
+        }
+      });
 
-      const chart = new Chart(ctx, config);
+      // ── Chart filter panel (3-dots) ──
+      const dotsBtn = document.getElementById('chart-dots-btn');
+      const filterPanel = document.getElementById('chart-filter-panel');
+      const filterClose = document.getElementById('filter-close');
+      const filterApply = document.getElementById('filter-apply');
+      const filterReset = document.getElementById('filter-reset');
+      const filterActiveDot = document.getElementById('filter-active-dot');
+
+      // Set default dates (last 7 months range)
+      const today = new Date();
+      const sevenMonthsAgo = new Date(today);
+      sevenMonthsAgo.setMonth(today.getMonth() - 7);
+      document.getElementById('filter-start').value = sevenMonthsAgo.toISOString().split('T')[0];
+      document.getElementById('filter-end').value = today.toISOString().split('T')[0];
+
+      function toggleFilterPanel(e) {
+        e.stopPropagation();
+        const isOpen = filterPanel.classList.contains('open');
+        filterPanel.classList.toggle('open', !isOpen);
+        dotsBtn.classList.toggle('active', !isOpen);
+      }
+
+      function closeFilterPanel() {
+        filterPanel.classList.remove('open');
+        dotsBtn.classList.remove('active');
+      }
+
+      dotsBtn.addEventListener('click', toggleFilterPanel);
+      filterClose.addEventListener('click', closeFilterPanel);
+      filterPanel.addEventListener('click', e => e.stopPropagation());
+      document.addEventListener('click', closeFilterPanel);
+
+      filterApply.addEventListener('click', () => {
+        const start = document.getElementById('filter-start').value;
+        const end = document.getElementById('filter-end').value;
+        const depts = [...document.querySelectorAll('#chart-filter-panel .filter-checkboxes:nth-of-type(1) input')]
+          .filter(c => c.checked).map(c => c.parentElement.textContent.trim());
+        const insurers = [...document.querySelectorAll('#chart-filter-panel .filter-checkboxes:nth-of-type(2) input')]
+          .filter(c => c.checked).map(c => c.parentElement.textContent.trim());
+
+        // Check if any filters differ from defaults
+        const allDepts = document.querySelectorAll('#chart-filter-panel .filter-group:nth-child(3) input');
+        const allInsurers = document.querySelectorAll('#chart-filter-panel .filter-group:nth-child(4) input');
+        const allChecked = [...allDepts, ...allInsurers].every(c => c.checked);
+        filterActiveDot.classList.toggle('show', !allChecked);
+
+        closeFilterPanel();
+        showToast(`Filters applied: ${depts.length} dept${depts.length !== 1 ? 's' : ''}, ${insurers.length} insurer${insurers.length !== 1 ? 's' : ''}`);
+
+        // Simulate chart update with slight data variation
+        const currentData = chart.data.datasets[0].data;
+        const varied = currentData.map(v => Math.round(v * (0.85 + Math.random() * 0.3)));
+        chart.data.datasets[0].data = varied;
+        chart.update();
+      });
+
+      filterReset.addEventListener('click', () => {
+        closeFilterPanel();
+      });
+
+      // Period switcher
+      document.querySelectorAll('.period-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          const period = btn.dataset.period;
+          const d = chartData[period];
+          chart.data.labels = d.labels;
+          chart.data.datasets[0].data = d.data;
+          chart.update();
+          showToast('Chart updated to ' + btn.textContent);
+        });
+      });
+
+      // ── Dept bars ──
+      const depts = [
+        { name: 'General Medicine', count: 14, pct: 47, color: '#059669' },
+        { name: 'Dental', count: 8, pct: 27, color: '#3b82f6' },
+        { name: 'Pediatrics', count: 5, pct: 17, color: '#f59e0b' },
+        { name: 'Orthopedics', count: 3, pct: 10, color: '#ef4444' },
+      ];
+
+      const deptList = document.getElementById('dept-list');
+      depts.forEach(d => {
+        deptList.innerHTML += `
+          <div class="dept-row" onclick="showToast('Opening ${d.name}...')">
+            <div class="dept-row-top">
+              <span class="dept-name">${d.name}</span>
+              <span class="dept-count">${d.count}</span>
+            </div>
+            <div class="dept-bar-bg">
+              <div class="dept-bar-fill" data-pct="${d.pct}" style="background:${d.color};"></div>
+            </div>
+          </div>`;
+      });
+
+      // Animate bars on load
+      setTimeout(() => {
+        document.querySelectorAll('.dept-bar-fill').forEach(bar => {
+          bar.style.width = bar.dataset.pct + '%';
+        });
+      }, 400);
+
+      // ── Report tabs ──
+      document.querySelectorAll('.report-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+          document.querySelectorAll('.report-tab').forEach(t => t.classList.remove('active'));
+          document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+          tab.classList.add('active');
+          document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+        });
+      });
+
+      // ── Scroll reveal ──
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+      }, { threshold: 0.1 });
+      document.querySelectorAll('.animate-on-scroll').forEach(el => observer.observe(el));
     </script>
   </body>
 </html>

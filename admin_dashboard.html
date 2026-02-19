@@ -446,6 +446,79 @@
         padding: 10px 22px;
         border-radius: 10px;
       }
+      /* GRID */
+.chart-grid{
+  display:grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap:24px;
+  padding:30px;
+}
+
+/* CARD */
+.chart-card{
+  background:#ffffff;
+  border-radius:18px;
+  padding:24px;
+  height:420px;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+  box-shadow:0 6px 20px rgba(0,0,0,0.05);
+  overflow:hidden;
+}
+
+/* HEADER */
+.chart-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.chart-title{
+  font-size:18px;
+  font-weight:600;
+}
+
+/* WRAPPER (IMPORTANT FIX) */
+.chart-wrapper{
+  position:relative;
+  width:100%;
+  height:260px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.chart-wrapper canvas{
+  max-width:100% !important;
+  max-height:100% !important;
+}
+
+/* LEGEND */
+.legend{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+  margin-top:10px;
+}
+
+.legend-item{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+.legend-color{
+  width:14px;
+  height:14px;
+  border-radius:50%;
+}
+
+@media(max-width:900px){
+  .chart-grid{
+    grid-template-columns:1fr;
+  }
+}
     </style>
   </head>
   <body>
@@ -1513,110 +1586,50 @@
         </div>
 
         <!-- Charts -->
-        <div class="chart-grid">
-          <div class="chart-card">
-            <div class="chart-header">
-              <h2 class="chart-title">Revenue Generated</h2>
-              <div class="chart-controls">
-                <select class="select-dropdown">
-                  <option>Departments</option>
-                  <option>Emergency</option>
-                  <option>Surgery</option>
-                  <option>Pediatrics</option>
-                </select>
-                <select class="select-dropdown">
-                  <option>Monthly</option>
-                  <option>Weekly</option>
-                  <option>Yearly</option>
-                </select>
-              </div>
-            </div>
-            <canvas id="revenueChart" class="chart-placeholder"></canvas>
-          </div>
+       <div class="chart-grid">
 
-          <div class="chart-card">
-            <div class="chart-header">
-              <h2 class="chart-title">Disease Prevalence</h2>
-              <div class="chart-controls">
-                <select class="select-dropdown">
-                  <option>Monthly</option>
-                  <option>Weekly</option>
-                  <option>Yearly</option>
-                </select>
-              </div>
-            </div>
-            <canvas id="donutChart" class="donut-chart"></canvas>
-            <div class="legend">
-              <div class="legend-item">
-                <div class="legend-color" style="background: #1a5f5a"></div>
-                <div class="legend-label">Malaria</div>
-              </div>
-              <div class="legend-item">
-                <div class="legend-color" style="background: #2d8b83"></div>
-                <div class="legend-label">Cancer</div>
-              </div>
-              <div class="legend-item">
-                <div class="legend-color" style="background: #7dd3c0"></div>
-                <div class="legend-label">Typhoid</div>
-              </div>
-              <div class="legend-item">
-                <div class="legend-color" style="background: #b8e6de"></div>
-                <div class="legend-label">Flu/Fever</div>
-              </div>
-            </div>
-          </div>
+  <!-- REVENUE CHART -->
+  <div class="chart-card">
+    <div class="chart-header">
+      <div class="chart-title">Revenue Generated</div>
+    </div>
 
-          <div class="chart-card">
-            <div class="chart-header">
-              <h2 class="chart-title">Total Patient Visits</h2>
-              <div class="chart-controls">
-                <select class="select-dropdown">
-                  <option>Monthly</option>
-                  <option>Weekly</option>
-                  <option>Yearly</option>
-                </select>
-              </div>
-            </div>
-            <div class="stat-value" style="margin-bottom: 8px">2600</div>
-            <div class="stat-label" style="margin-bottom: 24px">
-              ▲ 8% from last month
-            </div>
-            <canvas id="areaChart" class="chart-placeholder"></canvas>
-          </div>
+    <div class="chart-wrapper">
+      <canvas id="revenueChart"></canvas>
+    </div>
+  </div>
 
-          <div class="chart-card">
-            <div class="chart-header">
-              <h2 class="chart-title">Patient Gender</h2>
-              <div class="chart-controls">
-                <select class="select-dropdown">
-                  <option>Monthly</option>
-                  <option>Weekly</option>
-                  <option>Yearly</option>
-                </select>
-              </div>
-            </div>
-            <div class="gender-chart">
-              <div class="gender-bar">
-                <div class="gender-label">Male</div>
-                <div class="progress-bar">
-                  <div
-                    class="progress-fill"
-                    style="width: 65%; background: #1a5f5a"
-                  ></div>
-                </div>
-              </div>
-              <div class="gender-bar">
-                <div class="gender-label">Female</div>
-                <div class="progress-bar">
-                  <div
-                    class="progress-fill"
-                    style="width: 35%; background: #7dd3c0"
-                  ></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+  <!-- DISEASE PREVALENCE -->
+  <div class="chart-card">
+    <div class="chart-header">
+      <div class="chart-title">Disease Prevalence</div>
+    </div>
+
+    <div class="chart-wrapper">
+      <canvas id="donutChart"></canvas>
+    </div>
+
+    <div class="legend">
+      <div class="legend-item">
+        <div class="legend-color" style="background:#1a5f5a"></div>
+        Malaria
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background:#2d8b83"></div>
+        Cancer
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background:#7dd3c0"></div>
+        Typhoid
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background:#b8e6de"></div>
+        Flu/Fever
+      </div>
+    </div>
+  </div>
+
+</div>
 
         <!-- Table -->
         <div class="table-card">
@@ -1786,131 +1799,58 @@
         document.getElementById("onboarding").style.display = "none";
       }
       // Revenue Chart (Line Chart)
-      const revenueCtx = document
-        .getElementById("revenueChart")
-        .getContext("2d");
-      new Chart(revenueCtx, {
-        type: "line",
-        data: {
-          labels: [
-            "Jan",
-            "Feb",
-            "Mar",
-            "Apr",
-            "May",
-            "Jun",
-            "Jul",
-            "Aug",
-            "Sep",
-            "Oct",
-            "Nov",
-            "Dec",
-          ],
-          datasets: [
-            {
-              label: "Revenue 2024",
-              data: [30, 40, 35, 50, 49, 60, 70, 80, 75, 85, 90, 95],
-              borderColor: "#1a5f5a",
-              backgroundColor: "rgba(26, 95, 90, 0.1)",
-              tension: 0.4,
-              fill: true,
-              pointBackgroundColor: "#1a5f5a",
-              pointRadius: 4,
-              pointHoverRadius: 6,
-            },
-            {
-              label: "Revenue 2023",
-              data: [20, 30, 28, 40, 39, 50, 60, 70, 65, 75, 80, 85],
-              borderColor: "#7dd3c0",
-              backgroundColor: "rgba(125, 211, 192, 0.1)",
-              tension: 0.4,
-              fill: true,
-              pointBackgroundColor: "#7dd3c0",
-              pointRadius: 4,
-              pointHoverRadius: 6,
-            },
-          ],
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: {
-              display: false,
-            },
-            tooltip: {
-              backgroundColor: "#1e293b",
-              padding: 12,
-              titleColor: "#fff",
-              bodyColor: "#e2e8f0",
-              borderColor: "#334155",
-              borderWidth: 1,
-              displayColors: true,
-              boxPadding: 6,
-            },
-          },
-          scales: {
-            y: {
-              beginAtZero: true,
-              grid: {
-                color: "#e2e8f0",
-                drawBorder: false,
-              },
-              ticks: {
-                color: "#64748b",
-                font: {
-                  size: 11,
-                },
-              },
-            },
-            x: {
-              grid: {
-                display: false,
-                drawBorder: false,
-              },
-              ticks: {
-                color: "#64748b",
-                font: {
-                  size: 11,
-                },
-              },
-            },
-          },
-        },
-      });
+      
+    
+         new Chart(document.getElementById("revenueChart"), {
+  type: "line",
+  data: {
+    labels: ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],
+    datasets: [{
+      label:"Revenue",
+      data:[30,40,35,50,49,60,70,80,75,85,90,95],
+      borderColor:"#1a5f5a",
+      backgroundColor:"rgba(26,95,90,0.15)",
+      tension:0.4,
+      fill:true,
+      pointRadius:4
+    }]
+  },
+  options:{
+    responsive:true,
+    maintainAspectRatio:false, /* CRITICAL FIX */
+    plugins:{legend:{display:false}},
+    scales:{
+      y:{beginAtZero:true}
+    }
+  }
+});
 
       // Donut Chart (Disease Prevalence)
-      const donutCtx = document.getElementById("donutChart").getContext("2d");
-      new Chart(donutCtx, {
-        type: "doughnut",
-        data: {
-          labels: ["Malaria", "Cancer", "Typhoid", "Flu/Fever"],
-          datasets: [
-            {
-              data: [40, 25, 20, 15],
-              backgroundColor: ["#1a5f5a", "#2d8b83", "#7dd3c0", "#b8e6de"],
-              borderWidth: 0,
-              spacing: 2,
-            },
-          ],
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: {
-              display: false,
-            },
-            tooltip: {
-              backgroundColor: "#1e293b",
-              padding: 12,
-              titleColor: "#fff",
-              bodyColor: "#e2e8f0",
-            },
-          },
-          cutout: "70%",
-        },
-      });
+     new Chart(document.getElementById("donutChart"), {
+  type:"doughnut",
+  data:{
+    labels:["Malaria","Cancer","Typhoid","Flu/Fever"],
+    datasets:[{
+      data:[40,25,20,15],
+      backgroundColor:[
+        "#1a5f5a",
+        "#2d8b83",
+        "#7dd3c0",
+        "#b8e6de"
+      ],
+      borderWidth:0,
+      spacing:2
+    }]
+  },
+  options:{
+    responsive:true,
+    maintainAspectRatio:false, /* MOST IMPORTANT */
+    cutout:"70%",
+    plugins:{
+      legend:{display:false}
+    }
+  }
+});
 
       // Area Chart (Patient Visits)
       const areaCtx = document.getElementById("areaChart").getContext("2d");
