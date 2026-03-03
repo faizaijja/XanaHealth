@@ -3,152 +3,3133 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>XanaHealth - Patients List</title>
-    <link rel="stylesheet" href="css/global.css"/>
-   <style>
+    <title>XanaHealth - Consultation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+    <style>
+      *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
-   </style>
-        
+      :root {
+        --green: #4a8f75;
+        --green-dark: #3d7360;
+        --green-light: #e8f5f1;
+        --green-lighter: #d5ebe4;
+      }
+
+      body { font-family: 'Outfit', sans-serif; background-color: #f5f5f5; color: #1a1a1a; font-size: 14px; -webkit-font-smoothing: antialiased; }
+      .container { display: flex; min-height: 100vh; }
+
+      /* ── Sidebar ── */
+      .sidebar {
+        width: 240px; background-color: #fff; border-right: 1px solid #e5e5e5;
+        display: flex; flex-direction: column; flex-shrink: 0;
+        height: 100vh; position: sticky; top: 0; overflow-y: auto;
+      }
+      .logo { padding: 20px 24px; font-size: 20px; font-weight: 600; flex-shrink: 0; }
+      .logo span:first-child { color: #333; }
+      .logo span:last-child { color: var(--green); }
+      .nav-section { padding: 12px 0; flex-shrink: 0; }
+      .nav-label { padding: 8px 24px; font-size: 11px; font-weight: 600; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.5px; }
+      .nav-item { display: flex; align-items: center; padding: 10px 24px; color: #4b5563; text-decoration: none; font-size: 14px; font-weight: 500; cursor: pointer; transition: background-color 0.2s; }
+      .nav-item:hover { background: #f9fafb; }
+      .nav-item.active { color: var(--green); border-right: 3px solid var(--green); background: var(--green-light); }
+      .nav-item svg { width: 18px; height: 18px; margin-right: 12px; opacity: 0.6; flex-shrink: 0; }
+      .nav-item.active svg { opacity: 1; }
+      .sidebar-spacer { flex: 1; }
+      .user-section { padding: 16px 24px; flex-shrink: 0; border-top: 1px solid #f3f4f6; }
+      .user-profile { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+      .user-avatar { width: 36px; height: 36px; border-radius: 50%; background-color: var(--green); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; }
+      .user-info h4 { font-size: 14px; font-weight: 600; color: #333; }
+      .user-info p { font-size: 12px; color: #9ca3af; }
+      .user-actions { display: flex; flex-direction: column; gap: 2px; }
+      .user-action { display: flex; align-items: center; padding: 7px 0; color: #6b7280; text-decoration: none; font-size: 13px; cursor: pointer; }
+      .user-action svg { width: 16px; height: 16px; margin-right: 10px; opacity: 0.6; flex-shrink: 0; }
+
+      /* ── Main ── */
+      .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+      .header { background-color: #fff; padding: 0 32px; height: 64px; border-bottom: 1px solid #e5e5e5; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+      .header h1 { font-size: 22px; font-weight: 600; color: #111827; }
+      .header-right { display: flex; align-items: center; gap: 20px; }
+      .notification-icon { width: 20px; height: 20px; cursor: pointer; color: #6b7280; }
+      .company-dropdown { display: flex; align-items: center; gap: 8px; padding: 8px 16px; background-color: #fff; border: 1px solid #e5e5e5; border-radius: 6px; cursor: pointer; color: #9ca3af; font-size: 14px; }
+
+      /* ── Content ── */
+      .content-area { padding: 24px 32px; flex: 1; background-color: #F4F6F5; overflow-y: auto; }
+      .controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; gap: 16px; }
+      .controls-left { display: flex; gap: 12px; flex: 1; align-items: center; }
+      .filter-btn, .action-btn { display: flex; align-items: center; gap: 8px; padding: 10px 16px; background-color: #fff; border: 1px solid #d1d5db; border-radius: 6px; cursor: pointer; font-size: 14px; color: #374151; font-family: inherit; white-space: nowrap; }
+      .filter-btn:hover, .action-btn:hover { background: #f9fafb; }
+      .search-box { display: flex; align-items: center; gap: 8px; padding: 10px 16px; background-color: #fff; border: 1px solid #d1d5db; border-radius: 6px; flex: 1; max-width: 300px; }
+      .search-box svg { flex-shrink: 0; color: #9ca3af; }
+      .search-box input { border: none; outline: none; flex: 1; font-size: 14px; color: #6b7280; font-family: inherit; background: transparent; }
+      .applied-filters { display: flex; gap: 8px; margin-bottom: 16px; align-items: center; flex-wrap: wrap; }
+      .filter-label { font-size: 13px; color: #4b5563; font-weight: 500; }
+      .filter-tag { display: flex; align-items: center; gap: 6px; padding: 6px 12px; background-color: #f3f4f6; border-radius: 4px; font-size: 13px; color: #374151; }
+      .filter-tag .close { cursor: pointer; opacity: 0.6; }
+      .clear-filter { color: #ef4444; font-size: 13px; cursor: pointer; font-weight: 500; }
+
+      /* ── Table ── */
+      .table-container { background-color: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+      table { width: 100%; border-collapse: collapse; }
+      thead { background-color: #dfe5e5; border-bottom: 1px solid #e5e5e5; }
+      th { padding: 12px 16px; text-align: left; font-size: 12px; font-weight: 700; color: #374151; text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap; }
+      td { padding: 14px 16px; border-bottom: 1px solid #f3f4f6; font-size: 14px; color: #1f2937; font-weight: 500; }
+      tbody tr { transition: background-color 0.15s; }
+      tbody tr:hover { background: #f9fafb; }
+      .checkbox { width: 16px; height: 16px; cursor: pointer; }
+
+      /* ── Action icons ── */
+      .action-icons { display: flex; align-items: center; gap: 10px; }
+      .action-icon { width: 18px; height: 18px; opacity: 0.45; cursor: pointer; transition: opacity 0.15s; flex-shrink: 0; }
+      .action-icon-delete:hover { opacity: 1; stroke: #ef4444; }
+
+      /* ── Status badges ── */
+      .status-badge { display: inline-flex; align-items: center; padding: 3px 9px; border-radius: 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; }
+      .badge-unpaid  { background: #fee2e2; color: #991b1b; }
+      .badge-paid    { background: #d1fae5; color: #065f46; }
+      .badge-partial { background: #fef3c7; color: #92400e; }
+
+      /* ── Empty state ── */
+      .empty-cell { padding: 56px 24px; text-align: center; }
+      .empty-cell svg { width: 52px; height: 52px; color: #d1d5db; margin-bottom: 14px; display: block; margin-left: auto; margin-right: auto; }
+      .empty-cell p { font-size: 14px; color: #9ca3af; line-height: 1.6; }
+      .empty-cell a { color: var(--green); text-decoration: underline; font-weight: 500; }
+
+      /* ── Pagination ── */
+      .pagination { display: flex; justify-content: flex-end; align-items: center; padding: 16px 24px; gap: 8px; }
+      .page-btn { padding: 8px 12px; border: 1px solid #d1d5db; background-color: #fff; border-radius: 4px; cursor: pointer; font-size: 14px; color: #374151; font-family: inherit; }
+      .page-btn.active { background-color: var(--green); color: #fff; border-color: var(--green); }
+      .page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+      .page-info { font-size: 13px; color: #4b5563; font-weight: 500; margin-left: 8px; }
+
+      /* ── Invoice number mono ── */
+      .mono { font-family: 'Courier New', monospace; font-size: 12px; color: #6b7280; }
+
+      /* ── Modals ── */
+      .modal-overlay {
+        display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45);
+        z-index: 1000; align-items: center; justify-content: center;
+      }
+      .modal-overlay.open { display: flex; }
+      .modal {
+        background: #fff; border-radius: 12px; width: 580px; max-width: 95vw;
+        max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+      }
+      .modal-header {
+        padding: 24px 28px 16px; border-bottom: 1px solid #f3f4f6;
+        display: flex; justify-content: space-between; align-items: flex-start; gap: 12px;
+      }
+      .modal-header h2 { font-size: 18px; font-weight: 600; color: #111827; }
+      .modal-header p { font-size: 13px; color: #9ca3af; margin-top: 2px; }
+      .modal-close {
+        width: 32px; height: 32px; border-radius: 6px; border: 1px solid #e5e5e5;
+        background: #fff; cursor: pointer; display: flex; align-items: center;
+        justify-content: center; font-size: 18px; color: #6b7280; flex-shrink: 0;
+        transition: background 0.15s; line-height: 1;
+      }
+      .modal-close:hover { background: #f9fafb; }
+      .modal-body { padding: 20px 28px 28px; }
+      .form-group-nv { margin-bottom: 14px; }
+      .form-group-nv label { display: block; font-size: 13px; font-weight: 500; color: #374151; margin-bottom: 5px; }
+      .form-group-nv input, .form-group-nv select {
+        width: 100%; padding: 9px 12px; border: 1px solid #d1d5db; border-radius: 6px;
+        font-size: 14px; color: #374151; font-family: inherit; background: #fff;
+        outline: none; transition: border-color 0.15s;
+      }
+      .form-group-nv input:focus, .form-group-nv select:focus { border-color: var(--green); }
+      .form-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
+      .cancel-btn {
+        padding: 9px 20px; border: 1px solid #d1d5db; border-radius: 6px;
+        background: #fff; color: #374151; font-size: 14px; font-family: inherit; cursor: pointer;
+      }
+      .cancel-btn:hover { background: #f9fafb; }
+      .save-btn {
+        padding: 9px 20px; border: none; border-radius: 6px;
+        background: var(--green); color: #fff; font-size: 14px; font-family: inherit;
+        cursor: pointer; font-weight: 500;
+      }
+      .save-btn:hover { background: var(--green-dark); }
+      .view-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px 28px; }
+      .view-field label { font-size: 11px; font-weight: 600; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.4px; display: block; margin-bottom: 3px; }
+      .view-field span { font-size: 14px; color: #111827; font-weight: 500; }
+      .view-separator { border: none; border-top: 1px solid #f3f4f6; margin: 18px 0; }
+    </style>
   </head>
   <body>
     <div class="container">
       <!-- Sidebar -->
       <aside class="sidebar">
         <div class="logo"><span>Xana</span><span>Health</span></div>
-
         <nav class="nav-section">
           <div class="nav-label">CONSULTATION</div>
-          <a href="#" class="nav-item">
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-            >
-              <rect x="3" y="3" width="7" height="7"></rect>
-              <rect x="14" y="3" width="7" height="7"></rect>
-              <rect x="14" y="14" width="7" height="7"></rect>
-              <rect x="3" y="14" width="7" height="7"></rect>
-            </svg>
+         <a href="#" class="nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
             Dashboard
           </a>
-
-          <a href="patient_list.html" class="nav-item active">
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-            >
-              <path
-                d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
-              ></path>
-              <polyline points="14 2 14 8 20 8"></polyline>
-              <line x1="16" y1="13" x2="8" y2="13"></line>
-              <line x1="16" y1="17" x2="8" y2="17"></line>
-              <polyline points="10 9 9 9 8 9"></polyline>
-            </svg>
-            Patients List
+          <a href="patient_list.html" class="nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          Patients List
           </a>
-          <a href="patient_visits.html" class="nav-item">
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-            >
-              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-              <circle cx="9" cy="7" r="4"></circle>
-              <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-            </svg>
+          <a href="patient_visits.html" class="nav-item active">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
             Patient Visits
           </a>
-          <a href="#" class="nav-item">
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-            >
-              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-              <line x1="16" y1="2" x2="16" y2="6"></line>
-              <line x1="8" y1="2" x2="8" y2="6"></line>
-              <line x1="3" y1="10" x2="21" y2="10"></line>
-            </svg>
+          <a href="inpatients.html" class="nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
             In-Patients
           </a>
           <a href="hmis_report.html" class="nav-item">
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-            >
-              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-              <line x1="16" y1="2" x2="16" y2="6"></line>
-              <line x1="8" y1="2" x2="8" y2="6"></line>
-              <line x1="3" y1="10" x2="21" y2="10"></line>
-            </svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
             HMIS Report
           </a>
           <a href="appointments.html" class="nav-item">
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-            >
-              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-              <line x1="16" y1="2" x2="16" y2="6"></line>
-              <line x1="8" y1="2" x2="8" y2="6"></line>
-              <line x1="3" y1="10" x2="21" y2="10"></line>
-            </svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/><line x1="12" y1="15" x2="12" y2="17"/></svg>
             Appointments
           </a>
         </nav>
-
+        <div class="sidebar-spacer"></div>
         <div class="user-section">
           <div class="user-profile">
-            <div class="user-avatar"></div>
-            <div class="user-info">
-              <h4>Jane Doe</h4>
-              <p>Receptionist</p>
-            </div>
+            <div class="user-avatar">JD</div>
+            <div class="user-info"><h4>Jane Doe</h4><p>Receptionist</p></div>
           </div>
           <div class="user-actions">
             <a href="#" class="user-action">
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-              >
-                <circle cx="12" cy="12" r="10"></circle>
-                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
-                <line x1="12" y1="17" x2="12.01" y2="17"></line>
-              </svg>
-              Help
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Help
             </a>
             <a href="#" class="user-action">
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-              >
-                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-                <polyline points="16 17 21 12 16 7"></polyline>
-                <line x1="21" y1="12" x2="9" y2="12"></line>
-              </svg>
-              Logout
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Logout
             </a>
           </div>
         </div>
       </aside>
 
       <!-- Main Content -->
-      
+      <main class="main-content">
+        <header class="header">
+          <h1>Patient Visits</h1>
+          <div class="header-right">
+            <svg class="notification-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+            </svg>
+            <div class="company-dropdown">
+              <span>Company Logo</span>
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M6 9L1 4h10z"/></svg>
+            </div>
+          </div>
+        </header>
+
+        <div class="content-area">
+          <div class="controls">
+            <div class="controls-left">
+              <button class="filter-btn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/>
+                  <line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/>
+                  <line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/>
+                  <line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/>
+                </svg>Filter by
+              </button>
+              <div class="search-box">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                <input type="text" id="searchInput" placeholder="Search visits…" oninput="filterTable()" />
+              </div>
+              <button class="action-btn">Action <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M6 9L1 4h10z"/></svg></button>
+            </div>
+          </div>
+
+          <div class="applied-filters">
+            <span class="filter-label">Applied Filter</span>
+           
+            <span class="clear-filter">Clear filter</span>
+          </div>
+
+          <div class="table-container">
+            <table id="visitsTable">
+              <thead>
+                <tr>
+                  <th><input type="checkbox" class="checkbox" /></th>
+                  <th>Date</th>
+                  <th>First Name</th>
+                  <th>Last Name</th>
+                  <th>Gender</th>
+                  <th>Age</th>
+                  <th>Treated By</th>
+                  <th>Department</th>
+                  <th>Insurance</th>
+                  <th>Invoice</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="visits-tbody">
+                <!-- populated by JS -->
+              </tbody>
+            </table>
+
+            <div class="pagination">
+              <button class="page-btn" disabled>Previous</button>
+              <button class="page-btn active">1</button>
+              <button class="page-btn" disabled>Next</button>
+              <span class="page-info" id="pageInfo">—</span>
+            </div>
+          </div>
+        </div>
+      </main>
     </div>
-  </body>
+
+    <script>
+      const VISITS_KEY = 'xana_visits';
+      let allVisits = [];
+
+      function calcAge(dob) {
+        if (!dob) return '—';
+        const parts = dob.split('/');
+        if (parts.length !== 3) return '—';
+        const birth = new Date(+parts[2], +parts[1] - 1, +parts[0]);
+        const now = new Date();
+        let age = now.getFullYear() - birth.getFullYear();
+        if (now < new Date(now.getFullYear(), birth.getMonth(), birth.getDate())) age--;
+        return isNaN(age) ? '—' : age;
+      }
+
+      function deleteVisit(idx) {
+        if (!confirm('Are you sure you want to delete this patient visit? This action cannot be undone.')) return;
+        allVisits.splice(idx, 1);
+        localStorage.setItem(VISITS_KEY, JSON.stringify(allVisits));
+        renderTable(allVisits);
+      }
+
+      let currentEditIdx = -1;
+
+      function openEdit(idx) {
+        currentEditIdx = idx;
+        const overlay = document.getElementById('consultationOverlay');
+        overlay.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+        // Trigger sparklines after overlay is visible
+        setTimeout(() => {
+          if (window.initConsultationSparklines) window.initConsultationSparklines();
+        }, 50);
+      }
+
+      function closeConsultationOverlay() {
+        document.getElementById('consultationOverlay').style.display = 'none';
+        document.body.style.overflow = '';
+      }
+
+      function saveEdit() {
+        if (currentEditIdx < 0) return;
+        const getVal = id => document.getElementById(id).value;
+        allVisits[currentEditIdx] = Object.assign({}, allVisits[currentEditIdx], {
+          department: getVal('edit-department'),
+          doctor: getVal('edit-doctor'),
+          insurance: getVal('edit-insurance'),
+          cardNumber: getVal('edit-cardNumber'),
+          percentage: getVal('edit-percentage'),
+          voucher: getVal('edit-voucher'),
+          affiliateName: getVal('edit-affiliateName'),
+          affiliateAffectation: getVal('edit-affiliateAffectation'),
+          caution: getVal('edit-caution'),
+        });
+        localStorage.setItem(VISITS_KEY, JSON.stringify(allVisits));
+        renderTable(allVisits);
+        closeModal('editModal');
+      }
+
+      // Key used to store treatment data per visit index
+      const TREATMENT_KEY = 'xana_treatments';
+      let treatmentData = {};
+
+      function loadTreatmentData() {
+        const stored = localStorage.getItem(TREATMENT_KEY);
+        treatmentData = stored ? JSON.parse(stored) : {};
+      }
+      loadTreatmentData();
+
+      function collectTreatmentFormData() {
+        const getVal = id => { const el = document.getElementById(id); return el ? el.value : ''; };
+        // Collect prescription rows from the c-rx-tbl
+        const rxRows = [];
+        document.querySelectorAll('#consultationOverlay .c-rx-tbl tbody tr').forEach((tr, i) => {
+          const cells = tr.querySelectorAll('td');
+          if (cells.length >= 3) {
+            rxRows.push({ num: cells[0].textContent.trim(), drug: cells[1].textContent.trim(), comment: cells[2].textContent.trim() });
+          }
+        });
+        // Collect final diagnosis rows
+        const dxRows = [];
+        document.querySelectorAll('#consultationOverlay .c-dx-row').forEach(row => {
+          const name = row.querySelector('.c-dx-name');
+          const code = row.querySelector('.c-dx-code span');
+          if (name) dxRows.push({ name: name.textContent.trim(), code: code ? code.textContent.trim() : '' });
+        });
+        // Collect HMIS rows
+        const hmisRows = [];
+        document.querySelectorAll('#consultationOverlay .c-hmis-row').forEach(row => {
+          const span = row.querySelector('span');
+          if (span) hmisRows.push(span.textContent.trim());
+        });
+
+        return {
+          height: getVal('cv-h'), weight: getVal('cv-w'), bmi: getVal('cv-bmi'),
+          systolic: getVal('cv-sys'), diastolic: getVal('cv-dia'), bp: getVal('cv-bp'),
+          temperature: '', rr: '', o2: '',
+          chiefComplaints: getVal('tf-chief-complaints'),
+          physicalExam: getVal('tf-physical-exam'),
+          diffDiagnosis: getVal('tf-diff-diagnosis'),
+          management: getVal('tf-management'),
+          prescription: rxRows,
+          finalDiagnosis: dxRows,
+          hmis: hmisRows,
+          savedAt: new Date().toLocaleString(),
+        };
+      }
+
+      function submitTreatmentForm() {
+        if (currentEditIdx < 0) return;
+        const data = collectTreatmentFormData();
+        treatmentData[currentEditIdx] = data;
+        localStorage.setItem(TREATMENT_KEY, JSON.stringify(treatmentData));
+        // Show confirmation
+        const btn = document.getElementById('tf-submit-btn');
+        const orig = btn.innerHTML;
+        btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Saved!';
+        btn.style.background = '#3d7360';
+        setTimeout(() => { btn.innerHTML = orig; btn.style.background = ''; }, 2000);
+      }
+
+      function openTreatmentPreview(idx) {
+        const v = allVisits[idx];
+        const td = treatmentData[idx] || {};
+
+        // Header
+        document.getElementById('tp-header-title').textContent =
+          (v.firstName || '') + ' ' + (v.lastName || '') + ' — Treatment Preview';
+
+        // Biodata
+        const biodataFields = [
+          ['Patient', (v.firstName || '') + ' ' + (v.lastName || '')],
+          ['Invoice #', v.invoiceNum || '—'],
+          ['Date of Visit', v.date || '—'],
+          ['Gender', v.gender || '—'],
+          ['Department', v.department || '—'],
+          ['Doctor', v.doctor || '—'],
+          ['Insurance', v.insurance || '—'],
+          ['Status', v.status || '—'],
+        ];
+        document.getElementById('tp-biodata-grid').innerHTML = biodataFields.map(([lbl, val]) =>
+          `<div class="tp-field"><label>${lbl}</label><input class="tp-fi" type="text" value="${val}" readonly style="background:#f0f0f0;cursor:default;"></div>`
+        ).join('');
+
+        // Vitals
+        const setV = (id, val) => { const el = document.getElementById(id); if (el) el.value = val || ''; };
+        setV('tp-height', td.height); setV('tp-weight', td.weight); setV('tp-bmi', td.bmi);
+        setV('tp-sys', td.systolic); setV('tp-dia', td.diastolic); setV('tp-bp', td.bp);
+        setV('tp-temp', td.temperature); setV('tp-rr', td.rr); setV('tp-o2', td.o2);
+
+        // Live BP calc in preview
+        ['tp-sys','tp-dia'].forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.oninput = () => {
+            const s = document.getElementById('tp-sys').value;
+            const d = document.getElementById('tp-dia').value;
+            document.getElementById('tp-bp').value = (s && d) ? `${s}/${d} mmHg` : '';
+          };
+        });
+        // Live BMI calc in preview
+        ['tp-height','tp-weight'].forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.oninput = () => {
+            const h = parseFloat(document.getElementById('tp-height').value);
+            const w = parseFloat(document.getElementById('tp-weight').value);
+            document.getElementById('tp-bmi').value = (h && w) ? (w / ((h/100)**2)).toFixed(1) : '';
+          };
+        });
+
+        // Text areas
+        const setTA = (id, val) => { const el = document.getElementById(id); if (el) el.value = val || ''; };
+        setTA('tp-chief-complaints', td.chiefComplaints);
+        setTA('tp-physical-exam', td.physicalExam);
+        setTA('tp-diff-diagnosis', td.diffDiagnosis);
+        setTA('tp-management', td.management);
+
+        // Final Diagnosis
+        const dxRows = td.finalDiagnosis || [{ name: 'Gastritis & Duodenitis', code: 'K29.2' }, { name: 'Viral Hepatitis', code: 'B&EA.' }];
+        document.getElementById('tp-final-diagnosis-body').innerHTML = dxRows.map(dx =>
+          `<div class="tp-dx-row"><span>${dx.name}</span><span class="tp-badge-tag">${dx.code}</span></div>`
+        ).join('') || '<p style="color:#9ca3af;font-size:13px;">No final diagnosis recorded.</p>';
+
+        // Prescription
+        const rxRows = td.prescription || [{ num: '1', drug: 'Nominees', comment: 'Amitriptyline (LAM 69) 104' }, { num: '2', drug: 'Augmentin', comment: 'Tab 625 tdfly BID 8/7' }];
+        document.getElementById('tp-prescription-tbody').innerHTML = rxRows.map(r =>
+          `<tr><td>${r.num}</td><td><input class="tp-fi" type="text" value="${r.drug}" style="min-width:120px;"></td><td><input class="tp-fi" type="text" value="${r.comment}" style="min-width:200px;"></td></tr>`
+        ).join('') || '<tr><td colspan="3" style="color:#9ca3af;font-size:13px;padding:10px 8px;">No prescription recorded.</td></tr>';
+
+        // HMIS
+        const hmisItems = td.hmis || ['Pneumonia'];
+        document.getElementById('tp-hmis-body').innerHTML = hmisItems.map(item =>
+          `<div style="display:flex;align-items:center;gap:8px;padding:7px 11px;background:#e8f5f0;border-radius:6px;margin-bottom:7px;font-size:12px;font-weight:500;color:#374151;">${item}</div>`
+        ).join('') || '<p style="color:#9ca3af;font-size:13px;">No HMIS items recorded.</p>';
+
+        // If no saved data, show a note
+        if (!treatmentData[idx]) {
+          const note = document.createElement('div');
+          note.style.cssText = 'padding:10px 16px;background:#fef3c7;border-radius:8px;font-size:13px;color:#92400e;margin-bottom:16px;';
+          note.textContent = 'No treatment data has been submitted yet for this visit. Open the treatment form, fill it in, and click "Submit Treatment Form".';
+          document.querySelector('#treatmentPreviewOverlay .tp-content').insertBefore(note, document.querySelector('#treatmentPreviewOverlay .tp-content').children[1]);
+        }
+
+        // Store which visit we're previewing
+        document.getElementById('treatmentPreviewOverlay')._previewIdx = idx;
+        document.getElementById('treatmentPreviewOverlay').style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+      }
+
+      function closeTreatmentPreview() {
+        document.getElementById('treatmentPreviewOverlay').style.display = 'none';
+        document.body.style.overflow = '';
+        // Remove any warning note that was added
+        const note = document.querySelector('#treatmentPreviewOverlay .tp-content > div[style*="fef3c7"]');
+        if (note) note.remove();
+      }
+
+      function saveTreatmentPreview() {
+        const overlay = document.getElementById('treatmentPreviewOverlay');
+        const idx = overlay._previewIdx;
+        if (idx === undefined) return;
+        const getV = id => { const el = document.getElementById(id); return el ? el.value : ''; };
+        // Collect prescription edits
+        const rxRows = [];
+        document.querySelectorAll('#tp-prescription-tbody tr').forEach((tr, i) => {
+          const inputs = tr.querySelectorAll('input');
+          if (inputs.length >= 2) {
+            rxRows.push({ num: i + 1, drug: inputs[0].value, comment: inputs[1].value });
+          }
+        });
+        const existing = treatmentData[idx] || {};
+        treatmentData[idx] = Object.assign({}, existing, {
+          height: getV('tp-height'), weight: getV('tp-weight'), bmi: getV('tp-bmi'),
+          systolic: getV('tp-sys'), diastolic: getV('tp-dia'), bp: getV('tp-bp'),
+          temperature: getV('tp-temp'), rr: getV('tp-rr'), o2: getV('tp-o2'),
+          chiefComplaints: getV('tp-chief-complaints'),
+          physicalExam: getV('tp-physical-exam'),
+          diffDiagnosis: getV('tp-diff-diagnosis'),
+          management: getV('tp-management'),
+          prescription: rxRows,
+          savedAt: new Date().toLocaleString(),
+        });
+        localStorage.setItem(TREATMENT_KEY, JSON.stringify(treatmentData));
+        // Feedback
+        const btns = document.querySelectorAll('#treatmentPreviewOverlay .tp-save-btn');
+        btns.forEach(btn => { const t = btn.textContent; btn.textContent = '✓ Saved!'; setTimeout(() => { btn.textContent = t; }, 2000); });
+      }
+
+      function printTreatmentPreview() {
+        window.print();
+      }
+
+      function openView(idx) {
+        openTreatmentPreview(idx);
+      }
+
+      function closeModal(id) {
+        document.getElementById(id).classList.remove('open');
+      }
+
+      // Close on overlay click
+      document.addEventListener('click', e => {
+        if (e.target.classList.contains('modal-overlay')) closeModal(e.target.id);
+      });
+
+      function renderRow(v, idx) {
+        return `
+          <tr>
+            <td><input type="checkbox" class="checkbox" onclick="event.stopPropagation()"/></td>
+            <td>${v.date || '—'}</td>
+            <td>${v.firstName || '—'}</td>
+            <td>${v.lastName || '—'}</td>
+            <td>${v.gender || '—'}</td>
+            <td>${calcAge(v.dob)}</td>
+            <td>${v.doctor || '—'}</td>
+            <td>${v.department || '—'}</td>
+            <td>${v.insurance || '—'}</td>
+            <td class="mono">${v.invoiceNum || '—'}</td>
+            <td><span class="status-badge badge-${v.status || 'unpaid'}">${v.status || 'Unpaid'}</span></td>
+            <td>
+              <div class="action-icons">
+                <svg class="action-icon" title="Edit" onclick="openEdit(${idx})" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                </svg>
+                <svg class="action-icon" title="View" onclick="openView(${idx})" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                </svg>
+                <svg class="action-icon action-icon-delete" title="Delete" onclick="deleteVisit(${idx})" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="3 6 5 6 21 6"/>
+                  <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                  <path d="M10 11v6"/><path d="M14 11v6"/>
+                  <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+                </svg>
+              </div>
+            </td>
+          </tr>`;
+      }
+
+      function renderTable(visits) {
+        const tbody = document.getElementById('visits-tbody');
+        if (!visits.length) {
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="12" style="padding:0">
+                <div class="empty-cell">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                  </svg>
+                  <p>No visits recorded yet.<br>Go to <a href="patient_list.html">Patients List</a> and click <strong>New Visit</strong> to create one.</p>
+                </div>
+              </td>
+            </tr>`;
+        } else {
+          tbody.innerHTML = visits.map((v, i) => renderRow(v, i)).join('');
+        }
+        document.getElementById('pageInfo').textContent =
+          visits.length + ' visit' + (visits.length !== 1 ? 's' : '');
+      }
+
+      function filterTable() {
+        const q = document.getElementById('searchInput').value.toLowerCase();
+        if (!q) { renderTable(allVisits); return; }
+        const filtered = allVisits.filter(v =>
+          [v.firstName, v.lastName, v.doctor, v.department, v.insurance, v.invoiceNum, v.date]
+            .some(f => f && f.toLowerCase().includes(q))
+        );
+        renderTable(filtered);
+      }
+
+      const SAMPLE_VISITS = [
+        { date: '22/05/2025', firstName: 'Imani', lastName: 'Adentuola', gender: 'Female', dob: '23/05/1993', doctor: 'Dr. Jacob Ryan', department: 'General Medicine', insurance: 'RSSB', invoiceNum: '000022/0025', status: 'paid', cardNumber: '00042600780', percentage: '65%', voucher: '', affiliateName: '', affiliateAffectation: '', caution: '' },
+        { date: '10/06/2025', firstName: 'Kwame', lastName: 'Mensah', gender: 'Male', dob: '14/03/1988', doctor: 'Dr. Amina Otieno', department: 'Cardiology', insurance: 'MMI', invoiceNum: '000023/0025', status: 'unpaid', cardNumber: '00051200340', percentage: '80%', voucher: '', affiliateName: '', affiliateAffectation: '', caution: '' },
+        { date: '15/06/2025', firstName: 'Aisha', lastName: 'Nkosi', gender: 'Female', dob: '07/11/1995', doctor: 'Dr. Chen Wei', department: 'Pediatrics', insurance: 'RADIANT', invoiceNum: '000024/0025', status: 'partial', cardNumber: '00063400210', percentage: '50%', voucher: '', affiliateName: '', affiliateAffectation: '', caution: '' },
+        { date: '20/06/2025', firstName: 'Chidi', lastName: 'Okafor', gender: 'Male', dob: '30/08/1975', doctor: 'Dr. Jacob Ryan', department: 'Orthopedics', insurance: 'Private', invoiceNum: '000025/0025', status: 'paid', cardNumber: '', percentage: '', voucher: '', affiliateName: '', affiliateAffectation: '', caution: '' },
+      ];
+
+      function init() {
+        const stored = localStorage.getItem(VISITS_KEY);
+        allVisits = stored ? JSON.parse(stored) : SAMPLE_VISITS;
+        if (!stored) localStorage.setItem(VISITS_KEY, JSON.stringify(SAMPLE_VISITS));
+        renderTable(allVisits);
+      }
+
+      init();
+    </script>
+
+    <!-- ── Full-Screen Consultation Overlay ── -->
+    <div id="consultationOverlay" style="display:none;position:fixed;inset:0;z-index:2000;background:#f5f5f5;flex-direction:row;overflow:hidden;">
+
+      <!-- Embedded combined.html styles -->
+      <style>
+        #consultationOverlay * { box-sizing: border-box; }
+        :root {
+          --c-green: #2e7d5e;
+          --c-green-light: #e8f5f0;
+          --c-green-mid: #4caf88;
+          --c-red-light: #fff0f0;
+          --c-red-border: #ffd5d5;
+          --c-gray-50: #f9fafb;
+          --c-gray-100: #f3f4f6;
+          --c-gray-200: #e5e7eb;
+          --c-gray-300: #d1d5db;
+          --c-gray-400: #9ca3af;
+          --c-gray-500: #6b7280;
+          --c-gray-600: #4b5563;
+          --c-gray-700: #374151;
+          --c-gray-800: #1f2937;
+          --c-radius: 10px;
+          --c-shadow: 0 1px 5px rgba(0,0,0,0.08);
+          --c-nav-h: 50px;
+        }
+        #consultationOverlay { font-family: 'DM Sans', 'Outfit', sans-serif; font-size: 13px; flex-direction: row; }
+        /* Overlay uses the sidebar from the parent page — no extra sidebar styles needed */
+
+        /* MAIN CONTENT wrapper inside overlay */
+        #consultationOverlay .main-content { display: flex; flex-direction: column; flex: 1; overflow: hidden; height: 100vh;}
+
+        /* SPLIT */
+        #c-split {
+          display: flex; width: 100%; flex: 1; overflow: hidden;
+        }
+
+        /* Content topbar (replaces combined.html nav) */
+        .c-content-topbar {
+          display: flex; align-items: center; padding: 10px 12px 10px;
+          background: #edf1ef; flex-shrink: 0;
+        }
+        .c-content-topbar-right {
+          justify-content: space-between; padding: 8px 12px;
+        }
+
+        /* PANELS */
+        .c-panel { height: 100%; overflow-y: auto; overflow-x: hidden; }
+        .c-panel::-webkit-scrollbar { width: 5px; }
+        .c-panel::-webkit-scrollbar-thumb { background: var(--c-gray-300); border-radius: 10px; }
+        .c-panel::-webkit-scrollbar-thumb:hover { background: var(--c-gray-400); }
+
+        #c-left-panel {
+          flex: 1; width: 250px; flex-shrink: 0;
+          background: #edf1ef; border-right: 1px solid var(--c-gray-200);
+          padding: 0 0 32px;
+        }
+        #c-right-panel { flex: 1; background: #edf1ef; padding: 10px 12px; overflow-y: auto; overflow-x: hidden; }
+        #c-right-panel-inner { padding:0; display: flex; flex-direction: column; gap:8px; width:100%; }
+        /* Override panel overflow since we set it on the panel already */
+        #c-right-panel.c-panel { overflow-y: auto; }
+
+        /* DRAG DIVIDER */
+        #c-divider {
+          width: 6px; background: var(--c-gray-200); cursor: col-resize;
+          flex-shrink: 0; position: relative; transition: background 0.2s; z-index: 10;
+        }
+        #c-divider:hover, #c-divider.active { background: var(--c-green-mid); }
+        #c-divider::after {
+          content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+          width: 2px; height: 36px; background: var(--c-gray-400); border-radius: 2px; opacity: 0.5;
+        }
+
+        /* BUTTONS */
+        .c-btn {
+          border: none; cursor: pointer; border-radius: 6px;
+          font-family: inherit; font-size: 12px; font-weight: 500;
+          padding: 6px 14px; transition: opacity 0.15s;
+          display: inline-flex; align-items: center; gap: 5px; white-space: nowrap;
+        }
+        .c-btn:hover { opacity: 0.85; }
+        .c-btn-green { background: var(--c-green); color: #fff; }
+        .c-btn-outline { background: transparent; border: 1px solid var(--c-gray-300); color: var(--c-gray-600); }
+        .c-btn-outline:hover { background: var(--c-gray-50); opacity: 1; }
+        .c-btn-cancel { background: transparent; border: 1px solid var(--c-gray-300); color: var(--c-gray-500); }
+        .c-btn-sm { padding: 4px 10px; font-size: 11px; }
+        .c-btn-group { display: flex; gap: 6px; }
+        .c-back-btn {
+          display: flex; align-items: center; gap: 5px;
+          background: none; border: 1px solid var(--c-gray-300); border-radius: 6px;
+          padding: 6px 12px; font-family: inherit; font-size: 12px;
+          color: var(--c-gray-600); cursor: pointer;
+        }
+        .c-back-btn:hover { background: var(--c-gray-50); }
+
+        /* CARDS */
+        .c-card { background: #fff; border-radius: var(--c-radius); box-shadow: var(--c-shadow); overflow: hidden; width: 100%; max-width: 580px; }
+        .c-card-header {
+          display: flex; justify-content: space-between; align-items: center;
+          padding: 8px 14px; border-bottom: 1px solid var(--c-gray-100);
+        }
+        .c-card-title { font-weight: 600; font-size: 14px; color: var(--c-gray-800); }
+        .c-card-body { padding: 10px 14px; }
+
+        /* LEFT PANEL */
+        .c-mh-header { margin: 0 12px; }
+        #c-left-panel .c-visit-block { margin: 1px 12px 0; }
+        #c-left-panel .c-fetch-btn { margin: 13px 12px 0; width: calc(100% - 24px); }
+
+        .c-mh-header {
+          background: #fff; border-radius: var(--c-radius) var(--c-radius) 0 0;
+          padding: 11px 13px; border-bottom: 1px solid var(--c-gray-200);
+          font-weight: 600; font-size: 18px; color: var(--c-gray-800); box-shadow: var(--c-shadow);
+        }
+        .c-visit-block { background: #fff; box-shadow: var(--c-shadow); overflow: hidden; margin-bottom: 1px; }
+        .c-visit-block.c-last { border-radius: 0 0 var(--c-radius) var(--c-radius); }
+        .c-visit-head {
+          display: flex; justify-content: space-between; align-items: center;
+          padding: 9px 13px; border-bottom: 1px solid var(--c-gray-100);
+        }
+        .c-visit-type-lbl { font-weight: 600; font-size: 12px; color: var(--c-gray-800); display: flex; align-items: center; gap: 6px; }
+        .c-badge { background: var(--c-green-light); color: var(--c-green); font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 10px; }
+        .c-visit-meta { font-size: 11px; color: var(--c-gray-500); padding: 4px 13px 0; font-weight: 500; }
+        .c-visit-actions { display: flex; gap: 6px; padding: 6px 13px 9px; align-items: center; }
+        .c-visit-date { font-size: 12px; color: var(--c-gray-600); font-weight: 500; }
+        .c-vital-row {
+          padding: 7px 13px; border-bottom: 1px solid var(--c-gray-100);
+          display: flex; align-items: center; justify-content: space-between;
+        }
+        .c-vital-lbl { font-size: 11px; color: var(--c-gray-500); font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 2px; }
+        .c-vital-val { font-size: 21px; font-weight: 700; color: var(--c-gray-800); line-height: 1; letter-spacing: -0.5px; }
+        .c-vital-unit { font-size: 11px; font-weight: 400; color: var(--c-gray-500); }
+        .c-vital-bp-sub { font-size: 9px; color: var(--c-gray-400); margin-bottom: 1px; }
+        .c-sparkline { width: 68px; height: 34px; }
+        .c-info-row-item { padding: 6px 13px; border-bottom: 1px solid var(--c-gray-100); }
+        .c-info-row-lbl { font-size: 11px; color: var(--c-gray-500); font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 2px; }
+        .c-info-row-val { font-size: 12px; color: var(--c-gray-700); line-height: 1.55; font-weight: 500; }
+        .c-info-row-val span { display: block; }
+        .c-posted-by { padding: 6px 13px 11px; font-size: 11.5px; color: var(--c-gray-500); font-style: italic; }
+        .c-fetch-btn {
+          background: var(--c-green); color: #fff; border: none; border-radius: 8px;
+          padding: 11px; font-family: inherit; font-size: 13px; font-weight: 600;
+          cursor: pointer; width: 100%; margin-top: 13px; transition: opacity 0.15s;
+        }
+        .c-fetch-btn:hover { opacity: 0.88; }
+
+        /* RIGHT PANEL */
+        .c-biodata-wrap { display: flex; gap: 12px; align-items: flex-start; padding: 8px 14px; }
+        .c-pt-photo {
+          width: 66px; height: 66px; border-radius: 8px; background: var(--c-green-light);
+          flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+        }
+        .c-pt-photo svg { width: 40px; height: 40px; color: var(--c-green); }
+       .c-pt-grid { flex: 1; display: grid; grid-template-columns: auto auto; column-gap: 28px; row-gap: 0; align-content: start; }
+        .c-pt-row { display: flex; align-items: baseline; gap: 6px; padding: 2px 0; white-space: nowrap; }
+        .c-pt-field { display: flex; flex-direction: column; }
+        .c-pt-lbl { color: var(--c-gray-500); font-size:11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; white-space: nowrap; }
+       .c-pt-val { color: var(--c-gray-800); font-weight: 600; font-size:13px; }
+        .c-biodata-btns { display: flex; gap: 8px; padding: 0 14px 10px; justify-content: flex-end;}
+        .c-fi {
+          width: 100%; border: 1px solid var(--c-gray-200); border-radius: 6px;
+          padding: 5px 8px; font-family: inherit; font-size: 13px;
+          color: var(--c-gray-800); background: var(--c-gray-50); outline: none; transition: border-color 0.15s;
+        }
+        .c-fi:focus { border-color: var(--c-green-mid); background: #fff; }
+        .c-fi::placeholder { color: var(--c-gray-400); }
+        textarea.c-fi { resize: vertical; min-height: 52px; }
+        .c-g3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin-bottom: 6px; }
+        .c-fg { display: flex; flex-direction: column; gap: 3px; }
+        .c-fl { font-size: 12px; color: var(--c-gray-700); font-weight: 600; }
+        .c-sel {
+          width: 100%; border: 1px solid var(--c-gray-200); border-radius: 6px;
+          padding: 6px 9px; font-family: inherit; font-size: 12px;
+          color: var(--c-gray-800); background: var(--c-gray-50); outline: none; cursor: pointer;
+        }
+        .c-sel:focus { border-color: var(--c-green-mid); }
+        .c-lab-row { display: grid; grid-template-columns: 1fr auto 28px; align-items: center; gap: 8px; margin-bottom: 5px; }
+        .c-lab-lbl { font-size: 12px; color: var(--c-gray-700); font-weight: 500; }
+        .c-fbc-head { font-size: 12px; font-weight: 600; color: var(--c-gray-700); margin-bottom: 9px; display: flex; align-items: center; gap: 6px; }
+        .c-fbc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
+        .c-fbc-cell {
+          background: var(--c-red-light); border: 1px solid var(--c-red-border); border-radius: 6px;
+          padding: 7px 9px; display: flex; flex-direction: column; gap: 1px;
+          transition: background 0.2s, border-color 0.2s;
+        }
+        .c-fbc-name { font-size: 11px; font-weight: 600; color: var(--c-gray-700); font-family: 'DM Mono', monospace; }
+        .c-fbc-ref { font-size: 9px; color: var(--c-gray-400); }
+        .c-fbc-cell input { border: none; background: transparent; font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 500; color: var(--c-gray-800); width: 100%; outline: none; padding: 0; }
+        .c-fbc-cell input::placeholder { color: var(--c-gray-300); }
+        .c-dx-row { display: flex; align-items: center; justify-content: space-between; padding: 4px 9px; background: var(--c-green-light); border-radius: 6px; margin-bottom: 5px; }
+        .c-dx-name { font-size: 12px; font-weight: 500; color: var(--c-gray-700); }
+        .c-dx-code { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--c-green); font-weight: 600; display: flex; align-items: center; gap: 7px; }
+        .c-del-btn { background: none; border: none; cursor: pointer; color: var(--c-gray-400); display: flex; align-items: center; font-size: 13px; padding: 2px; }
+        .c-del-btn:hover { color: #dc2626; }
+        .c-rx-tbl { width: 100%; border-collapse: collapse; font-size: 11.5px; margin-top: 10px; }
+        .c-rx-tbl th { text-align: left; font-size: 10.5px; font-weight: 600; color: var(--c-gray-600); padding: 5px 7px; border-bottom: 1px solid var(--c-gray-200); background: var(--c-gray-50); }
+        .c-rx-tbl td { padding: 5px 7px; border-bottom: 1px solid var(--c-gray-100); color: var(--c-gray-700); vertical-align: top; }
+        .c-act-icons { display: flex; gap: 5px; }
+        .c-ico-btn { background: none; border: none; cursor: pointer; color: var(--c-gray-400); display: flex; align-items: center; padding: 2px; border-radius: 4px; transition: color 0.1s, background 0.1s; }
+        .c-ico-btn:hover { color: var(--c-green); background: var(--c-green-light); }
+        .c-hmis-row { display: flex; align-items: center; justify-content: space-between; padding: 4px 9px; background: var(--c-green-light); border-radius: 6px; margin-bottom: 5px; font-size: 12px; font-weight: 500; color: var(--c-gray-700); }
+        .c-sep { height: 1px; background: var(--c-gray-100); margin: 6px 0; }
+        .c-b-pending { color: #d97706; background: #fef3c7; font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 20px; }
+        .c-b-negative { color: #059669; background: #d1fae5; font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 20px; }
+        .c-add-row { display: flex; gap: 8px; align-items: flex-end; margin-bottom: 5px; }
+        .c-add-row .c-fg { flex: 1; }
+        .c-page-note { font-size: 11px; color: var(--c-gray-400); text-align: center; padding-top: 4px; font-style: italic; }
+      </style>
+
+      <!-- SIDEBAR (reusing consultation.html sidebar styles) -->
+      <aside class="sidebar">
+        <div class="logo"><span>Xana</span><span>Health</span></div>
+        <nav class="nav-section">
+          <div class="nav-label">CONSULTATION</div>
+          <a href="#" class="nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+            Dashboard
+          </a>
+          <a href="patient_list.html" class="nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          Patients List
+          </a>
+          <a href="patient_visits.html" class="nav-item active">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            Patient Visits
+          </a>
+          <a href="inpatients.html" class="nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            In-Patients
+          </a>
+          <a href="hmis_report.html" class="nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+            HMIS Report
+          </a>
+          <a href="appointments.html" class="nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/><line x1="12" y1="15" x2="12" y2="17"/></svg>
+            Appointments
+          </a>
+        </nav>
+        <div class="sidebar-spacer"></div>
+        <div class="user-section">
+          <div class="user-profile">
+            <div class="user-avatar">JD</div>
+            <div class="user-info"><h4> Rn Jane Doe</h4><p>Nurse</p></div>
+          </div>
+          <div class="user-actions">
+            <a href="#" class="user-action">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Help
+            </a>
+            <a href="#" class="user-action">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Logout
+            </a>
+          </div>
+        </div>
+      </aside>
+
+      <!-- MAIN: header + content -->
+      <div class="main-content">
+        <!-- HEADER (same as consultation.html) -->
+        <header class="header">
+          <h1>Treatment Form</h1>
+          <div class="header-right">
+            <svg class="notification-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+            </svg>
+            <div class="company-dropdown">
+              <span>Company Logo</span>
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M6 9L1 4h10z"/></svg>
+            </div>
+          </div>
+        </header>
+
+        <!-- SPLIT PANELS -->
+        <div id="c-split">
+
+          <!-- LEFT: MEDICAL HISTORY -->
+          <div class="c-panel" id="c-left-panel">
+            <!-- Content area top bar for left panel -->
+            <div class="c-content-topbar">
+              <button class="c-back-btn" onclick="closeConsultationOverlay()">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+                Back to Visits
+              </button>
+            </div>
+            <div class="c-mh-header">Medical History</div>
+
+          <div class="c-visit-block">
+            <div class="c-visit-head">
+              <div class="c-visit-type-lbl">Internal Visits <span class="c-badge">01</span></div>
+              <div style="display:flex;gap:5px;align-items:center;">
+                <button class="c-btn c-btn-outline c-btn-sm">View</button>
+                <span style="font-size:10px;color:var(--c-gray-400);">▾</span>
+              </div>
+            </div>
+            <div class="c-visit-meta">22/05/2025 · 1 Visit</div>
+            <div class="c-visit-actions">
+              <span class="c-visit-date">22/05/2025 · 9:17am</span>
+              <div style="margin-left:auto;display:flex;gap:5px;">
+                <button class="c-btn c-btn-outline c-btn-sm">Open</button>
+                <button class="c-btn c-btn-outline c-btn-sm">Invoice</button>
+              </div>
+            </div>
+            <div class="c-vital-row">
+              <div><div class="c-vital-lbl">Temperature</div><div class="c-vital-val">36.7<span class="c-vital-unit">°</span></div></div>
+              <canvas class="c-sparkline" id="cs-t1"></canvas>
+            </div>
+            <div class="c-vital-row">
+              <div><div class="c-vital-lbl">Weight</div><div class="c-vital-val">60<span class="c-vital-unit">kg</span></div></div>
+              <canvas class="c-sparkline" id="cs-w1"></canvas>
+            </div>
+            <div class="c-vital-row">
+              <div><div class="c-vital-lbl">Height</div><div class="c-vital-val">180<span class="c-vital-unit">cm</span></div></div>
+              <canvas class="c-sparkline" id="cs-h1"></canvas>
+            </div>
+            <div class="c-vital-row">
+              <div>
+                <div class="c-vital-lbl">Blood Pressure</div>
+                <div class="c-vital-bp-sub">mmHg</div>
+                <div class="c-vital-val" style="font-size:18px;">120 / 78</div>
+              </div>
+              <canvas class="c-sparkline" id="cs-bp1"></canvas>
+            </div>
+            <div class="c-info-row-item"><div class="c-info-row-lbl">Chief Complaints</div><div class="c-info-row-val">Sample complaints</div></div>
+            <div class="c-info-row-item"><div class="c-info-row-lbl">Physical Exam</div><div class="c-info-row-val">Sample physical examination</div></div>
+            <div class="c-info-row-item"><div class="c-info-row-lbl">Laboratory</div><div class="c-info-row-val"><span>FCBs</span><span>INF (Malaria)</span><span>NFL / FBC</span></div></div>
+            <div class="c-info-row-item"><div class="c-info-row-lbl">Final Diagnosis</div><div class="c-info-row-val">Sample final diagnosis</div></div>
+            <div class="c-info-row-item">
+              <div class="c-info-row-lbl">Management</div>
+              <div class="c-info-row-val">
+                <span>R/ Ciproflx 100mg, Bilaya 7d</span>
+                <span>R/ Amoxapine 1mg bdayo 7d</span>
+                <span>Take meal for 2 days</span>
+              </div>
+            </div>
+            <div class="c-posted-by">Dr. Anaja Arosuji Nabors, HMRS</div>
+          </div>
+
+          <div class="c-visit-block c-last" style="margin-top:2px;">
+            <div class="c-visit-head">
+              <div class="c-visit-type-lbl">External Visits <span class="c-badge">01</span></div>
+              <div style="display:flex;gap:5px;align-items:center;">
+                <button class="c-btn c-btn-outline c-btn-sm">View</button>
+                <button class="c-btn c-btn-green c-btn-sm">Update</button>
+                <span style="font-size:10px;color:var(--c-gray-400);">▾</span>
+              </div>
+            </div>
+            <div class="c-visit-meta">22/06/2025 · 1 Visit</div>
+            <div class="c-visit-actions">
+              <span class="c-visit-date">22/06/2025 · 9:17am</span>
+            </div>
+            <div class="c-vital-row">
+              <div><div class="c-vital-lbl">Temperature</div><div class="c-vital-val">36.7<span class="c-vital-unit">°</span></div></div>
+              <canvas class="c-sparkline" id="cs-t2"></canvas>
+            </div>
+            <div class="c-vital-row">
+              <div><div class="c-vital-lbl">Weight</div><div class="c-vital-val">60<span class="c-vital-unit">kg</span></div></div>
+              <canvas class="c-sparkline" id="cs-w2"></canvas>
+            </div>
+            <div class="c-vital-row">
+              <div><div class="c-vital-lbl">Height</div><div class="c-vital-val">180<span class="c-vital-unit">cm</span></div></div>
+              <canvas class="c-sparkline" id="cs-h2"></canvas>
+            </div>
+            <div class="c-vital-row">
+              <div>
+                <div class="c-vital-bp-sub">mmHg</div>
+                <div class="c-vital-val" style="font-size:18px;">120 / 78</div>
+              </div>
+              <canvas class="c-sparkline" id="cs-bp2"></canvas>
+            </div>
+            <div class="c-info-row-item"><div class="c-info-row-lbl">Chief Complaints</div><div class="c-info-row-val">sample complaints</div></div>
+            <div class="c-info-row-item"><div class="c-info-row-lbl">Physical Exam</div><div class="c-info-row-val">sample physical examination</div></div>
+            <div class="c-info-row-item"><div class="c-info-row-lbl">Laboratory</div><div class="c-info-row-val"><span>FCBs</span><span>INF (Malaria)</span><span>NFL / FBC</span></div></div>
+            <div class="c-info-row-item"><div class="c-info-row-lbl">Final Diagnosis</div><div class="c-info-row-val">Sample final diagnosis</div></div>
+            <div class="c-info-row-item">
+              <div class="c-info-row-lbl">Management</div>
+              <div class="c-info-row-val">
+                <span>R/ Ciproflx 500mg, Bilayern 7d</span>
+                <span>R/ Paracetamol 500mg bdayo 7d</span>
+                <span>Take meal for 5 days</span>
+              </div>
+            </div>
+            <div class="c-posted-by">Dr. Anaja Arosuji Nabors, PTQS</div>
+            <div style="padding:0 13px 12px;">
+              <button class="c-btn c-btn-outline c-btn-sm" style="width:100%;justify-content:center;">Print</button>
+            </div>
+          </div>
+
+          <button class="c-fetch-btn">Fetch Patient History</button>
+        </div>
+
+        <!-- DRAG DIVIDER -->
+        <div id="c-divider"></div>
+
+        <!-- RIGHT: PATIENT FORM -->
+        <div class="c-panel" id="c-right-panel" >
+
+          <!-- Content area top bar for right panel -->
+          <div class="c-content-topbar c-content-topbar-right" style="padding:8px 16px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;width:100%;max-width:580px;">
+              <span style="font-size:13px;font-weight:600;color:#1f2937;">Patient File</span>
+              <div style="display:flex;gap:8px;">
+                <button class="c-btn c-btn-green">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+                  Print
+                </button>
+                <button class="c-btn c-btn-outline">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+                  Lock File
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Patient Biodata -->
+          <div id="c-right-panel-inner" style="margin-left:0;">
+          <div class="c-card" >
+            <div class="c-card-header"><span class="c-card-title">Patient Biodata</span></div>
+            <div class="c-biodata-wrap">
+              <div class="c-pt-photo">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <circle cx="12" cy="7" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/>
+                </svg>
+              </div>
+              <div class="c-pt-grid">
+                <div class="c-pt-row"><span class="c-pt-lbl">Patient</span><span class="c-pt-val">Imani Adentuola</span></div>
+                <div class="c-pt-row"><span class="c-pt-lbl">Invoice #</span><span class="c-pt-val">000022/0025</span></div>
+                <div class="c-pt-row"><span class="c-pt-lbl">Age</span><span class="c-pt-val">31 (23/05/1993)</span></div>
+                <div class="c-pt-row"><span class="c-pt-lbl">Nationality</span><span class="c-pt-val">RE66, 65%</span></div>
+                <div class="c-pt-row"><span class="c-pt-lbl">Gender</span><span class="c-pt-val">Female</span></div>
+                <div class="c-pt-row"><span class="c-pt-lbl">Department Date</span><span class="c-pt-val">10/04/2025</span></div>
+                <div class="c-pt-row"><span class="c-pt-lbl">Phone</span><span class="c-pt-val">+08000000000</span></div>
+                <div class="c-pt-row"><span class="c-pt-lbl">Card Number</span><span class="c-pt-val">00042600780</span></div>
+                <div class="c-pt-row"><span class="c-pt-lbl">File Number</span><span class="c-pt-val">0611</span></div>
+                <div class="c-pt-row"><span class="c-pt-lbl">Department</span><span class="c-pt-val">General Consultation</span></div>
+              </div>
+            </div>
+            <div class="c-biodata-btns">
+              <button class="c-btn c-btn-green" onclick="openHospitalAdmissionForm()">Admit into hospital</button>
+              <button class="c-btn c-btn-green" onclick="openUltrasoundForm()">Add ultrasound</button>
+              <button class="c-btn c-btn-green" onclick="openConsultInvoice()" style="display:inline-flex;align-items:center;gap:5px;">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+                Invoice
+              </button>
+            </div>
+          </div>
+
+          <!-- Vital Signs -->
+          <div class="c-card" >
+            <div class="c-card-header">
+              <span class="c-card-title">Vital Signs</span>
+              <div class="c-btn-group">
+                <button class="c-btn c-btn-cancel c-btn-sm">Cancel</button>
+                <button class="c-btn c-btn-green c-btn-sm">Save</button>
+              </div>
+            </div>
+            <div class="c-card-body">
+              <div class="c-g3">
+                <div class="c-fg"><label class="c-fl">Height (cm)</label><input class="c-fi" type="number" id="cv-h"></div>
+                <div class="c-fg"><label class="c-fl">Weight (kg)</label><input class="c-fi" type="number" id="cv-w"></div>
+                <div class="c-fg"><label class="c-fl">BMI</label><input class="c-fi" type="number" id="cv-bmi" readonly></div>
+              </div>
+              <div class="c-g3">
+                <div class="c-fg"><label class="c-fl">Systolic</label><input class="c-fi" type="number" id="cv-sys"></div>
+                <div class="c-fg"><label class="c-fl">Diastolic</label><input class="c-fi" type="number" id="cv-dia"></div>
+                <div class="c-fg"><label class="c-fl">Blood Pressure</label><input class="c-fi" type="text" id="cv-bp" readonly></div>
+              </div>
+              <div class="c-g3">
+                <div class="c-fg"><label class="c-fl">Temperature (°C)</label><input class="c-fi" type="number"></div>
+                <div class="c-fg"><label class="c-fl">Respiratory Rate</label><input class="c-fi" type="number"></div>
+                <div class="c-fg"><label class="c-fl">O₂ Saturation</label><input class="c-fi" type="number"></div>
+              </div>
+              <button class="c-btn c-btn-outline c-btn-sm">+ Add New Vital Signs</button>
+            </div>
+          </div>
+
+          <!-- Chief Complaints -->
+          <div class="c-card">
+            <div class="c-card-header"><span class="c-card-title">Chief Complaints</span><button class="c-btn c-btn-green c-btn-sm">Save</button></div>
+            <div class="c-card-body"><textarea class="c-fi" id="tf-chief-complaints" placeholder="Type here"></textarea></div>
+          </div>
+
+          <!-- Physical Exam -->
+          <div class="c-card">
+            <div class="c-card-header"><span class="c-card-title">Physical Exam</span><button class="c-btn c-btn-green c-btn-sm">Save</button></div>
+            <div class="c-card-body"><textarea class="c-fi" id="tf-physical-exam" placeholder="Type here"></textarea></div>
+          </div>
+
+          <!-- Differential Diagnosis -->
+          <div class="c-card">
+            <div class="c-card-header"><span class="c-card-title">Differential Diagnosis</span><button class="c-btn c-btn-green c-btn-sm">Save</button></div>
+            <div class="c-card-body"><textarea class="c-fi" id="tf-diff-diagnosis" placeholder="Type here"></textarea></div>
+          </div>
+
+          <!-- Laboratory Test -->
+          <div class="c-card">
+            <div class="c-card-header"><span class="c-card-title">Laboratory Test</span><button class="c-btn c-btn-outline c-btn-sm">Print</button></div>
+            <div class="c-card-body">
+              <div class="c-lab-row">
+                <div class="c-lab-lbl">Malaria (T/DR)</div>
+                <span class="c-b-pending">Pending</span>
+                <button class="c-del-btn">🗑</button>
+              </div>
+              <div class="c-lab-row">
+                <div class="c-lab-lbl">Pregnancy</div>
+                <span class="c-b-negative">Negative</span>
+                <button class="c-del-btn">🗑</button>
+              </div>
+              <div class="c-sep"></div>
+              <div class="c-fbc-head">NFL/FBC <button class="c-del-btn" onclick="removeFbcSection()">🗑</button></div>
+              <!-- FBC Add Controls -->
+              <div style="display:flex;gap:8px;margin-bottom:10px;align-items:center;">
+                <select class="c-sel" id="fbc-test-select" style="flex:1">
+                  <option value="">Select FBC test to add...</option>
+                  <option value="WBC" data-ref-low="4.5" data-ref-high="11.0" data-unit="K/µL">WBC (4.5–11.0 K/µL)</option>
+                  <option value="LYMPH%" data-ref-low="20.0" data-ref-high="40.0" data-unit="%">LYMPH% (20.0–40.0 %)</option>
+                  <option value="NEUT%" data-ref-low="40.0" data-ref-high="70.0" data-unit="%">NEUT% (40.0–70.0 %)</option>
+                  <option value="GRAN%" data-ref-low="40.0" data-ref-high="70.0" data-unit="%">GRAN% (40.0–70.0 %)</option>
+                  <option value="LYM" data-ref-low="1.0" data-ref-high="4.8" data-unit="K/µL">LYM (1.0–4.8 K/µL)</option>
+                  <option value="MID" data-ref-low="0.0" data-ref-high="1.8" data-unit="K/µL">MID (0.0–1.8 K/µL)</option>
+                  <option value="GRAN" data-ref-low="1.8" data-ref-high="7.5" data-unit="K/µL">GRAN (1.8–7.5 K/µL)</option>
+                  <option value="RBC" data-ref-low="4.0" data-ref-high="6.0" data-unit="M/µL">RBC (4.0–6.0 M/µL)</option>
+                  <option value="HGB" data-ref-low="12.0" data-ref-high="18.0" data-unit="g/dL">HGB (12.0–18.0 g/dL)</option>
+                  <option value="HCT" data-ref-low="37.0" data-ref-high="54.0" data-unit="%">HCT (37.0–54.0 %)</option>
+                  <option value="MCV" data-ref-low="80.0" data-ref-high="96.0" data-unit="fL">MCV (80.0–96.0 fL)</option>
+                  <option value="MCH" data-ref-low="27.0" data-ref-high="33.0" data-unit="pg">MCH (27.0–33.0 pg)</option>
+                  <option value="MCHC" data-ref-low="33.0" data-ref-high="36.0" data-unit="g/dL">MCHC (33.0–36.0 g/dL)</option>
+                  <option value="RDW_CV" data-ref-low="11.0" data-ref-high="16.0" data-unit="%">RDW_CV (11.0–16.0 %)</option>
+                  <option value="RDW_SD" data-ref-low="37.0" data-ref-high="54.0" data-unit="fL">RDW_SD (37.0–54.0 fL)</option>
+                  <option value="PLT" data-ref-low="150" data-ref-high="400" data-unit="K/µL">PLT (150–400 K/µL)</option>
+                  <option value="MPV" data-ref-low="7.5" data-ref-high="12.5" data-unit="fL">MPV (7.5–12.5 fL)</option>
+                  <option value="PDW" data-ref-low="10.0" data-ref-high="20.0" data-unit="">PDW (10.0–20.0)</option>
+                  <option value="PCT" data-ref-low="0.01" data-ref-high="0.5" data-unit="%">PCT (0.01–0.5 %)</option>
+                  <option value="P_LCR" data-ref-low="15.0" data-ref-high="25.0" data-unit="%">P_LCR (15.0–25.0 %)</option>
+                  <option value="P_LCC" data-ref-low="0.01" data-ref-high="0.5" data-unit="K/µL">P_LCC (0.01–0.5 K/µL)</option>
+                </select>
+                <button class="c-btn c-btn-green" onclick="addFbcTest()">Add</button>
+              </div>
+              <div class="c-fbc-grid" id="fbc-active-grid">
+                <!-- added tests appear here -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Final Diagnosis -->
+          <div class="c-card">
+            <div class="c-card-header"><span class="c-card-title">Final Diagnosis</span></div>
+            <div class="c-card-body">
+              <div class="c-dx-row">
+                <span class="c-dx-name">Gastritis &amp; Duodenitis</span>
+                <div class="c-dx-code"><span>K29.2</span><button class="c-del-btn">🗑</button></div>
+              </div>
+              <div class="c-dx-row">
+                <span class="c-dx-name">Viral Hepatitis</span>
+                <div class="c-dx-code"><span>B&amp;EA.</span><button class="c-del-btn">🗑</button></div>
+              </div>
+              <div style="display:flex;gap:8px;margin-top:10px;align-items:center;">
+                <select class="c-sel" style="flex:1"><option value="">Select...</option></select>
+                <input class="c-fi" type="text" placeholder="Type comment here" style="flex:2">
+                <button class="c-btn c-btn-green">Add</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Management -->
+          <div class="c-card">
+            <div class="c-card-header"><span class="c-card-title">Management</span><button class="c-btn c-btn-green c-btn-sm">Save</button></div>
+            <div class="c-card-body"><textarea class="c-fi" id="tf-management" placeholder="Type here"></textarea></div>
+          </div>
+
+          <!-- Prescription -->
+          <div class="c-card">
+            <div class="c-card-header">
+              <span class="c-card-title">Prescription</span>
+              <div class="c-btn-group">
+                <button class="c-btn c-btn-green c-btn-sm">Send</button>
+                <button class="c-btn c-btn-outline c-btn-sm">Print</button>
+              </div>
+            </div>
+            <div class="c-card-body">
+              <div class="c-add-row"><div class="c-fg"><label class="c-fl">Drug Name</label><input class="c-fi" type="text" placeholder="Type here"></div></div>
+              <div class="c-add-row"><div class="c-fg"><label class="c-fl">Comment</label><input class="c-fi" type="text" placeholder="Type here"></div></div>
+              <div style="display:flex;justify-content:flex-end;margin-bottom:10px;">
+                <button class="c-btn c-btn-green c-btn-sm">Add</button>
+              </div>
+              <table class="c-rx-tbl">
+                <thead><tr><th>#</th><th>Drug Name</th><th>Comment</th><th>Actions</th></tr></thead>
+                <tbody>
+                  <tr>
+                    <td>1</td><td>Nominees</td><td>Amitriptyline (LAM 69) 104</td>
+                    <td><div class="c-act-icons">
+                      <button class="c-ico-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg></button>
+                      <button class="c-ico-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+                    </div></td>
+                  </tr>
+                  <tr>
+                    <td>2</td><td>Augmentin</td><td>Tab 625 tdfly BID 8/7</td>
+                    <td><div class="c-act-icons">
+                      <button class="c-ico-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg></button>
+                      <button class="c-ico-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+                    </div></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- HMIS Reporting -->
+          <div class="c-card">
+            <div class="c-card-header">
+              <span class="c-card-title">HMIS Reporting</span>
+              <div class="c-btn-group">
+                <button class="c-btn c-btn-green c-btn-sm">Send to PHM</button>
+                <button class="c-btn c-btn-outline c-btn-sm">Print</button>
+              </div>
+            </div>
+            <div class="c-card-body">
+              <div class="c-hmis-row"><span>Pneumonia</span><button class="c-del-btn">🗑</button></div>
+              <div style="display:flex;gap:8px;margin-top:9px;">
+                <select class="c-sel" style="flex:1"><option value="">Select...</option></select>
+                <button class="c-btn c-btn-green">Add</button>
+              </div>
+            </div>
+          </div>
+
+          <p class="c-page-note">Pneumonia</p>
+
+          <!-- Submit Treatment Form Button -->
+          <div style="display:flex;justify-content:flex-end;padding:8px 0 4px;">
+            <button id="tf-submit-btn" onclick="submitTreatmentForm()" style="padding:11px 32px;background:var(--c-green);color:#fff;border:none;border-radius:8px;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:8px;transition:opacity 0.15s;">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              Submit Treatment Form
+            </button>
+          </div>
+
+          </div><!-- /right-panel-inner -->
+        </div><!-- /right panel -->
+      </div><!-- /split -->
+      </div><!-- /main-content -->
+
+      <script>
+        /* ─── SPARKLINES for consultation overlay ─── */
+        window.initConsultationSparklines = function() {
+          function cSpark(id, data, color) {
+            const c = document.getElementById(id);
+            if (!c) return;
+            const dpr = window.devicePixelRatio || 1;
+            const cw = c.offsetWidth || 68, ch = c.offsetHeight || 34;
+            c.width = cw * dpr; c.height = ch * dpr;
+            const ctx = c.getContext('2d');
+            ctx.scale(dpr, dpr);
+            const mn = Math.min(...data), mx = Math.max(...data), rng = mx - mn || 1, p = 4;
+            ctx.beginPath();
+            ctx.lineWidth = 1.8; ctx.strokeStyle = color; ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+            data.forEach((v, i) => {
+              const x = p + (i / (data.length - 1)) * (cw - p * 2);
+              const y = ch - p - ((v - mn) / rng) * (ch - p * 2);
+              i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+            });
+            ctx.stroke();
+            const lx = p + (cw - p * 2);
+            const g = ctx.createLinearGradient(0, 0, 0, ch);
+            g.addColorStop(0, color + '55'); g.addColorStop(1, 'transparent');
+            ctx.lineTo(lx, ch); ctx.lineTo(p, ch); ctx.closePath(); ctx.fillStyle = g; ctx.fill();
+          }
+          function mkD(b, n, v) { return Array.from({length:n}, (_, i) => b + Math.sin(i * 1.4) * v + (Math.random() - .5) * v * .3); }
+          const G = '#2e7d5e';
+          ['1','2'].forEach(s => {
+            cSpark('cs-t'+s, mkD(36.7, 9, .35), G);
+            cSpark('cs-w'+s, mkD(60, 9, 1.8), G);
+            cSpark('cs-h'+s, mkD(180, 9, .6), G);
+            cSpark('cs-bp'+s, mkD(120, 9, 5), G);
+          });
+        };
+
+        /* ─── BMI CALC ─── */
+        ['cv-h','cv-w'].forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.addEventListener('input', () => {
+            const h = parseFloat(document.getElementById('cv-h').value);
+            const w = parseFloat(document.getElementById('cv-w').value);
+            document.getElementById('cv-bmi').value = (h && w) ? (w / ((h / 100) ** 2)).toFixed(1) : '';
+          });
+        });
+
+        /* ─── BP CALC ─── */
+        ['cv-sys','cv-dia'].forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.addEventListener('input', () => {
+            const s = document.getElementById('cv-sys').value;
+            const d = document.getElementById('cv-dia').value;
+            document.getElementById('cv-bp').value = (s && d) ? `${s}/${d} mmHg` : '';
+          });
+        });
+
+        /* ─── RESIZABLE DIVIDER ─── */
+        const cDivider = document.getElementById('c-divider');
+        const cLeftPanel = document.getElementById('c-left-panel');
+        const cContainer = document.getElementById('c-split');
+        let cDragging = false, cStartX = 0, cStartW = 0;
+
+        cDivider.addEventListener('mousedown', e => {
+          cDragging = true; cStartX = e.clientX; cStartW = cLeftPanel.offsetWidth;
+          cDivider.classList.add('active');
+          document.body.style.cursor = 'col-resize'; document.body.style.userSelect = 'none';
+          e.preventDefault();
+        });
+        window.addEventListener('mousemove', e => {
+          if (!cDragging) return;
+          const dx = e.clientX - cStartX;
+          const newW = Math.min(Math.max(cStartW + dx, 240), cContainer.offsetWidth - 300);
+          cLeftPanel.style.width = newW + 'px';
+        });
+        window.addEventListener('mouseup', () => {
+          if (!cDragging) return;
+          cDragging = false; cDivider.classList.remove('active');
+          document.body.style.cursor = ''; document.body.style.userSelect = '';
+        });
+      </script>
+    </div>
+
+    <!-- ── Treatment Preview Overlay ── -->
+    <div id="treatmentPreviewOverlay" style="display:none;position:fixed;inset:0;z-index:4000;background:#f5f5f5;flex-direction:row;overflow:hidden;">
+      <style>
+        #treatmentPreviewOverlay .tp-sidebar { width:240px;background:#fff;border-right:1px solid #e5e5e5;display:flex;flex-direction:column;flex-shrink:0;height:100vh; }
+        #treatmentPreviewOverlay .tp-main { flex:1;display:flex;flex-direction:column;overflow:hidden;height:100vh; }
+        #treatmentPreviewOverlay .tp-header { background:#fff;padding:0 32px;height:64px;border-bottom:1px solid #e5e5e5;display:flex;justify-content:space-between;align-items:center;flex-shrink:0; }
+        #treatmentPreviewOverlay .tp-header h1 { font-size:22px;font-weight:600;color:#111827; }
+        #treatmentPreviewOverlay .tp-content { padding:24px 32px;flex:1;overflow-y:auto;background:#f4f6f5; }
+        #treatmentPreviewOverlay .tp-card { background:#fff;border-radius:10px;box-shadow:0 1px 4px rgba(0,0,0,0.08);overflow:hidden;margin-bottom:16px; }
+        #treatmentPreviewOverlay .tp-card-header { background:#e8eded;padding:12px 18px;font-size:14px;font-weight:600;color:#1f2937;display:flex;justify-content:space-between;align-items:center; }
+        #treatmentPreviewOverlay .tp-card-body { padding:16px 18px; }
+        #treatmentPreviewOverlay .tp-field { margin-bottom:14px; }
+        #treatmentPreviewOverlay .tp-field label { display:block;font-size:11px;font-weight:600;color:#9ca3af;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:5px; }
+        #treatmentPreviewOverlay .tp-fi { width:100%;border:1px solid #d1d5db;border-radius:6px;padding:9px 12px;font-family:'Outfit',sans-serif;font-size:13px;color:#1f2937;background:#f9fafb;outline:none;transition:border-color 0.15s; }
+        #treatmentPreviewOverlay .tp-fi:focus { border-color:#4a8f75;background:#fff; }
+        #treatmentPreviewOverlay textarea.tp-fi { resize:vertical;min-height:80px; }
+        #treatmentPreviewOverlay .tp-biodata-grid { display:grid;grid-template-columns:1fr 1fr;gap:8px 24px; }
+        #treatmentPreviewOverlay .tp-vitals-grid { display:grid;grid-template-columns:repeat(3,1fr);gap:10px; }
+        #treatmentPreviewOverlay .tp-rx-tbl { width:100%;border-collapse:collapse;font-size:12px; }
+        #treatmentPreviewOverlay .tp-rx-tbl th { text-align:left;font-size:11px;font-weight:600;color:#6b7280;padding:6px 8px;border-bottom:1px solid #e5e5e5;background:#f9fafb; }
+        #treatmentPreviewOverlay .tp-rx-tbl td { padding:8px 8px;border-bottom:1px solid #f3f4f6;color:#374151; }
+        #treatmentPreviewOverlay .tp-dx-row { display:flex;align-items:center;justify-content:space-between;padding:7px 11px;background:#e8f5f0;border-radius:6px;margin-bottom:7px;font-size:12px; }
+        #treatmentPreviewOverlay .tp-badge-tag { background:#e8f5f0;color:#2e7d5e;font-size:11px;font-weight:600;padding:2px 9px;border-radius:20px; }
+        #treatmentPreviewOverlay .tp-save-btn { padding:10px 28px;background:#4a8f75;color:#fff;border:none;border-radius:8px;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;transition:opacity 0.15s; }
+        #treatmentPreviewOverlay .tp-save-btn:hover { opacity:0.88; }
+        #treatmentPreviewOverlay .tp-back-btn { display:inline-flex;align-items:center;gap:6px;padding:8px 16px;background:#fff;border:1px solid #d1d5db;border-radius:8px;font-family:inherit;font-size:13px;color:#4a8f75;cursor:pointer;font-weight:500; }
+        #treatmentPreviewOverlay .tp-back-btn:hover { background:#f9fafb; }
+      </style>
+
+      <!-- sidebar -->
+      <aside class="tp-sidebar sidebar">
+        <div class="logo"><span>Xana</span><span>Health</span></div>
+        <nav class="nav-section">
+          <div class="nav-label">CONSULTATION</div>
+          <a href="patient_visits.html" class="nav-item active">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            Patient Visits
+          </a>
+        </nav>
+        <div class="sidebar-spacer"></div>
+        <div class="user-section">
+          <div class="user-profile"><div class="user-avatar">JD</div><div class="user-info"><h4>Jane Doe</h4><p>Receptionist</p></div></div>
+        </div>
+      </aside>
+
+      <!-- main -->
+      <div class="tp-main">
+        <header class="tp-header">
+          <h1 id="tp-header-title">Treatment Preview</h1>
+          <div class="header-right">
+            <svg class="notification-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            <div class="company-dropdown"><span>Company Logo</span><svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M6 9L1 4h10z"/></svg></div>
+          </div>
+        </header>
+        <div class="tp-content">
+          <!-- back + actions row -->
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+            <button class="tp-back-btn" onclick="closeTreatmentPreview()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+              Back to Visits
+            </button>
+            <div style="display:flex;gap:10px;">
+              <button onclick="printTreatmentPreview()" style="display:inline-flex;align-items:center;gap:6px;padding:9px 18px;background:#fff;border:1px solid #d1d5db;border-radius:8px;font-family:inherit;font-size:13px;color:#374151;cursor:pointer;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+                Print
+              </button>
+              <button class="tp-save-btn" onclick="saveTreatmentPreview()">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="display:inline;vertical-align:middle;margin-right:4px;"><polyline points="20 6 9 17 4 12"/></svg>
+                Save Changes
+              </button>
+            </div>
+          </div>
+
+          <!-- Patient Biodata card -->
+          <div class="tp-card">
+            <div class="tp-card-header">Patient Biodata</div>
+            <div class="tp-card-body">
+              <div class="tp-biodata-grid" id="tp-biodata-grid">
+                <!-- filled by JS -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Vital Signs card -->
+          <div class="tp-card">
+            <div class="tp-card-header">Vital Signs</div>
+            <div class="tp-card-body">
+              <div class="tp-vitals-grid">
+                <div class="tp-field"><label>Height (cm)</label><input class="tp-fi" type="number" id="tp-height"></div>
+                <div class="tp-field"><label>Weight (kg)</label><input class="tp-fi" type="number" id="tp-weight"></div>
+                <div class="tp-field"><label>BMI</label><input class="tp-fi" type="number" id="tp-bmi" readonly></div>
+                <div class="tp-field"><label>Systolic</label><input class="tp-fi" type="number" id="tp-sys"></div>
+                <div class="tp-field"><label>Diastolic</label><input class="tp-fi" type="number" id="tp-dia"></div>
+                <div class="tp-field"><label>Blood Pressure</label><input class="tp-fi" type="text" id="tp-bp" readonly></div>
+                <div class="tp-field"><label>Temperature (°C)</label><input class="tp-fi" type="number" id="tp-temp"></div>
+                <div class="tp-field"><label>Respiratory Rate</label><input class="tp-fi" type="number" id="tp-rr"></div>
+                <div class="tp-field"><label>O₂ Saturation</label><input class="tp-fi" type="number" id="tp-o2"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Chief Complaints -->
+          <div class="tp-card">
+            <div class="tp-card-header">Chief Complaints</div>
+            <div class="tp-card-body">
+              <textarea class="tp-fi" id="tp-chief-complaints" placeholder="—"></textarea>
+            </div>
+          </div>
+
+          <!-- Physical Exam -->
+          <div class="tp-card">
+            <div class="tp-card-header">Physical Exam</div>
+            <div class="tp-card-body">
+              <textarea class="tp-fi" id="tp-physical-exam" placeholder="—"></textarea>
+            </div>
+          </div>
+
+          <!-- Differential Diagnosis -->
+          <div class="tp-card">
+            <div class="tp-card-header">Differential Diagnosis</div>
+            <div class="tp-card-body">
+              <textarea class="tp-fi" id="tp-diff-diagnosis" placeholder="—"></textarea>
+            </div>
+          </div>
+
+          <!-- Final Diagnosis -->
+          <div class="tp-card">
+            <div class="tp-card-header">Final Diagnosis</div>
+            <div class="tp-card-body" id="tp-final-diagnosis-body">
+              <!-- filled by JS -->
+            </div>
+          </div>
+
+          <!-- Management -->
+          <div class="tp-card">
+            <div class="tp-card-header">Management</div>
+            <div class="tp-card-body">
+              <textarea class="tp-fi" id="tp-management" placeholder="—"></textarea>
+            </div>
+          </div>
+
+          <!-- Prescription -->
+          <div class="tp-card">
+            <div class="tp-card-header">Prescription</div>
+            <div class="tp-card-body">
+              <table class="tp-rx-tbl" id="tp-prescription-tbl">
+                <thead><tr><th>#</th><th>Drug Name</th><th>Comment</th></tr></thead>
+                <tbody id="tp-prescription-tbody">
+                  <!-- filled by JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- HMIS -->
+          <div class="tp-card">
+            <div class="tp-card-header">HMIS Reporting</div>
+            <div class="tp-card-body" id="tp-hmis-body">
+              <!-- filled by JS -->
+            </div>
+          </div>
+
+          <div style="display:flex;justify-content:flex-end;gap:10px;padding-bottom:16px;">
+            <button class="tp-save-btn" onclick="saveTreatmentPreview()">
+              Save Changes
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── View Modal ── -->
+    <div class="modal-overlay" id="viewModal">
+      <div class="modal">
+        <div class="modal-header">
+          <div><h2 id="view-title">Patient Visit</h2><p id="view-subtitle">Visit details</p></div>
+          <button class="modal-close" onclick="closeModal('viewModal')">&#x2715;</button>
+        </div>
+        <div class="modal-body">
+          <div class="view-grid" id="view-grid"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── New Ultrasound Overlay ── -->
+    <div id="ultrasoundFormOverlay" style="display:none;position:fixed;inset:0;z-index:3000;background:#f5f5f5;flex-direction:row;overflow:hidden;">
+      <aside class="sidebar">
+        <div class="logo"><span>Xana</span><span>Health</span></div>
+       <nav class="nav-section">
+          <div class="nav-label">CONSULTATION</div>
+          <a href="#" class="nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+            Dashboard
+          </a>
+          <a href="patient_list.html" class="nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          Patients List
+          </a>
+          <a href="patient_visits.html" class="nav-item active">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            Patient Visits
+          </a>
+          <a href="inpatients.html" class="nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            In-Patients
+          </a>
+          <a href="hmis_report.html" class="nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+            HMIS Report
+          </a>
+          <a href="appointments.html" class="nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/><line x1="12" y1="15" x2="12" y2="17"/></svg>
+            Appointments
+          </a>
+        </nav>
+        <div class="sidebar-spacer"></div>
+        <div class="user-section">
+          <div class="user-profile"><div class="user-avatar">JD</div><div class="user-info"><h4>Jane Doe</h4><p>Receptionist</p></div></div>
+          <div class="user-actions">
+            <a href="#" class="user-action"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Help</a>
+            <a href="#" class="user-action"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Logout</a>
+          </div>
+        </div>
+      </aside>
+      <div class="main-content" style="height:100vh;">
+        <header class="header">
+          <h1>New Ultrasound</h1>
+          <div class="header-right">
+            <svg class="notification-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            <div class="company-dropdown"><span>Company Logo</span><svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M6 9L1 4h10z"/></svg></div>
+          </div>
+        </header>
+        <div class="content-area" style="overflow-y:auto;">
+          <!-- Back button -->
+          <div style="margin-bottom:20px;">
+            <button onclick="closeUltrasoundForm()" style="display:inline-flex;align-items:center;gap:6px;padding:8px 16px;background:#fff;border:1px solid #d1d5db;border-radius:8px;font-family:inherit;font-size:13px;color:#4a8f75;cursor:pointer;font-weight:500;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+              Back
+            </button>
+          </div>
+
+          <!-- New Ultrasound card -->
+          <div style="background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,0.08);overflow:hidden;margin-bottom:20px;">
+            <div style="background:#e8eded;padding:14px 20px;font-size:15px;font-weight:600;color:#333;">New Ultrasound</div>
+            <div style="padding:24px 20px;">
+              <!-- Patient info row -->
+              <div style="display:flex;gap:20px;align-items:flex-start;margin-bottom:28px;">
+                <div style="width:110px;height:110px;border-radius:8px;overflow:hidden;flex-shrink:0;background:#e8f5f1;display:flex;align-items:center;justify-content:center;">
+                  <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="#4a8f75" stroke-width="1.2"><circle cx="12" cy="7" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:6px;font-size:13px;color:#555;">
+                  <div><span style="color:#888;margin-right:6px;">Patient:</span><strong style="color:#222;">Imani Adimbola</strong></div>
+                  <div><span style="color:#888;margin-right:6px;">Age:</span><strong style="color:#222;">39</strong> <span style="color:#888;">(23/05/1985)</span></div>
+                  <div><span style="color:#888;margin-right:6px;">Gender:</span><strong style="color:#222;">Female</strong></div>
+                  <div><span style="color:#888;margin-right:6px;">Phone:</span><strong style="color:#222;">+250787878789</strong></div>
+                  <div><span style="color:#888;margin-right:6px;">File No:</span><strong style="color:#222;">1/23</strong></div>
+                  <div><span style="color:#888;margin-right:6px;">Visit Number:</span><strong style="color:#222;">00000023678</strong></div>
+                </div>
+              </div>
+              <!-- Ultrasound type + other -->
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+                <div>
+                  <label style="display:block;font-size:12px;color:#555;margin-bottom:8px;">Ultrasound type</label>
+                  <select id="us-type" style="width:100%;padding:10px 14px;border:1px solid #d1d5db;border-radius:6px;font-family:inherit;font-size:13px;color:#555;background:#fff;cursor:pointer;outline:none;">
+                    <option value="">Select ultrasound type</option>
+                    <option>Abdominal</option>
+                    <option>Pelvic</option>
+                    <option>Obstetric</option>
+                    <option>Cardiac (Echocardiogram)</option>
+                    <option>Thyroid</option>
+                    <option>Breast</option>
+                    <option>Renal</option>
+                    <option>Other</option>
+                  </select>
+                </div>
+                <div>
+                  <label style="display:block;font-size:12px;color:#555;margin-bottom:8px;">Other (specify)</label>
+                  <textarea id="us-other" style="width:100%;padding:10px 14px;border:1px solid #d1d5db;border-radius:6px;font-family:inherit;font-size:13px;color:#555;background:#fff;outline:none;resize:none;height:80px;" placeholder=""></textarea>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Ultrasound report card -->
+          <div style="background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,0.08);overflow:hidden;margin-bottom:20px;">
+            <div style="background:#e8eded;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;">
+              <span style="font-size:15px;font-weight:600;color:#333;">Ultrasound report</span>
+              <button style="padding:6px 18px;background:#fff;border:1px solid #d1d5db;border-radius:6px;font-family:inherit;font-size:13px;color:#374151;cursor:pointer;">Save</button>
+            </div>
+            <div style="padding:16px 20px;">
+              <textarea id="us-report" style="width:100%;min-height:100px;padding:10px 14px;border:1px solid #d1d5db;border-radius:6px;font-family:inherit;font-size:13px;color:#555;background:#fff;outline:none;resize:vertical;" placeholder="Type here"></textarea>
+            </div>
+
+            <div style="background:#e8eded;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;border-top:1px solid #e5e5e5;">
+              <span style="font-size:15px;font-weight:600;color:#333;">Recommendations</span>
+              <button style="padding:6px 18px;background:#fff;border:1px solid #d1d5db;border-radius:6px;font-family:inherit;font-size:13px;color:#374151;cursor:pointer;">Save</button>
+            </div>
+            <div style="padding:16px 20px;">
+              <textarea id="us-recommendations" style="width:100%;min-height:100px;padding:10px 14px;border:1px solid #d1d5db;border-radius:6px;font-family:inherit;font-size:13px;color:#555;background:#fff;outline:none;resize:vertical;" placeholder="Type here"></textarea>
+            </div>
+
+            <div style="padding:16px 20px;display:flex;justify-content:flex-end;border-top:1px solid #f3f4f6;">
+              <button onclick="submitUltrasound()" style="padding:10px 28px;background:#3d7360;color:#fff;border:none;border-radius:8px;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;">Submit</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Ultrasound Report Overlay ── -->
+    <div id="ultrasoundReportOverlay" style="display:none;position:fixed;inset:0;z-index:3000;background:#f5f5f5;flex-direction:row;overflow:hidden;">
+      <aside class="sidebar">
+        <div class="logo"><span>Xana</span><span>Health</span></div>
+        <nav class="nav-section">
+          <div class="nav-label">CONSULTATION</div>
+          <a href="#" class="nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+            Dashboard
+          </a>
+          <a href="patient_list.html" class="nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          Patients List
+          </a>
+          <a href="patient_visits.html" class="nav-item active">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            Patient Visits
+          </a>
+          <a href="inpatients.html" class="nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            In-Patients
+          </a>
+          <a href="hmis_report.html" class="nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+            HMIS Report
+          </a>
+          <a href="appointments.html" class="nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/><line x1="12" y1="15" x2="12" y2="17"/></svg>
+            Appointments
+          </a>
+        </nav>
+        <div class="sidebar-spacer"></div>
+        <div class="user-section">
+          <div class="user-profile"><div class="user-avatar">JD</div><div class="user-info"><h4>Jane Doe</h4><p>Receptionist</p></div></div>
+          <div class="user-actions">
+            <a href="#" class="user-action"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Help</a>
+            <a href="#" class="user-action"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Logout</a>
+          </div>
+        </div>
+      </aside>
+      <div class="main-content" style="height:100vh;">
+        <header class="header">
+          <h1>Ultrasound Report</h1>
+          <div class="header-right">
+            <svg class="notification-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            <div class="company-dropdown"><span>Company Logo</span><svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M6 9L1 4h10z"/></svg></div>
+          </div>
+        </header>
+        <div class="content-area" style="overflow-y:auto;">
+          <!-- Back + Edit buttons -->
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+            <button onclick="closeUltrasoundReport()" style="display:inline-flex;align-items:center;gap:6px;padding:8px 16px;background:#fff;border:1px solid #d1d5db;border-radius:8px;font-family:inherit;font-size:13px;color:#4a8f75;cursor:pointer;font-weight:500;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+              Back
+            </button>
+            <button onclick="editUltrasound()" style="padding:8px 24px;background:#3d7360;color:#fff;border:none;border-radius:8px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;">Edit</button>
+          </div>
+
+          <!-- Report card -->
+          <div style="background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,0.08);overflow:hidden;">
+            <div style="background:#e8eded;padding:14px 20px;font-size:15px;font-weight:600;color:#333;">Ultrasound Report</div>
+            <div style="padding:24px 20px;">
+              <!-- Patient info -->
+              <div style="display:flex;gap:20px;align-items:flex-start;margin-bottom:28px;">
+                <div style="width:110px;height:110px;border-radius:8px;overflow:hidden;flex-shrink:0;background:#e8f5f1;display:flex;align-items:center;justify-content:center;">
+                  <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="#4a8f75" stroke-width="1.2"><circle cx="12" cy="7" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:6px;font-size:13px;color:#555;">
+                  <div><span style="color:#888;margin-right:6px;">Patient:</span><strong style="color:#222;">Imani Adimbola</strong></div>
+                  <div><span style="color:#888;margin-right:6px;">Age:</span><strong style="color:#222;">39</strong> <span style="color:#888;">(23/05/1985)</span></div>
+                  <div><span style="color:#888;margin-right:6px;">Gender:</span><strong style="color:#222;">Female</strong></div>
+                  <div><span style="color:#888;margin-right:6px;">Phone:</span><strong style="color:#222;">+250787878789</strong></div>
+                  <div><span style="color:#888;margin-right:6px;">File No:</span><strong style="color:#222;">1/23</strong></div>
+                  <div><span style="color:#888;margin-right:6px;">Visit Number:</span><strong style="color:#222;">00000023678</strong></div>
+                </div>
+              </div>
+
+              <!-- Performed timestamp -->
+              <div style="font-size:12px;color:#888;margin-bottom:20px;">
+                Performed: <span id="us-report-performed" style="color:#333;font-weight:500;"></span>
+              </div>
+
+              <!-- Fields -->
+              <div style="margin-bottom:16px;">
+                <div style="font-size:12px;color:#888;margin-bottom:4px;">Ultrasound type</div>
+                <div id="us-report-type" style="font-size:14px;font-weight:700;color:#222;"></div>
+              </div>
+              <div style="margin-bottom:16px;">
+                <div style="font-size:12px;color:#888;margin-bottom:4px;">Report</div>
+                <div id="us-report-text" style="font-size:14px;font-weight:700;color:#222;"></div>
+              </div>
+              <div style="margin-bottom:8px;">
+                <div style="font-size:12px;color:#888;margin-bottom:4px;">Recommendations</div>
+                <div id="us-report-recommendations" style="font-size:14px;font-weight:700;color:#222;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function openUltrasoundForm() {
+        document.getElementById('ultrasoundFormOverlay').style.display = 'flex';
+      }
+      function closeUltrasoundForm() {
+        document.getElementById('ultrasoundFormOverlay').style.display = 'none';
+      }
+      function submitUltrasound() {
+        const type = document.getElementById('us-type').value;
+        const other = document.getElementById('us-other').value.trim();
+        const report = document.getElementById('us-report').value.trim();
+        const recs = document.getElementById('us-recommendations').value.trim();
+
+        // Build display type label
+        const typeLabel = type === 'Other' && other ? `Other - ${other}` : (type || '—');
+
+        // Set report values
+        const now = new Date();
+        const pad = n => String(n).padStart(2,'0');
+        const performed = `${pad(now.getDate())}/${pad(now.getMonth()+1)}/${now.getFullYear()} - ${pad(now.getHours())}:${pad(now.getMinutes())} (1 minute)`;
+        document.getElementById('us-report-performed').textContent = performed;
+        document.getElementById('us-report-type').textContent = typeLabel;
+        document.getElementById('us-report-text').textContent = report || '—';
+        document.getElementById('us-report-recommendations').textContent = recs || '—';
+
+        // Switch overlays
+        document.getElementById('ultrasoundFormOverlay').style.display = 'none';
+        document.getElementById('ultrasoundReportOverlay').style.display = 'flex';
+      }
+      function closeUltrasoundReport() {
+        document.getElementById('ultrasoundReportOverlay').style.display = 'none';
+      }
+      function editUltrasound() {
+        document.getElementById('ultrasoundReportOverlay').style.display = 'none';
+        document.getElementById('ultrasoundFormOverlay').style.display = 'flex';
+      }
+    </script>
+
+
+
+
+<!-- ══════════════════════════════════════════════════════════════
+     HOSPITAL ADMISSION FORM OVERLAY
+══════════════════════════════════════════════════════════════ -->
+<style>
+  .hosp-adm-page { display:none; position:fixed; inset:0; z-index:3000; flex-direction:row; font-family:'Outfit',sans-serif; }
+  .hosp-adm-main-content { flex:1; display:flex; flex-direction:column; overflow:hidden; height:100vh; }
+  .hosp-adm-back-btn { display:inline-flex; align-items:center; gap:6px; padding:7px 14px; background:#fff; border:1px solid #d1d5db; border-radius:7px; font-family:inherit; font-size:13px; color:#4a8f75; cursor:pointer; font-weight:500; }
+  .hosp-adm-save-btn { padding:8px 22px; background:#4a8f75; color:#fff; border:none; border-radius:7px; font-family:inherit; font-size:13px; font-weight:600; cursor:pointer; }
+  .hosp-adm-save-btn:hover { background:#3d7360; }
+  .hosp-adm-body { padding:24px 32px 48px; overflow-y:auto; flex:1; background:#F4F6F5; }
+  .hosp-adm-main-card { background:#fff; border-radius:10px; box-shadow:0 1px 4px rgba(0,0,0,.08); margin-bottom:14px; }
+  .hosp-adm-main-title { font-size:14px; font-weight:600; color:#333; padding:13px 16px; border-bottom:1px solid #f0f0f0; }
+  .hosp-adm-patient-section { padding:14px 16px; }
+  .hosp-adm-info-list { display:flex; flex-direction:column; gap:5px; font-size:13px; margin-bottom:10px; }
+  .hosp-adm-info-list div { color:#374151; }
+  .hosp-adm-info-list span.lbl { color:#6b7280; }
+  .hosp-adm-date-row { display:flex; gap:10px; align-items:flex-end; margin-top:4px; }
+  .hosp-adm-fg { display:flex; flex-direction:column; gap:4px; }
+  .hosp-adm-fl { font-size:12px; color:#374151; font-weight:500; margin-bottom:4px; }
+  .hosp-adm-fi { padding:7px 10px; border:1px solid #d1d5db; border-radius:6px; font-family:inherit; font-size:13px; color:#374151; background:#fff; outline:none; }
+  .hosp-adm-fi:focus { border-color:#4a8f75; }
+  .hosp-adm-section-card { background:#fff; border-radius:10px; box-shadow:0 1px 4px rgba(0,0,0,.08); margin-bottom:14px; overflow:hidden; }
+  .hosp-adm-section-header { padding:11px 16px; background:#e8eded; font-size:13px; font-weight:600; color:#333; }
+  .hosp-adm-section-body { padding:16px; }
+  .hosp-adm-vitals-grid { display:grid; grid-template-columns:repeat(8,1fr); gap:8px; }
+  .hosp-adm-vital-fg { display:flex; flex-direction:column; gap:4px; }
+  .hosp-adm-vital-lbl { font-size:10px; color:#374151; font-weight:500; text-align:center; line-height:1.3; }
+  .hosp-adm-vital-input { width:100%; padding:8px 4px; border:1px solid #d1d5db; border-radius:6px; font-family:inherit; font-size:13px; color:#374151; background:#f5f7f6; outline:none; text-align:center; }
+  .hosp-adm-vital-input:focus { border-color:#4a8f75; background:#fff; }
+  .hosp-adm-vital-input.readonly { background:#e8eded; }
+  .hosp-adm-lab-table { width:100%; border-collapse:collapse; font-size:13px; }
+  .hosp-adm-lab-table th { padding:9px 12px; text-align:left; font-size:11px; font-weight:600; color:#6b7280; text-transform:uppercase; letter-spacing:.4px; border-bottom:1px solid #e5e5e5; background:#f9fafb; }
+  .hosp-adm-lab-table td { padding:10px 12px; border-bottom:1px solid #f3f4f6; color:#374151; }
+  .hosp-adm-lab-table tr:last-child td { border-bottom:none; }
+  .hosp-adm-lab-id { color:#9ca3af; font-size:12px; }
+  .hosp-adm-lab-result-input { border:1px solid #d1d5db; border-radius:6px; padding:5px 10px; font-family:inherit; font-size:12px; color:#374151; background:#fff; outline:none; width:120px; }
+  .hosp-adm-lab-result-input:focus { border-color:#4a8f75; }
+  .hosp-adm-del-btn { background:none; border:none; cursor:pointer; color:#9ca3af; display:flex; align-items:center; padding:3px; border-radius:4px; }
+  .hosp-adm-del-btn:hover { color:#ef4444; }
+  .hosp-adm-textarea-card { background:#fff; border-radius:10px; box-shadow:0 1px 4px rgba(0,0,0,.08); margin-bottom:14px; overflow:hidden; }
+  .hosp-adm-textarea-header { display:flex; justify-content:space-between; align-items:center; padding:11px 16px; background:#e8eded; font-size:13px; font-weight:600; color:#333; }
+  .hosp-adm-textarea-save { padding:5px 14px; background:#4a8f75; color:#fff; border:none; border-radius:6px; font-family:inherit; font-size:12px; font-weight:600; cursor:pointer; }
+  .hosp-adm-textarea-save:hover { background:#3d7360; }
+  .hosp-adm-textarea-body { padding:12px 16px 14px; }
+  .hosp-adm-textarea-fi { width:100%; padding:8px 10px; border:1px solid #e5e5e5; border-radius:6px; font-family:inherit; font-size:13px; color:#374151; background:#fff; outline:none; min-height:80px; resize:vertical; }
+  .hosp-adm-textarea-fi:focus { border-color:#4a8f75; }
+  .hosp-adm-fbc-note { font-size:11px; color:#4a8f75; text-decoration:underline; cursor:pointer; margin-top:2px; display:inline-block; }
+</style>
+
+<div id="hospitalAdmissionOverlay" class="hosp-adm-page">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="logo"><span>Xana</span><span>Health</span></div>
+    <nav class="nav-section">
+      <div class="nav-label">CONSULTATION</div>
+      <a href="#" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard</a>
+      <a href="patient_list.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Patients List</a>
+      <a href="patient_visits.html" class="nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Patient Visits</a>
+      <a href="inpatients.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>In-Patients</a>
+      <a href="hmis_report.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>HMIS Report</a>
+      <a href="appointments.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/><line x1="12" y1="15" x2="12" y2="17"/></svg>Appointments</a>
+    </nav>
+    <div class="sidebar-spacer"></div>
+    <div class="user-section">
+      <div class="user-profile"><div class="user-avatar">JD</div><div class="user-info"><h4>Rn Jane Doe</h4><p>Nurse</p></div></div>
+      <div class="user-actions">
+        <a href="#" class="user-action"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Help</a>
+        <a href="#" class="user-action"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Logout</a>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main content -->
+  <div class="hosp-adm-main-content">
+    <!-- Header -->
+    <header class="header">
+      <h1>Hospital Admission</h1>
+      <div class="header-right">
+        <svg class="notification-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <div class="company-dropdown"><span>Company Logo</span><svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M6 9L1 4h10z"/></svg></div>
+      </div>
+    </header>
+
+    <div class="hosp-adm-body">
+      <!-- Back / Save row -->
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+        <button class="hosp-adm-back-btn" onclick="closeHospitalAdmissionForm()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+          Back
+        </button>
+        <button class="hosp-adm-save-btn" onclick="saveHospitalAdmission()">Save</button>
+      </div>
+    <div class="hosp-adm-main-card">
+      <div class="hosp-adm-main-title">New Hospital Admission</div>
+      <div class="hosp-adm-patient-section">
+        <div class="hosp-adm-info-list">
+          <div><span class="lbl">Patient: </span><strong>Imani Adentuola</strong></div>
+          <div><span class="lbl">Age: </span><strong>29</strong> <span style="color:#9ca3af;">(22/03/1995)</span></div>
+          <div><span class="lbl">Gender: </span><strong>Female</strong></div>
+          <div><span class="lbl">Insurance: </span><strong>RE66, 65%</strong></div>
+          <div><span class="lbl">Admitted by: </span><strong>Dr. Ange Arnaud Rebero</strong></div>
+        </div>
+        <div class="hosp-adm-fl">Admission Date</div>
+        <div class="hosp-adm-date-row">
+          <input type="date" class="hosp-adm-fi" id="hadm-date" />
+          <input type="time" class="hosp-adm-fi" id="hadm-time" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Vital Signs -->
+    <div class="hosp-adm-section-card">
+      <div class="hosp-adm-section-header">Vital Signs</div>
+      <div class="hosp-adm-section-body">
+        <div class="hosp-adm-vitals-grid">
+          <div class="hosp-adm-vital-fg"><div class="hosp-adm-vital-lbl">Height (cm)</div><input type="number" class="hosp-adm-vital-input" id="hadm-v-height"></div>
+          <div class="hosp-adm-vital-fg"><div class="hosp-adm-vital-lbl">Weight (kg)</div><input type="number" class="hosp-adm-vital-input" id="hadm-v-weight"></div>
+          <div class="hosp-adm-vital-fg"><div class="hosp-adm-vital-lbl">BMI</div><input type="number" class="hosp-adm-vital-input readonly" id="hadm-v-bmi" readonly></div>
+          <div class="hosp-adm-vital-fg"><div class="hosp-adm-vital-lbl">Blood Pressure</div><input type="text" class="hosp-adm-vital-input readonly" id="hadm-v-bp" readonly></div>
+          <div class="hosp-adm-vital-fg"><div class="hosp-adm-vital-lbl">Temp (°C)</div><input type="number" class="hosp-adm-vital-input" id="hadm-v-temp"></div>
+          <div class="hosp-adm-vital-fg"><div class="hosp-adm-vital-lbl">Heart Rate</div><input type="number" class="hosp-adm-vital-input" id="hadm-v-hr"></div>
+          <div class="hosp-adm-vital-fg"><div class="hosp-adm-vital-lbl">Resp. Rate</div><input type="number" class="hosp-adm-vital-input" id="hadm-v-rr"></div>
+          <div class="hosp-adm-vital-fg"><div class="hosp-adm-vital-lbl">O₂</div><input type="number" class="hosp-adm-vital-input" id="hadm-v-o2"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Laboratory Tests -->
+    <div class="hosp-adm-section-card">
+      <div class="hosp-adm-section-header">Laboratory Tests</div>
+      <table class="hosp-adm-lab-table">
+        <thead>
+          <tr>
+            <th style="width:40px;">ID</th>
+            <th>Test</th>
+            <th>Results</th>
+            <th style="width:36px;"></th>
+          </tr>
+        </thead>
+        <tbody id="hadm-lab-tbody">
+          <tr>
+            <td class="hosp-adm-lab-id">1</td>
+            <td>Malaria (T/DR)</td>
+            <td><input type="text" class="hosp-adm-lab-result-input" value="Pending" /></td>
+            <td><button class="hosp-adm-del-btn" onclick="this.closest('tr').remove()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg></button></td>
+          </tr>
+          <tr>
+            <td class="hosp-adm-lab-id">2</td>
+            <td>Pregnancy</td>
+            <td><input type="text" class="hosp-adm-lab-result-input" value="Negative" /></td>
+            <td><button class="hosp-adm-del-btn" onclick="this.closest('tr').remove()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg></button></td>
+          </tr>
+          <tr>
+            <td class="hosp-adm-lab-id">3</td>
+            <td>NFL-FBC<div><span class="hosp-adm-fbc-note">fpme!</span></div></td>
+            <td><input type="text" class="hosp-adm-lab-result-input" value="Pending" /></td>
+            <td><button class="hosp-adm-del-btn" onclick="this.closest('tr').remove()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg></button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Differential Diagnosis -->
+    <div class="hosp-adm-textarea-card">
+      <div class="hosp-adm-textarea-header">
+        <span>Differential Diagnosis</span>
+        <button class="hosp-adm-textarea-save">Save</button>
+      </div>
+      <div class="hosp-adm-textarea-body">
+        <textarea class="hosp-adm-textarea-fi" id="hadm-diagnosis" placeholder="Type here"></textarea>
+      </div>
+    </div>
+
+    <!-- Motivation for Admission -->
+    <div class="hosp-adm-textarea-card">
+      <div class="hosp-adm-textarea-header">
+        <span>Motivation for Admission</span>
+        <button class="hosp-adm-textarea-save">Save</button>
+      </div>
+      <div class="hosp-adm-textarea-body">
+        <textarea class="hosp-adm-textarea-fi" id="hadm-motivation" placeholder="Type here"></textarea>
+      </div>
+    </div>
+
+    <!-- Recommendation for Treatment -->
+    <div class="hosp-adm-textarea-card">
+      <div class="hosp-adm-textarea-header">
+        <span>Recommendation for Treatment</span>
+        <button class="hosp-adm-textarea-save">Save</button>
+      </div>
+      <div class="hosp-adm-textarea-body">
+        <textarea class="hosp-adm-textarea-fi" id="hadm-treatment" placeholder="Type here"></textarea>
+      </div>
+    </div>
+
+    <!-- Other Comment on Admission -->
+    <div class="hosp-adm-textarea-card">
+      <div class="hosp-adm-textarea-header">
+        <span>Other Comment on Admission</span>
+        <button class="hosp-adm-textarea-save">Save</button>
+      </div>
+      <div class="hosp-adm-textarea-body">
+        <textarea class="hosp-adm-textarea-fi" id="hadm-comment" placeholder="Type here"></textarea>
+      </div>
+    </div>
+
+    </div><!-- /hosp-adm-body -->
+  </div><!-- /hosp-adm-main-content -->
+</div><!-- /hospitalAdmissionOverlay -->
+
+<script>
+  function openHospitalAdmissionForm() {
+    const now = new Date();
+    const pad = n => String(n).padStart(2,'0');
+    document.getElementById('hadm-date').value = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}`;
+    document.getElementById('hadm-time').value = `${pad(now.getHours())}:${pad(now.getMinutes())}`;
+    // Sync vitals from consultation form if available
+    const h = document.getElementById('cv-h'), w = document.getElementById('cv-w');
+    const bmi = document.getElementById('cv-bmi'), bp = document.getElementById('cv-bp');
+    if (h) document.getElementById('hadm-v-height').value = h.value || '';
+    if (w) document.getElementById('hadm-v-weight').value = w.value || '';
+    if (bmi) document.getElementById('hadm-v-bmi').value = bmi.value || '';
+    if (bp) document.getElementById('hadm-v-bp').value = bp.value || '';
+    document.getElementById('hospitalAdmissionOverlay').style.display = 'flex';
+  }
+  function closeHospitalAdmissionForm() {
+    document.getElementById('hospitalAdmissionOverlay').style.display = 'none';
+  }
+  function saveHospitalAdmission() {
+    const pad = n => String(n).padStart(2,'0');
+    const dateVal = document.getElementById('hadm-date').value;
+    const timeVal = document.getElementById('hadm-time').value;
+    const dateTimeStr = dateVal && timeVal ? `${dateVal}T${timeVal}` : new Date().toISOString().slice(0,16);
+
+    // Pull patient info from consultation overlay biodata
+    const ptRows = document.querySelectorAll('#consultationOverlay .c-pt-row');
+    let patientName = 'Unknown Patient', doctorName = 'Unknown Doctor', insurance = '—', department = '—', fileNo = '—', dob = '—', gender = '—';
+    ptRows.forEach(row => {
+      const lbl = row.querySelector('.c-pt-lbl')?.textContent?.trim().toLowerCase() || '';
+      const val = row.querySelector('.c-pt-val')?.textContent?.trim() || '';
+      if (lbl.includes('patient')) patientName = val;
+      if (lbl.includes('department') && !lbl.includes('date')) department = val;
+      if (lbl.includes('file')) fileNo = val;
+      if (lbl.includes('gender')) gender = val;
+      if (lbl.includes('card')) insurance = val;
+    });
+    // Try to get doctor from visit data
+    if (window.allVisits && window.currentEditIdx >= 0) {
+      const v = window.allVisits[window.currentEditIdx];
+      if (v) {
+        patientName = (v.firstName||'') + ' ' + (v.lastName||'');
+        doctorName  = v.doctor || doctorName;
+        insurance   = v.insurance || insurance;
+        department  = v.department || department;
+        dob         = v.dob || dob;
+        gender      = v.gender || gender;
+      }
+    }
+
+    // Collect lab results from the table
+    const labRows = [];
+    document.querySelectorAll('#hadm-lab-tbody tr').forEach((tr, i) => {
+      const cells = tr.querySelectorAll('td');
+      if (cells.length >= 3) {
+        labRows.push({ test: cells[1]?.textContent?.trim(), result: cells[2]?.querySelector('input')?.value || '' });
+      }
+    });
+
+    const ADM_KEY = 'xana_inpatients';
+    const existing = JSON.parse(localStorage.getItem(ADM_KEY) || '[]');
+    const admNo = 'ADM-' + new Date().getFullYear() + '-' + String(existing.length + 1).padStart(5, '0');
+
+    const record = {
+      admNo,
+      patient:   patientName,
+      doctor:    doctorName,
+      gender,
+      dob,
+      insurance,
+      department,
+      fileNo,
+      ward:      '',
+      bed:       '',
+      date:      dateTimeStr,
+      duration:  '',
+      status:    'Admitted',
+      diagnosis: document.getElementById('hadm-diagnosis').value.trim(),
+      reason:    document.getElementById('hadm-motivation').value.trim(),
+      treatment: document.getElementById('hadm-treatment').value.trim(),
+      notes:     document.getElementById('hadm-comment').value.trim(),
+      vitals: {
+        height: document.getElementById('hadm-v-height').value,
+        weight: document.getElementById('hadm-v-weight').value,
+        bmi:    document.getElementById('hadm-v-bmi').value,
+        bp:     document.getElementById('hadm-v-bp').value,
+        temp:   document.getElementById('hadm-v-temp').value,
+        hr:     document.getElementById('hadm-v-hr').value,
+        rr:     document.getElementById('hadm-v-rr').value,
+        o2:     document.getElementById('hadm-v-o2').value,
+      },
+      labs: labRows,
+      kinName: '', kinRel: '', kinPhone: '',
+      followUps: [],
+      createdAt: new Date().toISOString(),
+    };
+
+    existing.push(record);
+    localStorage.setItem(ADM_KEY, JSON.stringify(existing));
+
+    document.getElementById('hospitalAdmissionOverlay').style.display = 'none';
+
+    // Show confirmation toast
+    const toast = document.createElement('div');
+    toast.style.cssText = 'position:fixed;bottom:28px;right:28px;z-index:9999;background:#3d7360;color:#fff;padding:14px 22px;border-radius:10px;font-family:Outfit,sans-serif;font-size:14px;font-weight:600;box-shadow:0 8px 24px rgba(0,0,0,.2);display:flex;align-items:center;gap:10px;';
+    toast.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Patient admitted — record saved in In-Patients.';
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 3500);
+  }
+  // Auto-calculate BMI in hadm form
+  function calcHadmBMI() {
+    const h = parseFloat(document.getElementById('hadm-v-height').value);
+    const w = parseFloat(document.getElementById('hadm-v-weight').value);
+    if (h > 0 && w > 0) {
+      document.getElementById('hadm-v-bmi').value = (w / ((h/100)**2)).toFixed(1);
+    }
+  }
+  document.addEventListener('DOMContentLoaded', function() {
+    const hEl = document.getElementById('hadm-v-height');
+    const wEl = document.getElementById('hadm-v-weight');
+    if (hEl) hEl.addEventListener('input', calcHadmBMI);
+    if (wEl) wEl.addEventListener('input', calcHadmBMI);
+  });
+</script>
+
+  <!-- ══════════════════════════════════════════════════════════
+       BILLING INVOICE OVERLAY  (from billing.html / index.html)
+       Opens when the user clicks "Invoice" in the Treatment Form
+  ═══════════════════════════════════════════════════════════════ -->
+  <style>
+    /* ── Scoped to #consultInvoiceOverlay to avoid conflicts ── */
+    #consultInvoiceOverlay { font-family:'Inter',sans-serif; }
+    #consultInvoiceOverlay *{ box-sizing:border-box; }
+
+    /* full-screen backdrop */
+    #consultInvoiceOverlay {
+      display:none; position:fixed; inset:0; background:rgba(0,0,0,.55);
+      z-index:5000; overflow-y:auto; padding:24px;
+      align-items:flex-start; justify-content:center;
+    }
+    #consultInvoiceOverlay.open { display:flex; }
+
+    /* the white invoice page card */
+    #consultInvoiceOverlay .ci-page {
+      background:#f0f4f2; width:100%; max-width:1140px;
+      border-radius:10px; overflow:hidden;
+      box-shadow:0 20px 60px rgba(0,0,0,.3);
+      animation:ciSlideIn .25s ease;
+    }
+    @keyframes ciSlideIn { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+
+    /* topbar */
+    #consultInvoiceOverlay .ci-topbar {
+      background:#fff; padding:12px 22px;
+      display:flex; align-items:center; justify-content:space-between;
+      border-bottom:1px solid #e5e5e5; flex-wrap:wrap; gap:8px;
+    }
+    #consultInvoiceOverlay .ci-topbar-left { display:flex; align-items:center; gap:14px; }
+    #consultInvoiceOverlay .ci-back-btn {
+      display:flex; align-items:center; gap:6px; color:#6b7280; font-size:14px;
+      cursor:pointer; background:none; border:none; font-family:inherit;
+    }
+    #consultInvoiceOverlay .ci-back-btn:hover { color:#111; }
+    #consultInvoiceOverlay .ci-title { font-size:17px; font-weight:600; color:#111; }
+    #consultInvoiceOverlay .ci-topbar-right { display:flex; gap:7px; align-items:center; flex-wrap:wrap; }
+    #consultInvoiceOverlay .ci-btn {
+      display:flex; align-items:center; gap:6px; padding:7px 12px;
+      border-radius:6px; font-size:12px; font-weight:500; cursor:pointer;
+      border:1px solid #d1d5db; background:#fff; color:#374151;
+      white-space:nowrap; font-family:inherit;
+    }
+    #consultInvoiceOverlay .ci-btn:hover { background:#f9fafb; }
+    #consultInvoiceOverlay .ci-btn.green { background:#059669; color:#fff; border-color:#059669; }
+    #consultInvoiceOverlay .ci-btn.red { color:#ef4444; border-color:#fca5a5; }
+    #consultInvoiceOverlay .ci-btn svg { width:13px; height:13px; }
+
+    /* send dropdown */
+    #consultInvoiceOverlay .ci-send-wrap { position:relative; display:inline-block; }
+    #consultInvoiceOverlay .ci-send-btn {
+      display:flex; align-items:center; gap:6px; padding:7px 12px;
+      background:#fff; border:1px solid #d1d5db; border-radius:6px;
+      font-size:12px; font-weight:500; cursor:pointer; color:#374151;
+      white-space:nowrap; font-family:inherit;
+    }
+    #consultInvoiceOverlay .ci-send-chevron { width:11px; height:11px; transition:transform .2s; }
+    #consultInvoiceOverlay .ci-send-btn.open .ci-send-chevron { transform:rotate(180deg); }
+    #consultInvoiceOverlay .ci-send-menu {
+      position:absolute; top:calc(100% + 4px); left:0; z-index:700;
+      background:#fff; border:1px solid #e5e5e5; border-radius:8px;
+      box-shadow:0 8px 24px rgba(0,0,0,.12); min-width:190px;
+      overflow:hidden; opacity:0; transform:translateY(-4px);
+      pointer-events:none; transition:opacity .15s,transform .18s;
+    }
+    #consultInvoiceOverlay .ci-send-menu.open { opacity:1; transform:translateY(0); pointer-events:all; }
+    #consultInvoiceOverlay .ci-send-opt {
+      display:flex; align-items:center; gap:10px; padding:10px 14px;
+      cursor:pointer; font-size:13px; color:#374151;
+    }
+    #consultInvoiceOverlay .ci-send-opt:hover { background:#f0fdf4; }
+    #consultInvoiceOverlay .ci-send-opt svg { width:16px; height:16px; flex-shrink:0; stroke-width:2; }
+
+    /* EBM */
+    #consultInvoiceOverlay .ci-ebm-wrap { position:relative; display:inline-block; }
+    #consultInvoiceOverlay .ci-ebm-btn {
+      display:flex; align-items:center; gap:5px; padding:7px 12px;
+      border-radius:6px; font-size:12px; font-weight:500; cursor:pointer;
+      border:1px solid #a7f3d0; background:#d1fae5; color:#065f46;
+      white-space:nowrap; font-family:inherit;
+    }
+    #consultInvoiceOverlay .ci-ebm-btn svg { width:11px; height:11px; transition:transform .25s; }
+    #consultInvoiceOverlay .ci-ebm-btn.open svg { transform:rotate(180deg); }
+    #consultInvoiceOverlay .ci-ebm-menu {
+      position:absolute; top:calc(100% + 5px); right:0; z-index:600;
+      background:#fff; border:1px solid #e5e5e5; border-radius:10px;
+      box-shadow:0 8px 30px rgba(0,0,0,.14); min-width:210px; overflow:hidden;
+      opacity:0; transform:translateY(-6px) scale(.97); pointer-events:none;
+      transition:opacity .18s,transform .2s cubic-bezier(.34,1.56,.64,1);
+    }
+    #consultInvoiceOverlay .ci-ebm-menu.open { opacity:1; transform:translateY(0) scale(1); pointer-events:all; }
+    #consultInvoiceOverlay .ci-ebm-menu-header {
+      padding:8px 14px 5px; font-size:10px; font-weight:700; color:#9ca3af;
+      letter-spacing:.1em; text-transform:uppercase;
+      font-family:'IBM Plex Mono',monospace; border-bottom:1px solid #f3f4f6;
+    }
+    #consultInvoiceOverlay .ci-ebm-opt {
+      display:flex; align-items:center; gap:10px; padding:9px 14px;
+      cursor:pointer; border-left:3px solid transparent;
+    }
+    #consultInvoiceOverlay .ci-ebm-opt:hover { background:#f0fdf4; border-left-color:#059669; }
+    #consultInvoiceOverlay .ci-ebm-dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
+    #consultInvoiceOverlay .dot-sale { background:#059669; }
+    #consultInvoiceOverlay .dot-refund { background:#ef4444; }
+    #consultInvoiceOverlay .dot-proforma { background:#f59e0b; }
+    #consultInvoiceOverlay .dot-training { background:#6366f1; }
+    #consultInvoiceOverlay .ci-ebm-opt-info strong { display:block; font-size:13px; color:#111827; font-weight:500; }
+    #consultInvoiceOverlay .ci-ebm-opt-info span { font-size:11px; color:#9ca3af; font-family:'IBM Plex Mono',monospace; }
+
+    /* body layout */
+    #consultInvoiceOverlay .ci-body {
+      display:grid; grid-template-columns:1fr 298px;
+      gap:14px; padding:14px; align-items:start;
+    }
+    #consultInvoiceOverlay .ci-main { display:flex; flex-direction:column; gap:12px; }
+    #consultInvoiceOverlay .ci-side { display:flex; flex-direction:column; gap:12px; }
+
+    /* cards */
+    #consultInvoiceOverlay .ci-card {
+      background:#fff; border-radius:8px; border:1px solid #e5e5e5; overflow:hidden;
+    }
+    #consultInvoiceOverlay .ci-card-header {
+      display:flex; justify-content:space-between; align-items:center;
+      padding:12px 16px; border-bottom:1px solid #f3f4f6;
+      font-size:14px; font-weight:600; color:#111;
+    }
+    #consultInvoiceOverlay .ci-card-header h3 { font-size:14px; font-weight:600; color:#111; }
+
+    /* visit info grid */
+    #consultInvoiceOverlay .ci-visit-grid {
+      display:grid; grid-template-columns:1fr 1fr 1fr;
+      padding:14px 16px; border-bottom:1px solid #f3f4f6;
+    }
+    #consultInvoiceOverlay .ci-visit-col h4 { font-size:13px; font-weight:700; color:#111; margin-bottom:6px; }
+    #consultInvoiceOverlay .ci-visit-col .ci-info-row { font-size:12px; color:#6b7280; margin-bottom:3px; }
+    #consultInvoiceOverlay .ci-visit-col .ci-info-row span { color:#374151; font-weight:500; }
+    #consultInvoiceOverlay .ci-visit-tags {
+      display:flex; gap:7px; padding:9px 16px;
+      border-bottom:1px solid #f3f4f6; flex-wrap:wrap; align-items:center;
+    }
+    #consultInvoiceOverlay .ci-tag {
+      display:inline-flex; align-items:center; padding:3px 9px;
+      border-radius:4px; font-size:11px; font-weight:500;
+    }
+    #consultInvoiceOverlay .ci-tag-dept { background:#e0f2fe; color:#0369a1; }
+    #consultInvoiceOverlay .ci-tag-ins  { background:#f3f4f6; color:#374151; }
+    #consultInvoiceOverlay .ci-tag-copay { background:#fef3c7; color:#92400e; }
+    #consultInvoiceOverlay .ci-tag-visit { background:#f0fdf4; color:#166534; font-family:'IBM Plex Mono',monospace; }
+
+    /* status badge */
+    #consultInvoiceOverlay .ci-status-badge {
+      display:inline-flex; align-items:center; padding:3px 9px;
+      border-radius:12px; font-size:11px; font-weight:600; text-transform:uppercase;
+    }
+    #consultInvoiceOverlay .badge-unpaid  { background:#fee2e2; color:#991b1b; }
+    #consultInvoiceOverlay .badge-paid    { background:#d1fae5; color:#065f46; }
+    #consultInvoiceOverlay .badge-partial { background:#fef3c7; color:#92400e; }
+
+    /* category tables */
+    #consultInvoiceOverlay .ci-cat-header {
+      display:flex; padding:8px 16px; background:#f9fafb;
+      border-bottom:1px solid #e5e5e5; border-top:1px solid #e5e5e5;
+    }
+    #consultInvoiceOverlay .ci-cat-title {
+      font-size:11px; font-weight:700; color:#374151;
+      text-transform:uppercase; letter-spacing:.5px;
+    }
+    #consultInvoiceOverlay .ci-items-tbl { width:100%; border-collapse:collapse; }
+    #consultInvoiceOverlay .ci-items-tbl th {
+      padding:8px 12px; text-align:left; font-size:11px; font-weight:600;
+      color:#6b7280; text-transform:uppercase; letter-spacing:.3px;
+      background:#fafafa; border-bottom:1px solid #e5e5e5;
+    }
+    #consultInvoiceOverlay .ci-items-tbl td {
+      padding:9px 12px; font-size:12px; color:#374151; border-bottom:1px solid #f3f4f6;
+    }
+    #consultInvoiceOverlay .ci-items-tbl .ci-subtotal-row td {
+      background:#edf4f0; font-weight:700; font-size:12px; color:#111;
+      border-top:1px solid #cdddd6; border-bottom:none;
+    }
+    #consultInvoiceOverlay .ci-del-btn {
+      display:inline-flex; align-items:center; justify-content:center;
+      width:26px; height:26px; background:#ef4444; border:none; border-radius:5px; cursor:pointer;
+    }
+    #consultInvoiceOverlay .ci-del-btn:hover { background:#dc2626; }
+    #consultInvoiceOverlay .ci-del-btn svg { width:12px; height:12px; stroke:#fff; fill:none; stroke-width:2; }
+    #consultInvoiceOverlay .ci-item-note { font-size:10px; color:#9ca3af; margin-top:1px; }
+
+    /* summary */
+    #consultInvoiceOverlay .ci-summary-tbl { width:100%; border-collapse:collapse; }
+    #consultInvoiceOverlay .ci-summary-tbl td {
+      padding:9px 16px; font-size:13px; border-bottom:1px solid #f3f4f6; color:#374151;
+    }
+    #consultInvoiceOverlay .ci-summary-tbl td:last-child { text-align:right; font-weight:500; color:#111; }
+    #consultInvoiceOverlay .ci-summary-tbl tr:last-child td { border-bottom:none; }
+    #consultInvoiceOverlay .ci-balance-row td { font-size:14px; font-weight:700; padding:12px 16px; }
+    #consultInvoiceOverlay .ci-initiated { padding:9px 16px; font-size:11px; color:#6b7280; text-align:right; border-top:1px solid #f3f4f6; }
+
+    /* RSSB */
+    #consultInvoiceOverlay .ci-rssb-card { background:#fff; border-radius:8px; border:1px solid #e5e5e5; overflow:hidden; }
+    #consultInvoiceOverlay .ci-rssb-header { padding:12px 16px; border-bottom:1px solid #f3f4f6; font-size:14px; font-weight:700; color:#111; }
+    #consultInvoiceOverlay .ci-rssb-body { display:grid; grid-template-columns:1fr 1fr 1fr; }
+    #consultInvoiceOverlay .ci-rssb-col { padding:14px 16px; border-right:1px solid #f3f4f6; }
+    #consultInvoiceOverlay .ci-rssb-col:last-child { border-right:none; }
+    #consultInvoiceOverlay .ci-rssb-col h4 { font-size:11px; font-weight:700; color:#6b7280; margin-bottom:10px; text-transform:uppercase; letter-spacing:.4px; }
+    #consultInvoiceOverlay .ci-rssb-field { margin-bottom:9px; font-size:12px; }
+    #consultInvoiceOverlay .ci-rssb-field strong { display:block; color:#374151; margin-bottom:2px; }
+    #consultInvoiceOverlay .ci-rssb-ul {
+      border:none; border-bottom:1px solid #374151; outline:none;
+      font-size:12px; color:#374151; padding:2px 0; width:100%;
+      background:transparent; font-family:'Inter',sans-serif;
+    }
+    #consultInvoiceOverlay .ci-rssb-ul:focus { border-bottom-color:#059669; }
+    #consultInvoiceOverlay .ci-rssb-footer { padding:10px 16px; font-size:12px; color:#6b7280; display:flex; align-items:center; gap:8px; border-top:1px solid #f3f4f6; }
+
+    /* cash paid */
+    #consultInvoiceOverlay .ci-cash-tbl { width:100%; border-collapse:collapse; }
+    #consultInvoiceOverlay .ci-cash-tbl th { padding:9px 12px; text-align:left; font-size:12px; font-weight:500; color:#9ca3af; border-bottom:1px solid #f3f4f6; }
+    #consultInvoiceOverlay .ci-cash-tbl td { padding:10px 12px; font-size:12px; color:#374151; }
+
+    /* side cards */
+    #consultInvoiceOverlay .ci-side-card { background:#fff; border-radius:8px; border:1px solid #e5e5e5; overflow:hidden; }
+    #consultInvoiceOverlay .ci-side-header { padding:12px 14px; border-bottom:1px solid #f3f4f6; font-size:13px; font-weight:600; color:#111; }
+    #consultInvoiceOverlay .ci-side-body { padding:12px 14px; }
+    #consultInvoiceOverlay .ci-fg { margin-bottom:11px; }
+    #consultInvoiceOverlay .ci-fg label { display:block; font-size:11px; font-weight:600; color:#374151; margin-bottom:4px; }
+    #consultInvoiceOverlay .ci-fc {
+      width:100%; padding:8px 10px; border:1px solid #d1d5db; border-radius:6px;
+      font-size:12px; color:#374151; outline:none; background:#fff; font-family:'Inter',sans-serif;
+    }
+    #consultInvoiceOverlay .ci-fc:focus { border-color:#059669; box-shadow:0 0 0 2px rgba(5,150,105,.08); }
+    #consultInvoiceOverlay .ci-ins-box { margin-top:7px; padding:9px 11px; background:#f0fdf4; border:1px solid #a7f3d0; border-radius:6px; font-size:11px; color:#065f46; }
+    #consultInvoiceOverlay .ci-submit-btn {
+      width:100%; padding:9px; background:#059669; color:#fff; border:none;
+      border-radius:6px; font-size:13px; font-weight:600; cursor:pointer; font-family:inherit;
+    }
+    #consultInvoiceOverlay .ci-submit-btn:hover { background:#047857; }
+
+    /* audit trail */
+    #consultInvoiceOverlay .ci-audit-empty { padding:14px; text-align:center; font-size:12px; color:#9ca3af; display:flex; align-items:center; justify-content:center; gap:6px; }
+    #consultInvoiceOverlay .ci-audit-section-lbl { padding:8px 14px 3px; font-size:11px; font-weight:700; color:#374151; text-transform:uppercase; letter-spacing:.4px; }
+    #consultInvoiceOverlay .ci-audit-item { padding:9px 14px; border-bottom:1px solid #f3f4f6; }
+    #consultInvoiceOverlay .ci-audit-top { display:flex; justify-content:space-between; align-items:flex-start; }
+    #consultInvoiceOverlay .ci-audit-date { font-size:12px; color:#374151; font-weight:500; }
+    #consultInvoiceOverlay .ci-audit-meta { font-size:11px; color:#9ca3af; margin-top:1px; }
+    #consultInvoiceOverlay .ci-audit-amt { font-size:13px; font-weight:700; color:#059669; }
+    #consultInvoiceOverlay .ci-audit-del {
+      display:inline-flex; align-items:center; justify-content:center;
+      width:30px; height:30px; background:#fff; border:1px solid #fca5a5;
+      border-radius:6px; cursor:pointer; margin-top:5px;
+    }
+    #consultInvoiceOverlay .ci-audit-del:hover { background:#fee2e2; }
+    #consultInvoiceOverlay .ci-audit-del svg { width:13px; height:13px; stroke:#ef4444; fill:none; stroke-width:2; }
+
+    /* receipt modal inside overlay */
+    #ciReceiptModal {
+      display:none; position:fixed; inset:0; background:rgba(0,0,0,.6);
+      z-index:6000; align-items:center; justify-content:center;
+      backdrop-filter:blur(4px);
+    }
+    #ciReceiptModal.open { display:flex; }
+    #ciReceiptModal .ci-rm-box {
+      background:#fff; border-radius:14px; width:400px; max-width:95vw;
+      max-height:90vh; overflow:hidden; display:flex; flex-direction:column;
+      box-shadow:0 24px 60px rgba(0,0,0,.3);
+      transform:scale(.94) translateY(16px);
+      transition:transform .3s cubic-bezier(.34,1.2,.64,1);
+    }
+    #ciReceiptModal.open .ci-rm-box { transform:scale(1) translateY(0); }
+    #ciReceiptModal .ci-rm-topbar { display:flex; align-items:center; justify-content:space-between; padding:12px 18px; border-bottom:1px solid #f0f0f0; flex-shrink:0; }
+    #ciReceiptModal .ci-rm-topbar-left { display:flex; align-items:center; gap:9px; }
+    #ciReceiptModal .ci-rtype-badge { font-family:'IBM Plex Mono',monospace; font-size:10px; font-weight:700; letter-spacing:.1em; padding:3px 9px; border-radius:20px; }
+    #ciReceiptModal .badge-sale    { background:#d1fae5; color:#065f46; border:1px solid #a7f3d0; }
+    #ciReceiptModal .badge-refund  { background:#fee2e2; color:#991b1b; border:1px solid #fca5a5; }
+    #ciReceiptModal .badge-proforma{ background:#fef3c7; color:#92400e; border:1px solid #fcd34d; }
+    #ciReceiptModal .badge-training{ background:#e0e7ff; color:#3730a3; border:1px solid #a5b4fc; }
+    #ciReceiptModal h3 { font-size:14px; font-weight:600; color:#111; }
+    #ciReceiptModal .ci-rm-close { width:30px; height:30px; border-radius:7px; border:1px solid #e5e5e5; background:#f9fafb; cursor:pointer; display:flex; align-items:center; justify-content:center; color:#6b7280; font-size:15px; }
+    #ciReceiptModal .ci-rm-close:hover { background:#fee2e2; color:#ef4444; border-color:#fca5a5; }
+    #ciReceiptModal .ci-rm-scroll { overflow-y:auto; flex:1; }
+    #ciReceiptModal .ci-rm-paper { padding:22px; font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:#1a1a1a; line-height:1.65; background:#fafaf7; }
+    #ciReceiptModal .ci-rm-footer { display:flex; gap:8px; padding:12px 18px; border-top:1px solid #f0f0f0; flex-shrink:0; }
+    #ciReceiptModal .ci-rm-foot-btn { flex:1; padding:8px 12px; border-radius:7px; font-size:13px; font-weight:500; cursor:pointer; border:1px solid #d1d5db; background:#f9fafb; color:#6b7280; display:flex; align-items:center; justify-content:center; gap:6px; font-family:inherit; }
+    #ciReceiptModal .ci-rm-foot-btn.primary { background:#059669; color:#fff; border-color:#059669; font-weight:600; }
+    #ciReceiptModal .ci-rm-foot-btn.primary:hover { background:#047857; }
+
+    /* receipt paper styles reused */
+    #ciReceiptModal .rp-header{text-align:center;padding-bottom:12px;margin-bottom:12px;border-bottom:1px dashed #d0d0c0}
+    #ciReceiptModal .rp-header h1{font-size:15px;font-weight:700;letter-spacing:.04em}
+    #ciReceiptModal .rp-header .sub{font-size:10px;color:#666;margin-top:2px}
+    #ciReceiptModal .rp-clinic{text-align:center;padding-bottom:11px;margin-bottom:11px;border-bottom:1px dashed #d0d0c0}
+    #ciReceiptModal .rp-stamp{display:inline-block;padding:2px 12px;border-radius:3px;font-size:9px;font-weight:700;letter-spacing:.1em;margin-top:5px}
+    #ciReceiptModal .stamp-official{background:#059669;color:#fff}
+    #ciReceiptModal .stamp-copy{background:#1a1a1a;color:#fff}
+    #ciReceiptModal .stamp-draft{background:#f59e0b;color:#fff}
+    #ciReceiptModal .stamp-training{background:#6366f1;color:#fff}
+    #ciReceiptModal .rp-section{padding-bottom:11px;margin-bottom:11px;border-bottom:1px dashed #d0d0c0}
+    #ciReceiptModal .rp-section:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
+    #ciReceiptModal .rp-title{text-align:center;font-weight:700;font-size:11.5px;letter-spacing:.08em;margin-bottom:5px;text-decoration:underline}
+    #ciReceiptModal .rp-row{display:flex;justify-content:space-between;padding:2px 0;font-size:11.5px}
+    #ciReceiptModal .rp-row.total{font-weight:700;font-size:12.5px;padding:4px 0}
+    #ciReceiptModal .rp-row.sub{color:#666;font-size:10.5px}
+    #ciReceiptModal .rp-thank{text-align:center;font-weight:700;font-size:12px;letter-spacing:.15em;padding-top:12px;color:#222}
+    #ciReceiptModal .watermark-proforma{text-align:center;color:#92400e;border:2px solid #f59e0b;border-radius:3px;display:block;padding:2px 14px;margin:7px 0;font-size:10px;font-weight:600;letter-spacing:.08em;width:100%}
+    #ciReceiptModal .watermark-training{text-align:center;color:#3730a3;border:2px solid #6366f1;border-radius:3px;display:block;padding:2px 14px;margin:7px 0;font-size:10px;font-weight:600;letter-spacing:.08em;width:100%}
+    #ciReceiptModal .rp-databox{background:#f0f0e8;border:1px solid #d5d5c0;border-radius:4px;padding:6px 9px;margin:7px 0;font-size:9.5px;color:#555;word-break:break-all}
+    #ciReceiptModal .rp-databox strong{display:block;font-size:10.5px;color:#222;margin-bottom:2px}
+
+    @media (max-width:900px) {
+      #consultInvoiceOverlay .ci-body { grid-template-columns:1fr; }
+      #consultInvoiceOverlay .ci-visit-grid { grid-template-columns:1fr 1fr; }
+      #consultInvoiceOverlay .ci-rssb-body { grid-template-columns:1fr 1fr; }
+    }
+    @media (max-width:600px) {
+      #consultInvoiceOverlay { padding:10px; }
+      #consultInvoiceOverlay .ci-visit-grid { grid-template-columns:1fr; }
+      #consultInvoiceOverlay .ci-rssb-body { grid-template-columns:1fr; }
+    }
+  </style>
+
+  <!-- ── Invoice overlay HTML ── -->
+  <div id="consultInvoiceOverlay">
+    <div class="ci-page">
+
+      <!-- topbar -->
+      <div class="ci-topbar">
+        <div class="ci-topbar-left">
+          <button class="ci-back-btn" onclick="closeConsultInvoice()">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>Back
+          </button>
+          <span class="ci-title">Patient Invoice <span id="ciInvNumber" style="font-size:13px;color:#6b7280;font-family:'IBM Plex Mono',monospace;font-weight:400"></span></span>
+        </div>
+        <div class="ci-topbar-right">
+          <button class="ci-btn" onclick="ciDownloadPDF()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Download PDF
+          </button>
+          <div class="ci-send-wrap" id="ciSendWrap">
+            <button class="ci-send-btn" id="ciSendBtnEl" onclick="ciToggleSendMenu()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+              Send
+              <svg class="ci-send-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="ci-send-menu" id="ciSendMenu">
+              <div class="ci-send-opt" onclick="ciSendWhatsApp()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#25D366" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+                Send via WhatsApp
+              </div>
+              <div class="ci-send-opt" onclick="ciSendEmail()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#4f46e5" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="2,4 12,13 22,4"/></svg>
+                Send via Email
+              </div>
+            </div>
+          </div>
+          <div class="ci-ebm-wrap" id="ciEbmWrap">
+            <button class="ci-ebm-btn" id="ciEbmBtnEl" onclick="ciToggleEbm()">
+              EBM Receipt <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="ci-ebm-menu" id="ciEbmMenu">
+              <div class="ci-ebm-menu-header">Select Receipt Type</div>
+              <div class="ci-ebm-opt" onclick="ciOpenReceipt('sale')"><span class="ci-ebm-dot dot-sale"></span><div class="ci-ebm-opt-info"><strong>Generate EBM (Sale)</strong><span>Normal / Official</span></div></div>
+              <div class="ci-ebm-opt" onclick="ciOpenReceipt('refund')"><span class="ci-ebm-dot dot-refund"></span><div class="ci-ebm-opt-info"><strong>Refund Receipt</strong><span>Copy Refund (CR)</span></div></div>
+              <div class="ci-ebm-opt" onclick="ciOpenReceipt('proforma')"><span class="ci-ebm-dot dot-proforma"></span><div class="ci-ebm-opt-info"><strong>Proforma Invoice</strong><span>Not Official</span></div></div>
+              <div class="ci-ebm-opt" onclick="ciOpenReceipt('training')"><span class="ci-ebm-dot dot-training"></span><div class="ci-ebm-opt-info"><strong>Training Receipt</strong><span>Simulation Only</span></div></div>
+            </div>
+          </div>
+          <button class="ci-btn red">Delete</button>
+        </div>
+      </div>
+
+      <!-- body -->
+      <div class="ci-body">
+        <div class="ci-main">
+
+          <!-- Visit Info -->
+          <div class="ci-card">
+            <div class="ci-card-header">
+              <h3>Visit information</h3>
+              <span id="ciStatusBadge" class="ci-status-badge badge-unpaid">UNPAID</span>
+            </div>
+            <div class="ci-visit-grid">
+              <div class="ci-visit-col"><h4>Shema Clinic</h4><div class="ci-info-row">Kigali City, Rwanda</div><div class="ci-info-row">Tel: +250000000000</div><div class="ci-info-row">Email: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a5cccbc3cae5d6cdc0c8c48bc6c9cccbccc6">[email&#160;protected]</a></div></div>
+              <div class="ci-visit-col"><div class="ci-info-row">Patient: <span id="ciPatientName">—</span></div><div class="ci-info-row">File No: <span id="ciFileNo">—</span></div><div class="ci-info-row">Phone: <span>+250 000 000 000</span></div></div>
+              <div class="ci-visit-col"><div class="ci-info-row">Visit No: <span id="ciVisitNo" style="color:#059669;font-weight:600">—</span></div><div class="ci-info-row">Department: <span id="ciDept">—</span></div><div class="ci-info-row">Insurance: <span id="ciInsurance">—</span></div><div class="ci-info-row">Copay: <span id="ciCopay">—</span></div></div>
+            </div>
+            <div class="ci-visit-tags">
+              <span class="ci-tag ci-tag-visit" id="ciVisitTag">V/—</span>
+              <span class="ci-tag ci-tag-dept" id="ciDeptTag">—</span>
+              <span class="ci-tag ci-tag-ins" id="ciInsTag">—</span>
+              <span class="ci-tag ci-tag-copay" id="ciCopayTag">—</span>
+              <div style="margin-left:auto;font-size:11px;color:#6b7280" id="ciDate">—</div>
+            </div>
+          </div>
+
+          <!-- Invoice Items -->
+          <div class="ci-card">
+            <div class="ci-card-header">
+              <h3>Invoice items <span style="color:#9ca3af;font-size:12px;font-weight:400" id="ciItemCount">(0)</span></h3>
+            </div>
+            <div id="ciCategoryContainer"></div>
+          </div>
+
+          <!-- Invoice Summary -->
+          <div class="ci-card">
+            <div class="ci-card-header"><h3>Invoice Summary</h3></div>
+            <table class="ci-summary-tbl">
+              <tr><td>Sub-total (all items):</td><td id="ciSumSubtotal">Rwf 0</td></tr>
+              <tr>
+                <td>
+                  <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+                    <span>Insurance</span>
+                    <select id="ciInsuranceSelect" onchange="ciOnInsuranceChange()" style="padding:4px 28px 4px 9px;border:1px solid #d1d5db;border-radius:5px;font-size:12px;color:#374151;outline:none;background:#fff url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2210%22 height=%2210%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%236b7280%22 stroke-width=%222%22%3E%3Cpolyline points=%226 9 12 15 18 9%22/%3E%3C/svg%3E') no-repeat right 8px center;appearance:none;font-family:'Inter',sans-serif">
+                      <option value="none|0">None / Private</option>
+                      <option value="RSSB|85">RSSB (85%)</option>
+                      <option value="MMI|80">MMI (80%)</option>
+                      <option value="Activa|75">Activa (75%)</option>
+                      <option value="Radiant|70">Radiant (70%)</option>
+                      <option value="CORAR|65">CORAR (65%)</option>
+                    </select>
+                    <span id="ciInsPctLabel" style="font-size:12px;color:#059669;font-weight:600"></span>
+                  </div>
+                </td>
+                <td id="ciSumInsurance" style="color:#059669">Rwf 0</td>
+              </tr>
+              <tr><td>Patient contribution:</td><td id="ciSumPatient">Rwf 0</td></tr>
+              <tr><td>Amount Paid (by patient):</td><td id="ciSumPaid">Rwf 0</td></tr>
+              <tr class="ci-balance-row"><td><strong>Patient Balance Due:</strong></td><td id="ciSumBalance" style="color:#ef4444"><strong>Rwf 0</strong></td></tr>
+            </table>
+            <div class="ci-initiated">Visit initiated by: <strong>Mrs. Agathe Amina Uwera</strong></div>
+          </div>
+
+          <!-- RSSB Details -->
+          <div class="ci-rssb-card" id="ciRssbSection" style="display:none">
+            <div class="ci-rssb-header">RSSB Details</div>
+            <div class="ci-rssb-body">
+              <div class="ci-rssb-col">
+                <h4>Beneficiary Details</h4>
+                <div class="ci-rssb-field"><strong>Full Name:</strong><input class="ci-rssb-ul" type="text" placeholder="_______________"/></div>
+                <div class="ci-rssb-field"><strong>Phone:</strong><input class="ci-rssb-ul" type="text" placeholder="_______________"/></div>
+                <div class="ci-rssb-field"><strong>Beneficiary relationship:</strong><input class="ci-rssb-ul" type="text" value="Spouse"/></div>
+                <div class="ci-rssb-field"><strong>Signature:</strong><input class="ci-rssb-ul" type="text" placeholder="_______________"/></div>
+              </div>
+              <div class="ci-rssb-col">
+                <h4>Treatment Information</h4>
+                <div class="ci-rssb-field"><strong>Disease Type:</strong><input class="ci-rssb-ul" type="text" value="Natural disease"/></div>
+                <div class="ci-rssb-field"><strong>Status:</strong><input class="ci-rssb-ul" type="text" placeholder="_______________"/></div>
+                <div class="ci-rssb-field"><strong>Entry Date:</strong><input class="ci-rssb-ul" type="text" id="ciRssbEntry"/></div>
+                <div class="ci-rssb-field"><strong>Discharge Date:</strong><input class="ci-rssb-ul" type="text" placeholder="_______________"/></div>
+              </div>
+              <div class="ci-rssb-col">
+                <h4>Attending Doctor</h4>
+                <div class="ci-rssb-field"><strong>Name:</strong><input class="ci-rssb-ul" type="text" id="ciRssbDoctor"/></div>
+                <div class="ci-rssb-field"><strong>License #:</strong><input class="ci-rssb-ul" type="text" placeholder="_______________"/></div>
+                <div class="ci-rssb-field"><strong>Signature:</strong><input class="ci-rssb-ul" type="text" placeholder="_______________"/></div>
+                <div class="ci-rssb-field"><strong>Stamp:</strong><input class="ci-rssb-ul" type="text" placeholder="_______________"/></div>
+              </div>
+            </div>
+            <div class="ci-rssb-footer"><strong>Facility stamp:</strong><input class="ci-rssb-ul" type="text" placeholder="_______________" style="max-width:200px"/></div>
+          </div>
+
+          <!-- Cash Paid -->
+          <div class="ci-card">
+            <div class="ci-card-header"><h3>Cash Paid</h3></div>
+            <table class="ci-cash-tbl">
+              <thead><tr><th>Date</th><th>Amount</th><th>Received by</th><th>Method</th><th></th></tr></thead>
+              <tbody id="ciCashBody">
+                <tr id="ciNoCashRow"><td colspan="5" style="text-align:center;color:#9ca3af;font-size:12px;padding:14px">No payments recorded</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+        </div><!-- /ci-main -->
+
+        <!-- RIGHT SIDE -->
+        <div class="ci-side">
+
+          <!-- Add items -->
+          <div class="ci-side-card">
+            <div class="ci-side-header">Add items to this invoice</div>
+            <div class="ci-side-body">
+              <div class="ci-fg">
+                <label>Select Product</label>
+                <select class="ci-fc" id="ciProductSelect" onchange="ciOnProductChange()">
+                  <option value="">Search for a product...</option>
+                  <optgroup label="Medical Acts">
+                    <option value="General Consultation|Medical Acts|2690">General Consultation — Rwf 2,690</option>
+                    <option value="Intra oral peri apical x-ray|Medical Acts|16000">Intra oral peri apical x-ray — Rwf 16,000</option>
+                    <option value="Indirect pulp caping|Medical Acts|23000">Indirect pulp caping — Rwf 23,000</option>
+                    <option value="Crown and bridge (per unit)|Medical Acts|240000">Crown and bridge — Rwf 240,000</option>
+                    <option value="Reconstruction of fractured crown|Medical Acts|81000">Reconstruction of fractured crown — Rwf 81,000</option>
+                  </optgroup>
+                  <optgroup label="Laboratory">
+                    <option value="Full blood count (NFS)|Laboratory|500">Full blood count (NFS) — Rwf 500</option>
+                    <option value="Malaria RDT|Laboratory|200">Malaria RDT — Rwf 200</option>
+                    <option value="Blood glucose|Laboratory|300">Blood glucose — Rwf 300</option>
+                  </optgroup>
+                  <optgroup label="Pharmacy">
+                    <option value="Amoxicillin 500mg caps|Pharmacy|200">Amoxicillin 500mg caps — Rwf 200/unit</option>
+                    <option value="Ibuprofen 400mg tabs|Pharmacy|100">Ibuprofen 400mg tabs — Rwf 100/unit</option>
+                    <option value="Metronidazole 500mg|Pharmacy|150">Metronidazole 500mg — Rwf 150/unit</option>
+                  </optgroup>
+                  <optgroup label="Radiology">
+                    <option value="Chest X-ray|Radiology|8000">Chest X-ray — Rwf 8,000</option>
+                    <option value="Echocardiography|Radiology|25000">Echocardiography — Rwf 25,000</option>
+                  </optgroup>
+                </select>
+              </div>
+              <div class="ci-fg" id="ciProductInfoBox" style="display:none">
+                <div style="padding:9px 11px;background:#f9fafb;border:1px solid #e5e5e5;border-radius:6px;font-size:11px">
+                  <div style="display:flex;justify-content:space-between;margin-bottom:3px"><span style="color:#6b7280">Category</span><span style="font-weight:600;color:#374151" id="ciPCategory">—</span></div>
+                  <div style="display:flex;justify-content:space-between"><span style="color:#6b7280">Unit Price</span><span style="font-weight:600;color:#059669" id="ciPPrice">—</span></div>
+                </div>
+              </div>
+              <div class="ci-fg"><label>Quantity</label><input type="number" class="ci-fc" id="ciQtyInput" value="1" min="1"/></div>
+              <div class="ci-fg"><label>Note <span style="font-weight:400;color:#9ca3af">(optional)</span></label><input type="text" class="ci-fc" id="ciItemNote" placeholder="e.g. tooth 16, take 3×/day…"/></div>
+              <button class="ci-submit-btn" onclick="ciAddItem()">Submit</button>
+            </div>
+          </div>
+
+          <!-- Record Payment -->
+          <div class="ci-side-card" id="ciRecordPaymentCard" style="display:none">
+            <div class="ci-side-header">Record Payment</div>
+            <div class="ci-side-body">
+              <div class="ci-fg"><label>Amount</label><input type="number" class="ci-fc" id="ciPaymentAmount" placeholder="RWF"/></div>
+              <div class="ci-fg">
+                <label>Payment Method</label>
+                <select class="ci-fc" id="ciPaymentMethod">
+                  <option value="">Select payment method...</option>
+                  <option>Cash</option><option>Mobile Money (MTN)</option><option>Mobile Money (Airtel)</option>
+                  <option>Bank Card</option><option>Bank Transfer</option><option>Insurance Direct</option>
+                </select>
+              </div>
+              <div class="ci-fg">
+                <label>Transaction Reference</label>
+                <input type="text" class="ci-fc" id="ciPaymentRef" placeholder="Required for non-cash payments"/>
+                <div style="font-size:10px;color:#9ca3af;margin-top:3px">Required for non-cash payments</div>
+              </div>
+              <button class="ci-submit-btn" onclick="ciRecordPayment()">Submit</button>
+            </div>
+          </div>
+
+          <!-- Audit Trail -->
+          <div class="ci-side-card">
+            <div class="ci-side-header" style="display:flex;align-items:center;justify-content:space-between">
+              <span>Payments &amp; Audit Trail</span>
+              <span id="ciAuditCount" style="background:#f3f4f6;border-radius:10px;padding:2px 8px;font-size:11px;color:#6b7280;font-weight:600">0</span>
+            </div>
+            <div id="ciAuditContainer">
+              <div class="ci-audit-empty" id="ciAuditEmptyMsg">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:16px;height:16px;flex-shrink:0"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                No payments yet
+              </div>
+              <div class="ci-audit-section-lbl" id="ciAuditSectionLbl" style="display:none">Payment history</div>
+              <div id="ciAuditList"></div>
+            </div>
+          </div>
+
+        </div><!-- /ci-side -->
+      </div><!-- /ci-body -->
+    </div><!-- /ci-page -->
+  </div><!-- /consultInvoiceOverlay -->
+
+  <!-- Receipt modal (inside invoice overlay) -->
+  <div id="ciReceiptModal">
+    <div class="ci-rm-box">
+      <div class="ci-rm-topbar">
+        <div class="ci-rm-topbar-left">
+          <span class="ci-rtype-badge" id="ciReceiptBadge"></span>
+          <h3 id="ciReceiptTitle"></h3>
+        </div>
+        <button class="ci-rm-close" onclick="ciCloseReceipt()">✕</button>
+      </div>
+      <div class="ci-rm-scroll"><div class="ci-rm-paper" id="ciReceiptContent"></div></div>
+      <div class="ci-rm-footer">
+        <button class="ci-rm-foot-btn primary" onclick="ciCloseReceipt()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+    // ── State ──────────────────────────────────────────────────────
+    let ciPatientId = null, ciItems = {}, ciPayments = [], ciTotalPaid = 0, ciInsPct = 0;
+
+    // Patient data (mirrors billing.html)
+    const ciPatients = {
+      imani: {
+        name:'Imani Adentuola', invoice:'000022/0025', total:12144,
+        date:'22/05/2025 · 10:14', insurance:'RSSB', copay:15,
+        dept:'General Medicine', visitNo:'V/IA/0022/2025',
+        fileNo:'0611', status:'paid', doctor:'Dr. Jacob Ryan'
+      },
+      kwame: {
+        name:'Kwame Mensah', invoice:'000023/0025', total:17500,
+        date:'10/06/2025 · 11:05', insurance:'MMI', copay:20,
+        dept:'Cardiology', visitNo:'V/KM/0023/2025',
+        fileNo:'0612', status:'unpaid', doctor:'Dr. Amina Otieno'
+      }
+    };
+    const ciDefaultItems = {
+      imani: { 'Medical Acts': [{ name:'General Consultation', note:'', qty:1, unitCost:2690 }] },
+      kwame: { 'Laboratory': [{ name:'Full blood count (NFS)', note:'', qty:1, unitCost:500 }, { name:'Malaria RDT', note:'', qty:1, unitCost:200 }] }
+    };
+
+    function openConsultInvoice() {
+      // Use the current patient from the consultation overlay.
+      // Match by name if possible; fall back to first patient.
+      const patNameEl = document.querySelector('#consultationOverlay .c-pt-val');
+      const patName = patNameEl ? patNameEl.textContent.trim().toLowerCase() : '';
+      let matchId = Object.keys(ciPatients)[0];
+      for (const id of Object.keys(ciPatients)) {
+        if (patName.includes(ciPatients[id].name.split(' ')[0].toLowerCase())) { matchId = id; break; }
+      }
+      ciLoadPatient(matchId);
+      document.getElementById('consultInvoiceOverlay').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeConsultInvoice() {
+      document.getElementById('consultInvoiceOverlay').classList.remove('open');
+      document.body.style.overflow = '';
+      ciCloseSendMenu(); ciCloseEbm();
+    }
+
+    function ciLoadPatient(id) {
+      ciPatientId = id;
+      const p = ciPatients[id];
+      ciItems = JSON.parse(JSON.stringify(ciDefaultItems[id] || {}));
+      ciPayments = []; ciTotalPaid = 0; ciInsPct = 0;
+
+      // Reset cash body
+      document.getElementById('ciCashBody').innerHTML =
+        '<tr id="ciNoCashRow"><td colspan="5" style="text-align:center;color:#9ca3af;font-size:12px;padding:14px">No payments recorded</td></tr>';
+      document.getElementById('ciAuditList').innerHTML = '';
+      document.getElementById('ciAuditCount').textContent = '0';
+      document.getElementById('ciAuditEmptyMsg').style.display = 'flex';
+      document.getElementById('ciAuditSectionLbl').style.display = 'none';
+
+      // Fill header
+      document.getElementById('ciInvNumber').textContent = p.invoice;
+      document.getElementById('ciPatientName').textContent = p.name;
+      document.getElementById('ciDate').textContent = p.date;
+      document.getElementById('ciDept').textContent = p.dept;
+      document.getElementById('ciInsurance').textContent = p.insurance;
+      document.getElementById('ciCopay').textContent = p.copay + '%';
+      document.getElementById('ciVisitNo').textContent = p.visitNo;
+      document.getElementById('ciFileNo').textContent = p.fileNo;
+      document.getElementById('ciVisitTag').textContent = p.visitNo;
+      document.getElementById('ciDeptTag').textContent = p.dept;
+      document.getElementById('ciInsTag').textContent = p.insurance;
+      document.getElementById('ciCopayTag').textContent = p.copay + '% Copay';
+
+      // Status badge
+      const badge = document.getElementById('ciStatusBadge');
+      badge.textContent = p.status.toUpperCase();
+      badge.className = 'ci-status-badge badge-' + p.status;
+
+      // Insurance selector
+      const insMap = { RSSB:'RSSB|85', MMI:'MMI|80', Activa:'Activa|75', Radiant:'Radiant|70', CORAR:'CORAR|65' };
+      const insVal = insMap[p.insurance] || 'none|0';
+      document.getElementById('ciInsuranceSelect').value = insVal;
+      ciInsPct = Number(insVal.split('|')[1]);
+      document.getElementById('ciInsPctLabel').textContent = ciInsPct > 0 ? `covers ${ciInsPct}%` : '';
+
+      // RSSB section
+      document.getElementById('ciRssbSection').style.display = p.insurance === 'RSSB' ? '' : 'none';
+      if (p.insurance === 'RSSB') {
+        document.getElementById('ciRssbEntry').value = p.date.split('·')[0].trim();
+        document.getElementById('ciRssbDoctor').value = p.doctor;
+      }
+
+      ciRenderTables();
+    }
+
+    function ciRenderTables() {
+      const container = document.getElementById('ciCategoryContainer');
+      container.innerHTML = '';
+      const cats = Object.keys(ciItems);
+      let grandTotal = 0, totalItems = 0;
+
+      if (!cats.length) {
+        container.innerHTML = '<div style="padding:20px;text-align:center;color:#9ca3af;font-size:12px">No items added yet.</div>';
+      }
+
+      cats.forEach(cat => {
+        const items = ciItems[cat];
+        let catTotal = 0;
+
+        const hdr = document.createElement('div');
+        hdr.className = 'ci-cat-header';
+        hdr.innerHTML = `<span class="ci-cat-title">${cat}</span>`;
+        container.appendChild(hdr);
+
+        const tbl = document.createElement('table');
+        tbl.className = 'ci-items-tbl';
+        tbl.innerHTML = `<thead><tr><th>#</th><th>Description</th><th>Qty</th><th>Unit Cost</th><th>Total</th><th></th></tr></thead>`;
+        const tbody = document.createElement('tbody');
+
+        items.forEach((item, idx) => {
+          const lt = item.qty * item.unitCost;
+          catTotal += lt; totalItems++;
+          const tr = document.createElement('tr');
+          tr.innerHTML = `<td>${idx+1}</td>
+            <td>${item.name}${item.note ? `<div class="ci-item-note">ⓘ ${item.note}</div>` : ''}</td>
+            <td>${item.qty}</td><td>${item.unitCost.toLocaleString()}</td><td>${lt.toLocaleString()}</td>
+            <td><button class="ci-del-btn" onclick="ciDeleteItem('${cat}',${idx})"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></button></td>`;
+          tbody.appendChild(tr);
+        });
+
+        const stRow = document.createElement('tr');
+        stRow.className = 'ci-subtotal-row';
+        stRow.innerHTML = `<td colspan="4" style="text-align:left;padding-left:12px;font-size:11px">Sub-total (${cat}):</td><td>${catTotal.toLocaleString()}</td><td></td>`;
+        tbody.appendChild(stRow);
+        tbl.appendChild(tbody);
+        container.appendChild(tbl);
+        grandTotal += catTotal;
+      });
+
+      document.getElementById('ciItemCount').textContent = `(${totalItems})`;
+      const insAmt = Math.round(grandTotal * ciInsPct / 100);
+      const patContrib = grandTotal - insAmt;
+      const balance = patContrib - ciTotalPaid;
+
+      document.getElementById('ciSumSubtotal').textContent = 'Rwf ' + grandTotal.toLocaleString();
+      document.getElementById('ciSumInsurance').textContent = 'Rwf ' + insAmt.toLocaleString();
+      document.getElementById('ciSumPatient').textContent = 'Rwf ' + patContrib.toLocaleString();
+      document.getElementById('ciSumPaid').textContent = 'Rwf ' + ciTotalPaid.toLocaleString();
+      document.getElementById('ciSumBalance').textContent = 'Rwf ' + Math.abs(balance).toLocaleString();
+      document.getElementById('ciSumBalance').style.color = balance <= 0 ? '#059669' : '#ef4444';
+      document.getElementById('ciRecordPaymentCard').style.display = balance > 0 ? '' : 'none';
+    }
+
+    function ciDeleteItem(cat, idx) {
+      ciItems[cat].splice(idx, 1);
+      if (!ciItems[cat].length) delete ciItems[cat];
+      ciRenderTables();
+    }
+
+    function ciOnProductChange() {
+      const val = document.getElementById('ciProductSelect').value;
+      const box = document.getElementById('ciProductInfoBox');
+      if (!val) { box.style.display = 'none'; return; }
+      const p = val.split('|');
+      document.getElementById('ciPCategory').textContent = p[1];
+      document.getElementById('ciPPrice').textContent = 'Rwf ' + Number(p[2]).toLocaleString();
+      box.style.display = '';
+    }
+
+    function ciAddItem() {
+      const val = document.getElementById('ciProductSelect').value;
+      if (!val) { alert('Please select a product'); return; }
+      const p = val.split('|');
+      const name = p[0], cat = p[1], unitCost = Number(p[2]);
+      const qty = Number(document.getElementById('ciQtyInput').value) || 1;
+      const note = document.getElementById('ciItemNote').value.trim();
+      if (!ciItems[cat]) ciItems[cat] = [];
+      ciItems[cat].push({ name, note, qty, unitCost });
+      ciRenderTables();
+      document.getElementById('ciProductSelect').value = '';
+      document.getElementById('ciQtyInput').value = 1;
+      document.getElementById('ciItemNote').value = '';
+      document.getElementById('ciProductInfoBox').style.display = 'none';
+    }
+
+    function ciOnInsuranceChange() {
+      const val = document.getElementById('ciInsuranceSelect').value;
+      ciInsPct = Number(val.split('|')[1]);
+      document.getElementById('ciInsPctLabel').textContent = ciInsPct > 0 ? `covers ${ciInsPct}%` : '';
+      document.getElementById('ciRssbSection').style.display = val.startsWith('RSSB') ? '' : 'none';
+      ciRenderTables();
+    }
+
+    function ciRecordPayment() {
+      const amt = Number(document.getElementById('ciPaymentAmount').value);
+      const method = document.getElementById('ciPaymentMethod').value;
+      const ref = document.getElementById('ciPaymentRef').value.trim();
+      if (!amt || amt <= 0) { alert('Please enter a valid amount'); return; }
+      if (!method) { alert('Please select a payment method'); return; }
+      const now = new Date();
+      const ds = now.toLocaleDateString('en-GB') + ' - ' + now.toTimeString().slice(0, 8);
+      ciPayments.push({ date: ds, amt, method, ref });
+      ciTotalPaid += amt;
+
+      const nr = document.getElementById('ciNoCashRow');
+      if (nr) nr.remove();
+      const cb = document.getElementById('ciCashBody');
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${ds}</td><td>Rwf ${amt.toLocaleString()}</td><td>Jane Doe</td><td>${method}</td><td></td>`;
+      cb.appendChild(tr);
+
+      document.getElementById('ciAuditEmptyMsg').style.display = 'none';
+      document.getElementById('ciAuditSectionLbl').style.display = 'block';
+      const cnt = Number(document.getElementById('ciAuditCount').textContent) + 1;
+      document.getElementById('ciAuditCount').textContent = cnt;
+
+      const div = document.createElement('div');
+      div.className = 'ci-audit-item';
+      div.innerHTML = `<div class="ci-audit-top"><div><div class="ci-audit-date">${ds}</div><div class="ci-audit-meta">${method}${ref ? ' · Ref: ' + ref : ''}</div></div><span class="ci-audit-amt">Rwf ${amt.toLocaleString()}</span></div><button class="ci-audit-del" onclick="ciRemovePayment(this,${amt})"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></button>`;
+      document.getElementById('ciAuditList').appendChild(div);
+
+      document.getElementById('ciPaymentAmount').value = '';
+      document.getElementById('ciPaymentMethod').value = '';
+      document.getElementById('ciPaymentRef').value = '';
+      ciRenderTables();
+    }
+
+    function ciRemovePayment(btn, amt) {
+      ciTotalPaid = Math.max(0, ciTotalPaid - amt);
+      btn.closest('.ci-audit-item').remove();
+      const cnt = Number(document.getElementById('ciAuditCount').textContent) - 1;
+      document.getElementById('ciAuditCount').textContent = cnt;
+      if (cnt === 0) {
+        document.getElementById('ciAuditEmptyMsg').style.display = 'flex';
+        document.getElementById('ciAuditSectionLbl').style.display = 'none';
+      }
+      ciRenderTables();
+    }
+
+    // ── Send dropdown ──────────────────────────────────────────────
+    function ciToggleSendMenu() {
+      const btn = document.getElementById('ciSendBtnEl');
+      const menu = document.getElementById('ciSendMenu');
+      btn.classList.toggle('open');
+      menu.classList.toggle('open');
+    }
+    function ciCloseSendMenu() {
+      document.getElementById('ciSendBtnEl').classList.remove('open');
+      document.getElementById('ciSendMenu').classList.remove('open');
+    }
+    function ciSendWhatsApp() { alert('Send via WhatsApp – integrate your WhatsApp Business API here.'); ciCloseSendMenu(); }
+    function ciSendEmail()    { alert('Send via Email – configure SMTP or email service here.');        ciCloseSendMenu(); }
+
+    // ── EBM ───────────────────────────────────────────────────────
+    function ciToggleEbm() {
+      document.getElementById('ciEbmBtnEl').classList.toggle('open');
+      document.getElementById('ciEbmMenu').classList.toggle('open');
+    }
+    function ciCloseEbm() {
+      document.getElementById('ciEbmBtnEl').classList.remove('open');
+      document.getElementById('ciEbmMenu').classList.remove('open');
+    }
+
+    function ciOpenReceipt(type) {
+      ciCloseEbm();
+      const p = ciPatients[ciPatientId];
+      const rnum = '#' + Math.floor(10000000 + Math.random() * 90000000);
+      const now = new Date().toLocaleString();
+      const configs = {
+        sale:     { label:'SALE',     title:'EBM Official Receipt',   badgeClass:'badge-sale',     stamp:'stamp-official', stampText:'OFFICIAL' },
+        refund:   { label:'REFUND',   title:'Refund Receipt (CR)',     badgeClass:'badge-refund',   stamp:'stamp-copy',     stampText:'COPY REFUND' },
+        proforma: { label:'PROFORMA', title:'Proforma Invoice',        badgeClass:'badge-proforma', stamp:'stamp-draft',    stampText:'DRAFT' },
+        training: { label:'TRAINING', title:'Training Receipt',        badgeClass:'badge-training', stamp:'stamp-training', stampText:'TRAINING' },
+      };
+      const cfg = configs[type];
+
+      let itemLines = '';
+      Object.entries(ciItems).forEach(([cat, items]) => {
+        items.forEach(item => {
+          const lt = item.qty * item.unitCost;
+          itemLines += `<div class="rp-row"><span>${item.name} ×${item.qty}</span><span>Rwf ${lt.toLocaleString()}</span></div>`;
+        });
+      });
+      const insAmt = Math.round(Object.values(ciItems).flat().reduce((s, i) => s + i.qty * i.unitCost, 0) * ciInsPct / 100);
+      const total = Object.values(ciItems).flat().reduce((s, i) => s + i.qty * i.unitCost, 0);
+      const patPay = total - insAmt;
+
+      const watermark = type === 'proforma' ? '<span class="watermark-proforma">⚠ PROFORMA – NOT AN OFFICIAL RECEIPT</span>' :
+                        type === 'training'  ? '<span class="watermark-training">⚠ TRAINING MODE – NOT OFFICIAL</span>' : '';
+
+      document.getElementById('ciReceiptBadge').textContent = cfg.label;
+      document.getElementById('ciReceiptBadge').className = 'ci-rtype-badge ' + cfg.badgeClass;
+      document.getElementById('ciReceiptTitle').textContent = cfg.title;
+      document.getElementById('ciReceiptContent').innerHTML = `
+        <div class="rp-header">
+          <h1>SHEMA CLINIC</h1>
+          <div class="sub">Kigali, Rwanda · Tel: +250 000 000 000</div>
+          <div class="sub">TIN: 123456789</div>
+          <span class="rp-stamp ${cfg.stamp}">${cfg.stampText}</span>
+        </div>
+        <div class="rp-clinic">
+          <p>Receipt No: ${rnum}</p>
+          <p>Date: ${now}</p>
+          <p>Patient: ${p ? p.name : '—'}</p>
+          <p>File No: ${p ? p.fileNo : '—'}</p>
+        </div>
+        ${watermark}
+        <div class="rp-section">
+          <div class="rp-title">ITEMS</div>
+          ${itemLines || '<div class="rp-row sub"><span>No items</span><span>—</span></div>'}
+          <div class="rp-row total"><span>TOTAL:</span><span>Rwf ${total.toLocaleString()}</span></div>
+          <div class="rp-row sub"><span>Insurance (${ciInsPct}%):</span><span>− Rwf ${insAmt.toLocaleString()}</span></div>
+          <div class="rp-row total"><span>PATIENT PAYS:</span><span>Rwf ${patPay.toLocaleString()}</span></div>
+        </div>
+        <div class="rp-thank">THANK YOU</div>`;
+
+      document.getElementById('ciReceiptModal').classList.add('open');
+    }
+
+    function ciCloseReceipt() {
+      document.getElementById('ciReceiptModal').classList.remove('open');
+    }
+
+    function ciDownloadPDF() { alert('PDF download – integrate html2pdf or similar here.'); }
+
+    function addFbcTest() {
+      const sel = document.getElementById('fbc-test-select');
+      const opt = sel.options[sel.selectedIndex];
+      if (!opt || !opt.value) return;
+
+      const name = opt.value;
+      const refLow = parseFloat(opt.dataset.refLow);
+      const refHigh = parseFloat(opt.dataset.refHigh);
+      const unit = opt.dataset.unit;
+
+      // Prevent duplicates
+      if (document.getElementById('fbc-cell-' + name)) {
+        sel.value = ''; return;
+      }
+
+      const refText = refLow + ' – ' + refHigh + (unit ? ' ' + unit : '');
+      const cell = document.createElement('div');
+      cell.className = 'c-fbc-cell';
+      cell.id = 'fbc-cell-' + name;
+      cell.dataset.refLow = refLow;
+      cell.dataset.refHigh = refHigh;
+      cell.innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <div class="c-fbc-name">${name}</div>
+          <button class="c-del-btn" onclick="removeFbcTest('${name}')" style="font-size:11px;padding:0;">🗑</button>
+        </div>
+        <div class="c-fbc-ref">${refText}</div>
+        <input type="number" placeholder="0.0" oninput="checkFbcRange(this, ${refLow}, ${refHigh})">
+      `;
+      document.getElementById('fbc-active-grid').appendChild(cell);
+
+      // Remove from dropdown
+      opt.remove();
+      sel.value = '';
+    }
+
+    function checkFbcRange(input, low, high) {
+      const cell = input.closest('.c-fbc-cell');
+      const val = parseFloat(input.value);
+      if (input.value === '' || isNaN(val)) {
+        // Reset to default red-light style
+        cell.style.background = '';
+        cell.style.borderColor = '';
+        return;
+      }
+      if (val >= low && val <= high) {
+        cell.style.background = '#d1fae5';
+        cell.style.borderColor = '#6ee7b7';
+      } else {
+        cell.style.background = 'var(--c-red-light)';
+        cell.style.borderColor = 'var(--c-red-border)';
+      }
+    }
+
+    function removeFbcTest(name) {
+      const cell = document.getElementById('fbc-cell-' + name);
+      if (!cell) return;
+      const refLow = cell.dataset.refLow;
+      const refHigh = cell.dataset.refHigh;
+      cell.remove();
+
+      // Re-add to dropdown
+      const sel = document.getElementById('fbc-test-select');
+      const opt = document.createElement('option');
+      opt.value = name;
+      opt.textContent = name + ' (' + refLow + '–' + refHigh + ')';
+      opt.dataset.refLow = refLow;
+      opt.dataset.refHigh = refHigh;
+      sel.appendChild(opt);
+    }
+
+    function removeFbcSection() {
+      if (confirm('Remove NFL/FBC section?')) {
+        document.getElementById('fbc-active-grid').innerHTML = '';
+        document.getElementById('fbc-test-select').selectedIndex = 0;
+      }
+    }
+
+    // Close send menu / ebm when clicking outside
+    document.addEventListener('click', function(e) {
+      const sendBtn = document.getElementById('ciSendBtnEl');
+      const sendMenu = document.getElementById('ciSendMenu');
+      const ebmBtn = document.getElementById('ciEbmBtnEl');
+      const ebmMenu = document.getElementById('ciEbmMenu');
+
+      if (sendBtn && sendMenu && !sendBtn.contains(e.target) && !sendMenu.contains(e.target)) {
+        sendBtn.classList.remove('open');
+        sendMenu.classList.remove('open');
+      }
+      if (ebmBtn && ebmMenu && !ebmBtn.contains(e.target) && !ebmMenu.contains(e.target)) {
+        ebmBtn.classList.remove('open');
+        ebmMenu.classList.remove('open');
+      }
+    });
+  </script>
+</body>
 </html>

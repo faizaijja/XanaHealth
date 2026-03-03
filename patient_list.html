@@ -346,7 +346,7 @@
                 <button class="import-btn">Import</button>
                 <button class="add-patient-btn" onclick="showAddPatient(event)">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                  Add New Patient
+                  New Patient File
                 </button>
               </div>
             </div>
@@ -361,7 +361,7 @@
                 <thead>
                   <tr>
                     <th><input type="checkbox" class="checkbox" /></th>
-                    <th>Image</th><th>File Number</th><th>First Name</th><th>Last Name</th>
+                    <th>File Number</th><th>First Name</th><th>Last Name</th>
                     <th>Gender</th><th>Date of Birth</th><th>Phone Number</th><th>Actions</th>
                   </tr>
                 </thead>
@@ -685,16 +685,16 @@
     <script>
       // ---- Patient Data ----
       const patients = [
-        { id:1, img:'https://i.pravatar.cc/150?img=1', file:'112/001', firstName:'Raekwon', lastName:'Gbeho', gender:'Female', dob:'23/05/1992', phone:'+250000000000', email:'raekwon@gmail.com', nhes:'0000000000000000', address:'KN 78 Street, Kigali' },
-        { id:2, img:'https://i.pravatar.cc/150?img=5', file:'112/002', firstName:'Milani', lastName:'Mostafa', gender:'Female', dob:'23/05/1998', phone:'+250000000000', email:'milani@gmail.com', nhes:'0000000000000001', address:'KG 12 Avenue, Kigali' },
-        { id:3, img:'https://i.pravatar.cc/150?img=9', file:'112/003', firstName:'Tawana', lastName:'Adébáyò', gender:'Female', dob:'13/04/1999', phone:'+250000000000', email:'tawana@gmail.com', nhes:'0000000000000002', address:'KN 45 Road, Kigali' },
-        { id:4, img:'https://i.pravatar.cc/150?img=12', file:'112/004', firstName:'Tamira', lastName:'Mostafa', gender:'Male', dob:'01/09/1962', phone:'+250000000000', email:'tamira@gmail.com', nhes:'0000000000000003', address:'KG 33 Street, Kigali' },
-        { id:5, img:'https://i.pravatar.cc/150?img=20', file:'112/005', firstName:'Raekwon', lastName:'Adimb...', gender:'Female', dob:'23/05/2002', phone:'+250000000000', email:'raekwon2@gmail.com', nhes:'0000000000000004', address:'KN 22 Street, Kigali' },
-        { id:6, img:'https://i.pravatar.cc/150?img=33', file:'112/006', firstName:'Imani', lastName:'Badu', gender:'Male', dob:'23/05/1992', phone:'+250000000000', email:'imani@gmail.com', nhes:'0000000000000005', address:'KG 5 Avenue, Kigali' },
-        { id:7, img:'https://i.pravatar.cc/150?img=47', file:'112/007', firstName:'Jelani', lastName:'Chidubem', gender:'Female', dob:'13/02/1940', phone:'+250000000000', email:'jelani@gmail.com', nhes:'0000000000000006', address:'KN 90 Road, Kigali' },
-        { id:8, img:'https://i.pravatar.cc/150?img=52', file:'112/008', firstName:'Jelani', lastName:'Kasongo', gender:'Male', dob:'07/10/1996', phone:'+250000000000', email:'jelani2@gmail.com', nhes:'0000000000000007', address:'KG 18 Street, Kigali' },
-        { id:9, img:'https://i.pravatar.cc/150?img=44', file:'112/009', firstName:'Ogechukwu', lastName:'Ezel...', gender:'Female', dob:'03/09/1992', phone:'+250000000000', email:'ogechukwu@gmail.com', nhes:'0000000000000008', address:'KN 55 Avenue, Kigali' },
-        { id:10, img:'https://i.pravatar.cc/150?img=60', file:'112/010', firstName:'Mohammed', lastName:'Chi...', gender:'Male', dob:'23/05/1992', phone:'+250000000000', email:'mohammed@gmail.com', nhes:'0000000000000009', address:'KG 77 Road, Kigali' },
+        { id:1, file:'112/001', firstName:'Raekwon', lastName:'Gbeho', gender:'Female', dob:'23/05/1992', phone:'+250000000000', email:'raekwon@gmail.com', nhes:'0000000000000000', address:'KN 78 Street, Kigali' },
+        { id:2, file:'112/002', firstName:'Milani', lastName:'Mostafa', gender:'Female', dob:'23/05/1998', phone:'+250000000000', email:'milani@gmail.com', nhes:'0000000000000001', address:'KG 12 Avenue, Kigali' },
+        { id:3, file:'112/003', firstName:'Tawana', lastName:'Adébáyò', gender:'Female', dob:'13/04/1999', phone:'+250000000000', email:'tawana@gmail.com', nhes:'0000000000000002', address:'KN 45 Road, Kigali' },
+        { id:4, file:'112/004', firstName:'Tamira', lastName:'Mostafa', gender:'Male', dob:'01/09/1962', phone:'+250000000000', email:'tamira@gmail.com', nhes:'0000000000000003', address:'KG 33 Street, Kigali' },
+        { id:5,  file:'112/005', firstName:'Raekwon', lastName:'Adimb...', gender:'Female', dob:'23/05/2002', phone:'+250000000000', email:'raekwon2@gmail.com', nhes:'0000000000000004', address:'KN 22 Street, Kigali' },
+        { id:6, file:'112/006', firstName:'Imani', lastName:'Badu', gender:'Male', dob:'23/05/1992', phone:'+250000000000', email:'imani@gmail.com', nhes:'0000000000000005', address:'KG 5 Avenue, Kigali' },
+        { id:7, file:'112/007', firstName:'Jelani', lastName:'Chidubem', gender:'Female', dob:'13/02/1940', phone:'+250000000000', email:'jelani@gmail.com', nhes:'0000000000000006', address:'KN 90 Road, Kigali' },
+        { id:8, file:'112/008', firstName:'Jelani', lastName:'Kasongo', gender:'Male', dob:'07/10/1996', phone:'+250000000000', email:'jelani2@gmail.com', nhes:'0000000000000007', address:'KG 18 Street, Kigali' },
+        { id:9,  file:'112/009', firstName:'Ogechukwu', lastName:'Ezel...', gender:'Female', dob:'03/09/1992', phone:'+250000000000', email:'ogechukwu@gmail.com', nhes:'0000000000000008', address:'KN 55 Avenue, Kigali' },
+        { id:10, file:'112/010', firstName:'Mohammed', lastName:'Chi...', gender:'Male', dob:'23/05/1992', phone:'+250000000000', email:'mohammed@gmail.com', nhes:'0000000000000009', address:'KG 77 Road, Kigali' },
       ];
 
       let currentPatient = null;

@@ -5,26 +5,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>XanaHealth - Billing</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
   <style>
     *{margin:0;padding:0;box-sizing:border-box}
-
-    body{font-family: 'Inter', sans-serif;background:#f5f5f5;color:#333}
-
+    body{font-family:'Inter',sans-serif;background:#f5f5f5;color:#333}
     .container{display:flex;min-height:100vh}
-
-    /* Sidebar */
     .sidebar{width:240px;background:#fff;border-right:1px solid #e5e5e5;display:flex;flex-direction:column;flex-shrink:0}
     .logo{padding:20px 24px;font-size:20px;font-weight:600}
-    .logo span:first-child{color:#333}
-    .logo span:last-child{color:#059669}
+    .logo span:first-child{color:#333}.logo span:last-child{color:#059669}
     .nav-section{padding:12px 0}
     .nav-label{padding:8px 24px;font-size:11px;font-weight:600;color:#9ca3af;text-transform:uppercase;letter-spacing:.5px}
-    .nav-item{display:flex;align-items:center;padding:10px 24px;color:#6b7280;text-decoration:none;font-size:14px;cursor:pointer;transition:background .2s}
+    .nav-item{display:flex;align-items:center;padding:10px 24px;color:#6b7280;text-decoration:none;font-size:14px;cursor:pointer}
     .nav-item.active{color:#3C8066;border-right:3px solid #3C8066}
     .nav-item svg{width:18px;height:18px;margin-right:12px;opacity:.6}
-    .user-section{margin-top:auto;padding:20px 24px;}
+    .user-section{margin-top:auto;padding:20px 24px}
     .user-profile{display:flex;align-items:center;margin-bottom:16px}
     .user-avatar{width:40px;height:40px;border-radius:50%;background:#fecaca;margin-right:12px;overflow:hidden}
     .user-avatar img{width:100%;height:100%;object-fit:cover}
@@ -33,8 +27,6 @@
     .user-actions{display:flex;flex-direction:column;gap:8px}
     .user-action{display:flex;align-items:center;padding:8px 0;color:#6b7280;text-decoration:none;font-size:14px;cursor:pointer}
     .user-action svg{width:18px;height:18px;margin-right:12px;opacity:.6}
-
-    /* Main */
     .main-content{flex:1;display:flex;flex-direction:column;overflow:hidden}
     .header{background:#fff;padding:16px 32px;border-bottom:1px solid #e5e5e5;display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
     .header h1{font-size:24px;font-weight:600;color:#111827}
@@ -42,332 +34,234 @@
     .notification-icon{width:20px;height:20px;cursor:pointer}
     .company-dropdown{display:flex;align-items:center;gap:8px;padding:8px 16px;background:#fff;border:1px solid #e5e5e5;border-radius:6px;cursor:pointer;color:#9ca3af;font-size:14px}
     .content-area{padding:24px 32px;flex:1;background:#F4F6F5;overflow-y:auto}
-    .controls{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;gap:16px}
-    .controls-left{display:flex;gap:12px;flex:1}
-    .filter-btn,.action-btn{display:flex;align-items:center;gap:8px;padding:10px 16px;background:#fff;border:1px solid #d1d5db;border-radius:6px;cursor:pointer;font-size:14px;color:#374151;white-space:nowrap}
+    .controls{display:flex;margin-bottom:16px;gap:12px}
+    .filter-btn{display:flex;align-items:center;gap:8px;padding:10px 16px;background:#fff;border:1px solid #d1d5db;border-radius:6px;cursor:pointer;font-size:14px;color:#374151;white-space:nowrap}
+    .clear-filter-btn{display:flex;align-items:center;gap:7px;padding:10px 16px;background:#fff;border:1px solid #fca5a5;border-radius:6px;cursor:pointer;font-size:14px;color:#ef4444;white-space:nowrap;font-weight:500}
+    .clear-filter-btn svg{width:14px;height:14px;stroke:#ef4444}
     .search-box{display:flex;align-items:center;gap:8px;padding:10px 16px;background:#fff;border:1px solid #d1d5db;border-radius:6px;flex:1;max-width:300px}
     .search-box input{border:none;outline:none;flex:1;font-size:14px;color:#6b7280}
     .applied-filters{display:flex;gap:8px;margin-bottom:16px;align-items:center;flex-wrap:wrap}
     .filter-label{font-size:13px;color:#6b7280}
     .filter-tag{display:flex;align-items:center;gap:6px;padding:6px 12px;background:#f3f4f6;border-radius:4px;font-size:13px;color:#374151}
     .filter-tag .close{cursor:pointer;opacity:.6}
-    .clear-filter{color:#ef4444;font-size:13px;cursor:pointer;font-weight:500}
+    /* Filter modal */
+    .filter-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:500;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s;backdrop-filter:blur(2px)}
+    .filter-modal-overlay.open{opacity:1;pointer-events:all}
+    .filter-modal{background:#fff;border-radius:12px;width:460px;max-width:95vw;box-shadow:0 20px 50px rgba(0,0,0,.18);transform:scale(.96) translateY(8px);transition:transform .25s cubic-bezier(.34,1.2,.64,1)}
+    .filter-modal-overlay.open .filter-modal{transform:scale(1) translateY(0)}
+    .filter-modal-header{display:flex;align-items:center;justify-content:space-between;padding:20px 24px 16px}
+    .filter-modal-header h2{font-size:18px;font-weight:700;color:#111}
+    .filter-close-btn{width:32px;height:32px;border:none;background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#6b7280;font-size:20px;border-radius:6px}
+    .filter-close-btn:hover{background:#f3f4f6;color:#111}
+    .filter-modal-body{padding:0 24px 20px}
+    .filter-section{margin-bottom:20px}
+    .filter-section-label{font-size:14px;font-weight:700;color:#111;margin-bottom:10px;display:block}
+    .filter-date-row{display:flex;align-items:center;gap:10px}
+    .filter-date-input{flex:1;padding:10px 12px;border:1px solid #d1d5db;border-radius:8px;font-size:14px;color:#374151;outline:none;font-family:'Inter',sans-serif;background:#fff}
+    .filter-date-input:focus{border-color:#059669;box-shadow:0 0 0 3px rgba(5,150,105,.08)}
+    .filter-date-sep{font-size:13px;color:#9ca3af;font-weight:500}
+    .filter-date-hint{font-size:12px;color:#9ca3af;margin-top:6px}
+    .filter-select{width:100%;padding:10px 12px;border:1px solid #d1d5db;border-radius:8px;font-size:14px;color:#374151;outline:none;background:#fff;font-family:'Inter',sans-serif;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
+    .filter-select:focus{border-color:#059669;box-shadow:0 0 0 3px rgba(5,150,105,.08)}
+    .filter-modal-footer{display:flex;justify-content:flex-end;gap:10px;padding:16px 24px;border-top:1px solid #f3f4f6}
+    .filter-cancel-btn{padding:10px 20px;border:1px solid #d1d5db;background:#fff;border-radius:8px;font-size:14px;font-weight:500;cursor:pointer;color:#374151}
+    .filter-cancel-btn:hover{background:#f9fafb}
+    .filter-apply-btn{padding:10px 24px;border:none;background:#1d6fdb;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;color:#fff}
+    .filter-apply-btn:hover{background:#1557b0}
     .table-container{background:#fff;border-radius:8px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.1)}
     table{width:100%;border-collapse:collapse}
     thead{background:#dfe5e5;border-bottom:1px solid #e5e5e5}
-    th{padding:12px 16px;text-align:left;font-size:12px;font-weight:600;color:#6b7280;text-transform:uppercase;letter-spacing:.5px;white-space:nowrap}
-    td{padding:14px 16px;border-bottom:1px solid #f3f4f6;font-size:14px;color:#374151}
+    th{padding:10px 12px;text-align:left;font-size:11px;font-weight:600;color:#6b7280;text-transform:uppercase;letter-spacing:.5px;white-space:nowrap}
+    td{padding:11px 12px;border-bottom:1px solid #f3f4f6;font-size:13px;color:#374151}
     tbody tr{cursor:pointer;transition:background .15s}
-  
-    .checkbox{width:16px;height:16px;border:1px solid #d1d5db;border-radius:3px;cursor:pointer}
-    .patient-image{width:36px;height:36px;border-radius:50%;object-fit:cover}
+    tbody tr:hover{background:#f9fafb}
+    .checkbox{width:16px;height:16px;cursor:pointer}
     .pagination{display:flex;justify-content:flex-end;align-items:center;padding:16px 24px;gap:8px}
     .page-btn{padding:8px 12px;border:1px solid #d1d5db;background:#fff;border-radius:4px;cursor:pointer;font-size:14px;color:#374151}
     .page-btn.active{background:#3C8066;color:#fff;border-color:#059669}
     .page-btn:disabled{opacity:.4;cursor:not-allowed}
     .page-info{font-size:14px;color:#9ca3af;margin-left:8px}
-
-    /* ── EBM Dropdown ── */
-    .ebm-wrapper{position:relative;display:inline-block}
-
-    .ebm-btn{
-      display:flex;align-items:center;gap:6px;
-      padding:6px 14px;
-      background:#3C8066;border:1px solid #a7f3d0;
-      border-radius:6px;cursor:pointer;
-      font-size:13px;color:white;font-weight:200;
-      transition:all .2s;white-space:nowrap;
-    }
-    
-    .ebm-btn svg{width:12px;height:12px;transition:transform .25s;flex-shrink:0}
-    .ebm-btn.open svg{transform:rotate(180deg)}
-
-    .ebm-menu{
-      position:absolute;top:calc(100% + 6px);right:0;left:auto;z-index:500;
-      background:#fff;border:1px solid #e5e5e5;
-      border-radius:10px;box-shadow:0 8px 30px rgba(0,0,0,.14);
-      min-width:210px;overflow:hidden;
-      opacity:0;transform:translateY(-6px) scale(.97);
-      pointer-events:none;
-      transition:opacity .18s ease,transform .2s cubic-bezier(.34,1.56,.64,1);
-    }
-    .ebm-menu.open{opacity:1;transform:translateY(0) scale(1);pointer-events:all}
-
-    .ebm-menu-header{padding:10px 16px 6px;font-size:10px;font-weight:700;color:#9ca3af;letter-spacing:.1em;text-transform:uppercase;font-family:'IBM Plex Mono',monospace;border-bottom:1px solid #f3f4f6}
-
-    .ebm-option{
-      display:flex;align-items:center;gap:12px;
-      padding:10px 16px;cursor:pointer;
-      transition:background .15s;
-      border-left:3px solid transparent;
-    }
-    .ebm-option:hover{background:#f0fdf4;border-left-color:#059669}
-
-    .ebm-option-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-    .dot-sale{background:#059669}
-    .dot-refund{background:#ef4444}
-    .dot-proforma{background:#f59e0b}
-    .dot-training{background:#6366f1}
-
-    .ebm-option-info strong{display:block;font-size:13px;color:#111827;font-weight:500}
-    .ebm-option-info span{font-size:11px;color:#9ca3af;font-family:'IBM Plex Mono',monospace}
-
-    /* ── Invoice Overlay ── */
+    .eye-btn{display:flex;align-items:center;justify-content:center;width:34px;height:34px;background:#3C8066;border:none;border-radius:6px;cursor:pointer}
+    .eye-btn:hover{background:#2d6b54}
+    .eye-btn svg{width:15px;height:15px;stroke:#fff;fill:none;stroke-width:2}
+    .status-badge{display:inline-flex;align-items:center;padding:3px 9px;border-radius:12px;font-size:11px;font-weight:600;text-transform:uppercase}
+    .badge-unpaid{background:#fee2e2;color:#991b1b}
+    .badge-paid{background:#d1fae5;color:#065f46}
+    .badge-partial{background:#fef3c7;color:#92400e}
+    /* Invoice overlay */
     .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:100;overflow-y:auto;padding:24px}
     .overlay.open{display:flex;align-items:flex-start;justify-content:center}
-    .invoice-page{background:#f9fafb;width:100%;max-width:960px;border-radius:10px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.3);animation:slideIn .25s ease}
+    .invoice-page{background:#f0f4f2;width:100%;max-width:1140px;border-radius:10px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.3);animation:slideIn .25s ease}
     @keyframes slideIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
-
-    .invoice-topbar{background:#fff;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #e5e5e5}
-    .inv-topbar-left{display:flex;align-items:center;gap:16px}
+    .invoice-topbar{background:#fff;padding:12px 22px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #e5e5e5}
+    .inv-topbar-left{display:flex;align-items:center;gap:14px}
     .back-btn{display:flex;align-items:center;gap:6px;color:#6b7280;font-size:14px;cursor:pointer;background:none;border:none}
     .back-btn:hover{color:#111}
-    .inv-title{font-size:18px;font-weight:600;color:#111}
-    .inv-topbar-right{display:flex;gap:10px;align-items:center}
-    .inv-btn{display:flex;align-items:center;gap:6px;padding:8px 16px;border-radius:6px;font-size:13px;font-weight:500;cursor:pointer;border:1px solid #d1d5db;background:#fff;color:#374151}
+    .inv-title{font-size:17px;font-weight:600;color:#111}
+    .inv-topbar-right{display:flex;gap:7px;align-items:center;flex-wrap:wrap}
+    .inv-btn{display:flex;align-items:center;gap:6px;padding:7px 12px;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid #d1d5db;background:#fff;color:#374151;white-space:nowrap}
     .inv-btn.green{background:#059669;color:#fff;border-color:#059669}
     .inv-btn.red{background:#fff;color:#ef4444;border-color:#fca5a5}
-
-    /* EBM inside invoice topbar */
-    .inv-ebm-wrapper{position:relative;display:inline-block}
-    .inv-ebm-btn{display:flex;align-items:center;gap:6px;padding:8px 16px;border-radius:6px;font-size:13px;font-weight:500;cursor:pointer;border:1px solid #a7f3d0;background:#d1fae5;color:#065f46}
-    .inv-ebm-btn svg{width:12px;height:12px;transition:transform .25s}
-    .inv-ebm-btn.open svg{transform:rotate(180deg)}
-    .inv-ebm-menu{position:absolute;top:calc(100% + 6px);right:0;left:auto;z-index:600;background:#fff;border:1px solid #e5e5e5;border-radius:10px;box-shadow:0 8px 30px rgba(0,0,0,.14);min-width:210px;overflow:hidden;opacity:0;transform:translateY(-6px) scale(.97);pointer-events:none;transition:opacity .18s ease,transform .2s cubic-bezier(.34,1.56,.64,1)}
-    .inv-ebm-menu.open{opacity:1;transform:translateY(0) scale(1);pointer-events:all}
-
-    .invoice-body{display:grid;grid-template-columns:1fr 220px;gap:16px;padding:16px}
-    .inv-card{background:#fff;border-radius:8px;border:1px solid #e5e5e5;overflow:hidden;margin-bottom:14px}
-    .inv-card-header{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;border-bottom:1px solid #f3f4f6}
-    .inv-card-header h3{font-size:15px;font-weight:600;color:#111}
-    .inv-number{font-size:13px;color:#6b7280}
-    .clinic-patient-info{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:14px 18px;border-bottom:1px solid #f3f4f6}
-    .clinic-col h4,.patient-col h4{font-size:14px;font-weight:600;color:#111;margin-bottom:6px}
-    .info-row{font-size:12px;color:#6b7280;margin-bottom:3px}
-    .info-row span{color:#374151;font-weight:500}
-    .patient-meta{display:flex;gap:24px;padding:10px 18px;border-bottom:1px solid #f3f4f6;font-size:12px;color:#6b7280;flex-wrap:wrap}
-    .patient-meta span{color:#374151;font-weight:500}
-    .items-search{display:flex;align-items:center;gap:8px;padding:10px 18px;border-bottom:1px solid #f3f4f6}
-    .items-search input{border:none;outline:none;font-size:13px;color:#6b7280;flex:1}
+    .inv-btn svg{width:13px;height:13px}
+    /* Send dropdown */
+    .send-wrapper{position:relative;display:inline-block}
+    .send-btn{display:flex;align-items:center;gap:6px;padding:7px 12px;background:#fff;border:1px solid #d1d5db;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;color:#374151;white-space:nowrap}
+    .send-btn svg.chevron{width:11px;height:11px;transition:transform .2s}
+    .send-btn.open svg.chevron{transform:rotate(180deg)}
+    .send-menu{position:absolute;top:calc(100% + 4px);left:0;z-index:700;background:#fff;border:1px solid #e5e5e5;border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.12);min-width:190px;overflow:hidden;opacity:0;transform:translateY(-4px);pointer-events:none;transition:opacity .15s,transform .18s}
+    .send-menu.open{opacity:1;transform:translateY(0);pointer-events:all}
+    .send-option{display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;font-size:13px;color:#374151}
+    .send-option:hover{background:#f0fdf4}
+    .send-option svg{width:16px;height:16px;flex-shrink:0;stroke-width:2}
+    /* Invoice body */
+    .invoice-body{display:grid;grid-template-columns:1fr 298px;gap:14px;padding:14px;align-items:start}
+    .invoice-main{display:flex;flex-direction:column;gap:12px}
+    .invoice-side{display:flex;flex-direction:column;gap:12px}
+    .inv-card{background:#fff;border-radius:8px;border:1px solid #e5e5e5;overflow:hidden}
+    .inv-card-header{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid #f3f4f6}
+    .inv-card-header h3{font-size:14px;font-weight:600;color:#111}
+    /* Visit grid */
+    .visit-info-grid{display:grid;grid-template-columns:1fr 1fr 1fr;padding:14px 16px;border-bottom:1px solid #f3f4f6;gap:0}
+    .visit-col h4{font-size:13px;font-weight:700;color:#111;margin-bottom:6px}
+    .visit-col .info-row{font-size:12px;color:#6b7280;margin-bottom:3px}
+    .visit-col .info-row span{color:#374151;font-weight:500}
+    .visit-tags{display:flex;gap:7px;padding:9px 16px;border-bottom:1px solid #f3f4f6;flex-wrap:wrap;align-items:center}
+    .visit-tag{display:inline-flex;align-items:center;padding:3px 9px;border-radius:4px;font-size:11px;font-weight:500}
+    .tag-dept{background:#e0f2fe;color:#0369a1}
+    .tag-ins{background:#f3f4f6;color:#374151}
+    .tag-copay{background:#fef3c7;color:#92400e}
+    .tag-visit{background:#f0fdf4;color:#166534;font-family:'IBM Plex Mono',monospace}
+    /* Category tables */
+    .category-header{display:flex;padding:8px 16px;background:#f9fafb;border-bottom:1px solid #e5e5e5;border-top:1px solid #e5e5e5}
+    .category-title{font-size:11px;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:.5px}
     .items-table{width:100%;border-collapse:collapse}
-    .items-table th{padding:10px 14px;text-align:left;font-size:11px;font-weight:600;color:#6b7280;text-transform:uppercase;letter-spacing:.4px;background:#f9fafb;border-bottom:1px solid #e5e5e5}
-    .items-table td{padding:12px 14px;font-size:13px;color:#374151;border-bottom:1px solid #f3f4f6}
-    .del-icon{color:#ef4444;cursor:pointer;opacity:.7}
-    .del-icon:hover{opacity:1}
-    .items-table-footer{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;border-top:1px solid #f3f4f6}
-    .add-item-btn{display:flex;align-items:center;gap:6px;padding:8px 14px;background:#fff;border:1px solid #d1d5db;border-radius:6px;cursor:pointer;font-size:13px;color:#374151;font-weight:500}
-    .item-pagination{display:flex;align-items:center;gap:6px;font-size:13px;color:#6b7280}
-    .item-pg-btn{padding:4px 10px;border:1px solid #e5e5e5;border-radius:4px;background:#fff;cursor:pointer;font-size:12px;color:#6b7280}
-    .item-pg-btn.active{background:#059669;color:#fff;border-color:#059669}
-    .totals-bar{display:grid;grid-template-columns:repeat(5,1fr);padding:14px 18px;background:#f9fafb;border-top:1px solid #e5e5e5;border-bottom:1px solid #e5e5e5;gap:12px}
-    .total-col label{font-size:11px;color:#6b7280;text-transform:uppercase;letter-spacing:.3px;display:block;margin-bottom:4px}
-    .total-col .val{font-size:14px;font-weight:600;color:#111}
-    .total-col .val.red{color:#ef4444}
-    .balance-due-row{text-align:center;padding:10px;font-size:13px;color:#6b7280;border-bottom:1px solid #f3f4f6}
-    .balance-due-row span{font-weight:600;color:#111}
-    .payment-row{display:flex;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid #f3f4f6}
-    .payment-input{flex:1;padding:9px 14px;border:1px solid #d1d5db;border-radius:6px;font-size:13px;color:#374151;outline:none}
-    .payment-input:focus{border-color:#059669}
-    .cash-select{padding:9px 14px;border:1px solid #d1d5db;border-radius:6px;font-size:13px;color:#374151;background:#fff;outline:none}
-    .submit-btn{padding:9px 20px;background:#059669;color:#fff;border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer}
-    .submit-btn:hover{background:#047857}
-    .balance-checkbox{padding:10px 18px;font-size:12px;color:#6b7280;display:flex;align-items:center;gap:8px;border-bottom:1px solid #f3f4f6}
-    .initiated-by{padding:10px 18px;font-size:12px;color:#6b7280;text-align:right}
-    .cash-paid-title{padding:14px 18px 10px;font-size:14px;font-weight:600;color:#111;border-bottom:1px solid #f3f4f6}
+    .items-table th{padding:8px 12px;text-align:left;font-size:11px;font-weight:600;color:#6b7280;text-transform:uppercase;letter-spacing:.3px;background:#fafafa;border-bottom:1px solid #e5e5e5}
+    .items-table td{padding:9px 12px;font-size:12px;color:#374151;border-bottom:1px solid #f3f4f6}
+    .items-table .subtotal-row td{background:#edf4f0;font-weight:700;font-size:12px;color:#111;border-top:1px solid #cdddd6;border-bottom:none}
+    .del-btn{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;background:#ef4444;border:none;border-radius:5px;cursor:pointer}
+    .del-btn:hover{background:#dc2626}
+    .del-btn svg{width:12px;height:12px;stroke:#fff;fill:none;stroke-width:2}
+    .item-note{font-size:10px;color:#9ca3af;margin-top:1px}
+    /* Summary */
+    .inv-summary-card{background:#fff;border-radius:8px;border:1px solid #e5e5e5;overflow:hidden}
+    .inv-summary-table{width:100%;border-collapse:collapse}
+    .inv-summary-table td{padding:9px 16px;font-size:13px;border-bottom:1px solid #f3f4f6;color:#374151}
+    .inv-summary-table td:last-child{text-align:right;font-weight:500;color:#111}
+    .inv-summary-table tr:last-child td{border-bottom:none}
+    .inv-summary-table .balance-row td{font-size:14px;font-weight:700;padding:12px 16px}
+    /* RSSB */
+    .rssb-card{background:#fff;border-radius:8px;border:1px solid #e5e5e5;overflow:hidden}
+    .rssb-card-header{padding:12px 16px;border-bottom:1px solid #f3f4f6;font-size:14px;font-weight:700;color:#111}
+    .rssb-body{display:grid;grid-template-columns:1fr 1fr 1fr}
+    .rssb-col{padding:14px 16px;border-right:1px solid #f3f4f6}
+    .rssb-col:last-child{border-right:none}
+    .rssb-col h4{font-size:11px;font-weight:700;color:#6b7280;margin-bottom:10px;text-transform:uppercase;letter-spacing:.4px}
+    .rssb-field{margin-bottom:9px;font-size:12px}
+    .rssb-field strong{display:block;color:#374151;margin-bottom:2px}
+    .rssb-underline{border:none;border-bottom:1px solid #374151;outline:none;font-size:12px;color:#374151;padding:2px 0;width:100%;background:transparent;font-family:'Inter',sans-serif}
+    .rssb-underline:focus{border-bottom-color:#059669}
+    .rssb-footer{padding:10px 16px;font-size:12px;color:#6b7280;display:flex;align-items:center;gap:8px;border-top:1px solid #f3f4f6}
+    /* Cash paid */
     .cash-table{width:100%;border-collapse:collapse}
-    .cash-table th{padding:10px 14px;text-align:left;font-size:12px;font-weight:500;color:#9ca3af;border-bottom:1px solid #f3f4f6}
-    .cash-table td{padding:12px 14px;font-size:13px;color:#374151}
-    .lab-orders-card{background:#fff;border-radius:8px;border:1px solid #e5e5e5;overflow:hidden}
-    .lab-header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid #f3f4f6}
-    .lab-header h4{font-size:14px;font-weight:600;color:#111}
-    .lab-count{background:#f3f4f6;border-radius:10px;padding:2px 8px;font-size:12px;color:#6b7280;margin-left:6px}
-    .actions-btn{display:flex;align-items:center;gap:4px;font-size:12px;color:#6b7280;cursor:pointer;background:none;border:none}
-    .lab-item{display:flex;align-items:center;padding:10px 16px;border-bottom:1px solid #f9fafb;gap:10px}
-    .lab-item input[type="checkbox"]{flex-shrink:0}
-    .lab-item-name{flex:1;font-size:13px;color:#374151}
-    .lab-item-price{font-size:13px;color:#6b7280;width:40px;text-align:right}
-    .lab-add-btn{padding:5px 14px;border-radius:5px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid #d1d5db;background:#fff;color:#374151}
-    .lab-add-btn.added{background:#f3f4f6;color:#9ca3af;cursor:default}
-    .lab-add-btn.primary{background:#059669;color:#fff;border-color:#059669}
-    .lab-totals{padding:12px 16px;border-top:1px solid #f3f4f6;font-size:12px;color:#6b7280;line-height:1.8}
-    .lab-totals strong{color:#111}
-
-    /* ── Receipt Modal ── */
-    .receipt-modal-overlay{
-      position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:900;
-      display:flex;align-items:center;justify-content:center;
-      opacity:0;pointer-events:none;transition:opacity .3s;
-      backdrop-filter:blur(4px);
-    }
+    .cash-table th{padding:9px 12px;text-align:left;font-size:12px;font-weight:500;color:#9ca3af;border-bottom:1px solid #f3f4f6}
+    .cash-table td{padding:10px 12px;font-size:12px;color:#374151}
+    /* Side */
+    .side-card{background:#fff;border-radius:8px;border:1px solid #e5e5e5;overflow:hidden}
+    .side-card-header{padding:12px 14px;border-bottom:1px solid #f3f4f6;font-size:13px;font-weight:600;color:#111}
+    .side-card-body{padding:12px 14px}
+    .form-group{margin-bottom:11px}
+    .form-group label{display:block;font-size:11px;font-weight:600;color:#374151;margin-bottom:4px}
+    .form-control{width:100%;padding:8px 10px;border:1px solid #d1d5db;border-radius:6px;font-size:12px;color:#374151;outline:none;background:#fff;font-family:'Inter',sans-serif}
+    .form-control:focus{border-color:#059669;box-shadow:0 0 0 2px rgba(5,150,105,.08)}
+    .ins-contrib-box{margin-top:7px;padding:9px 11px;background:#f0fdf4;border:1px solid #a7f3d0;border-radius:6px;font-size:11px;color:#065f46}
+    .side-submit-btn{width:100%;padding:9px;background:#1d6fdb;color:#fff;border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer}
+    .side-submit-btn:hover{background:#1557b0}
+    .side-submit-btn.green{background:#059669}
+    .side-submit-btn.green:hover{background:#047857}
+    /* Audit trail */
+    .audit-empty{padding:14px;text-align:center;font-size:12px;color:#9ca3af;display:flex;align-items:center;justify-content:center;gap:6px}
+    .audit-section-label{padding:8px 14px 3px;font-size:11px;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:.4px}
+    .audit-item{padding:9px 14px;border-bottom:1px solid #f3f4f6}
+    .audit-item-top{display:flex;justify-content:space-between;align-items:flex-start}
+    .audit-date{font-size:12px;color:#374151;font-weight:500}
+    .audit-meta{font-size:11px;color:#9ca3af;margin-top:1px}
+    .audit-amount{font-size:13px;font-weight:700;color:#059669}
+    .audit-del-btn{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;background:#fff;border:1px solid #fca5a5;border-radius:6px;cursor:pointer;margin-top:5px}
+    .audit-del-btn:hover{background:#fee2e2}
+    .audit-del-btn svg{width:13px;height:13px;stroke:#ef4444;fill:none;stroke-width:2}
+    /* EBM */
+    .inv-ebm-wrapper{position:relative;display:inline-block}
+    .inv-ebm-btn{display:flex;align-items:center;gap:5px;padding:7px 12px;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid #a7f3d0;background:#d1fae5;color:#065f46;white-space:nowrap}
+    .inv-ebm-btn svg{width:11px;height:11px;transition:transform .25s}
+    .inv-ebm-btn.open svg{transform:rotate(180deg)}
+    .ebm-menu{position:absolute;top:calc(100% + 5px);right:0;z-index:600;background:#fff;border:1px solid #e5e5e5;border-radius:10px;box-shadow:0 8px 30px rgba(0,0,0,.14);min-width:210px;overflow:hidden;opacity:0;transform:translateY(-6px) scale(.97);pointer-events:none;transition:opacity .18s,transform .2s cubic-bezier(.34,1.56,.64,1)}
+    .ebm-menu.open{opacity:1;transform:translateY(0) scale(1);pointer-events:all}
+    .ebm-menu-header{padding:8px 14px 5px;font-size:10px;font-weight:700;color:#9ca3af;letter-spacing:.1em;text-transform:uppercase;font-family:'IBM Plex Mono',monospace;border-bottom:1px solid #f3f4f6}
+    .ebm-option{display:flex;align-items:center;gap:10px;padding:9px 14px;cursor:pointer;border-left:3px solid transparent}
+    .ebm-option:hover{background:#f0fdf4;border-left-color:#059669}
+    .ebm-option-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+    .dot-sale{background:#059669}.dot-refund{background:#ef4444}.dot-proforma{background:#f59e0b}.dot-training{background:#6366f1}
+    .ebm-option-info strong{display:block;font-size:13px;color:#111827;font-weight:500}
+    .ebm-option-info span{font-size:11px;color:#9ca3af;font-family:'IBM Plex Mono',monospace}
+    /* Receipt modal */
+    .receipt-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:900;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s;backdrop-filter:blur(4px)}
     .receipt-modal-overlay.open{opacity:1;pointer-events:all}
-
-    .receipt-modal-box{
-      background:#fff;border-radius:16px;
-      width:420px;max-width:95vw;max-height:90vh;
-      overflow:hidden;display:flex;flex-direction:column;
-      box-shadow:0 24px 60px rgba(0,0,0,.3);
-      transform:scale(.94) translateY(16px);
-      transition:transform .35s cubic-bezier(.34,1.2,.64,1);
-    }
+    .receipt-modal-box{background:#fff;border-radius:14px;width:400px;max-width:95vw;max-height:90vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 24px 60px rgba(0,0,0,.3);transform:scale(.94) translateY(16px);transition:transform .3s cubic-bezier(.34,1.2,.64,1)}
     .receipt-modal-overlay.open .receipt-modal-box{transform:scale(1) translateY(0)}
-
-    .receipt-topbar{
-      display:flex;align-items:center;justify-content:space-between;
-      padding:14px 20px;border-bottom:1px solid #f0f0f0;background:#fff;flex-shrink:0;
-    }
-    .receipt-topbar-left{display:flex;align-items:center;gap:10px}
-
-    .rtype-badge{font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.1em;padding:3px 10px;border-radius:20px}
+    .receipt-topbar{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;border-bottom:1px solid #f0f0f0;flex-shrink:0}
+    .receipt-topbar-left{display:flex;align-items:center;gap:9px}
+    .rtype-badge{font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.1em;padding:3px 9px;border-radius:20px}
     .badge-sale{background:#d1fae5;color:#065f46;border:1px solid #a7f3d0}
     .badge-refund{background:#fee2e2;color:#991b1b;border:1px solid #fca5a5}
     .badge-proforma{background:#fef3c7;color:#92400e;border:1px solid #fcd34d}
     .badge-training{background:#e0e7ff;color:#3730a3;border:1px solid #a5b4fc}
-
-    .receipt-topbar h3{font-size:15px;font-weight:600;color:#111}
-
-    .modal-close-btn{
-      width:32px;height:32px;border-radius:8px;border:1px solid #e5e5e5;
-      background:#f9fafb;cursor:pointer;display:flex;align-items:center;justify-content:center;
-      color:#6b7280;font-size:16px;transition:all .2s;
-    }
+    .receipt-topbar h3{font-size:14px;font-weight:600;color:#111}
+    .modal-close-btn{width:30px;height:30px;border-radius:7px;border:1px solid #e5e5e5;background:#f9fafb;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#6b7280;font-size:15px}
     .modal-close-btn:hover{background:#fee2e2;color:#ef4444;border-color:#fca5a5}
-
     .receipt-scroll{overflow-y:auto;flex:1}
-
-    /* Receipt paper */
-    .receipt-paper{
-      padding:24px;
-      font-family:'IBM Plex Mono',monospace;
-      font-size:12px;color:#1a1a1a;line-height:1.65;
-      background:#fafaf7;
-    }
-    .rp-header{text-align:center;padding-bottom:14px;margin-bottom:14px;border-bottom:1px dashed #d0d0c0}
-    .rp-header h1{font-size:16px;font-weight:700;letter-spacing:.04em}
-    .rp-header .sub{font-size:11px;color:#666;margin-top:2px}
-    .rp-clinic{text-align:center;padding-bottom:12px;margin-bottom:12px;border-bottom:1px dashed #d0d0c0}
-    .rp-clinic p{font-size:12px}
-    .rp-stamp{display:inline-block;padding:2px 14px;border-radius:3px;font-size:10px;font-weight:700;letter-spacing:.1em;margin-top:6px}
-    .stamp-copy{background:#1a1a1a;color:#fff}
-    .stamp-official{background:#059669;color:#fff}
-    .stamp-draft{background:#f59e0b;color:#fff}
-    .stamp-training{background:#6366f1;color:#fff}
-    .rp-section{padding-bottom:12px;margin-bottom:12px;border-bottom:1px dashed #d0d0c0}
+    .receipt-paper{padding:22px;font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:#1a1a1a;line-height:1.65;background:#fafaf7}
+    .rp-header{text-align:center;padding-bottom:12px;margin-bottom:12px;border-bottom:1px dashed #d0d0c0}
+    .rp-header h1{font-size:15px;font-weight:700;letter-spacing:.04em}
+    .rp-header .sub{font-size:10px;color:#666;margin-top:2px}
+    .rp-clinic{text-align:center;padding-bottom:11px;margin-bottom:11px;border-bottom:1px dashed #d0d0c0}
+    .rp-clinic p{font-size:11.5px}
+    .rp-stamp{display:inline-block;padding:2px 12px;border-radius:3px;font-size:9px;font-weight:700;letter-spacing:.1em;margin-top:5px}
+    .stamp-official{background:#059669;color:#fff}.stamp-copy{background:#1a1a1a;color:#fff}.stamp-draft{background:#f59e0b;color:#fff}.stamp-training{background:#6366f1;color:#fff}
+    .rp-section{padding-bottom:11px;margin-bottom:11px;border-bottom:1px dashed #d0d0c0}
     .rp-section:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
-    .rp-title{text-align:center;font-weight:700;font-size:12px;letter-spacing:.08em;margin-bottom:6px;text-decoration:underline}
-    .rp-warn{text-align:center;font-size:11px;font-style:italic;color:#666;padding:4px 0}
-    .rp-row{display:flex;justify-content:space-between;padding:2px 0;font-size:12px}
-    .rp-row.total{font-weight:700;font-size:13px;padding:4px 0}
-    .rp-row.sub{color:#666;font-size:11px}
-    .not-official{text-align:center;font-weight:700;font-size:11px;padding:6px 0;border-top:1px solid #d0d0c0;border-bottom:1px solid #d0d0c0;margin:8px 0}
-    .rp-databox{background:#f0f0e8;border:1px solid #d5d5c0;border-radius:5px;padding:7px 10px;margin:8px 0;font-size:10px;color:#555;word-break:break-all}
-    .rp-databox strong{display:block;font-size:11px;color:#222;margin-bottom:2px}
-    .rp-thank{text-align:center;font-weight:700;font-size:13px;letter-spacing:.15em;padding-top:14px;color:#222}
-    .watermark-proforma{text-align:center;color:#92400e;border:2px solid #f59e0b;border-radius:4px;display:inline-block;padding:2px 16px;margin:8px 0;font-size:11px;font-weight:600;letter-spacing:.08em;width:100%}
-    .watermark-training{text-align:center;color:#3730a3;border:2px solid #6366f1;border-radius:4px;display:inline-block;padding:2px 16px;margin:8px 0;font-size:11px;font-weight:600;letter-spacing:.08em;width:100%}
-
-    .receipt-footer{display:flex;gap:8px;padding:14px 20px;border-top:1px solid #f0f0f0;background:#fff;flex-shrink:0}
-    .rfooter-btn{flex:1;padding:9px 14px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;border:1px solid #d1d5db;background:#f9fafb;color:#6b7280;display:flex;align-items:center;justify-content:center;gap:6px;transition:all .2s}
+    .rp-title{text-align:center;font-weight:700;font-size:11.5px;letter-spacing:.08em;margin-bottom:5px;text-decoration:underline}
+    .rp-warn{text-align:center;font-size:10px;font-style:italic;color:#666;padding:3px 0}
+    .rp-row{display:flex;justify-content:space-between;padding:2px 0;font-size:11.5px}
+    .rp-row.total{font-weight:700;font-size:12.5px;padding:4px 0}
+    .rp-row.sub{color:#666;font-size:10.5px}
+    .not-official{text-align:center;font-weight:700;font-size:10px;padding:5px 0;border-top:1px solid #d0d0c0;border-bottom:1px solid #d0d0c0;margin:7px 0}
+    .rp-databox{background:#f0f0e8;border:1px solid #d5d5c0;border-radius:4px;padding:6px 9px;margin:7px 0;font-size:9.5px;color:#555;word-break:break-all}
+    .rp-databox strong{display:block;font-size:10.5px;color:#222;margin-bottom:2px}
+    .rp-thank{text-align:center;font-weight:700;font-size:12px;letter-spacing:.15em;padding-top:12px;color:#222}
+    .watermark-proforma{text-align:center;color:#92400e;border:2px solid #f59e0b;border-radius:3px;display:block;padding:2px 14px;margin:7px 0;font-size:10px;font-weight:600;letter-spacing:.08em;width:100%}
+    .watermark-training{text-align:center;color:#3730a3;border:2px solid #6366f1;border-radius:3px;display:block;padding:2px 14px;margin:7px 0;font-size:10px;font-weight:600;letter-spacing:.08em;width:100%}
+    .receipt-footer{display:flex;gap:8px;padding:12px 18px;border-top:1px solid #f0f0f0;flex-shrink:0}
+    .rfooter-btn{flex:1;padding:8px 12px;border-radius:7px;font-size:13px;font-weight:500;cursor:pointer;border:1px solid #d1d5db;background:#f9fafb;color:#6b7280;display:flex;align-items:center;justify-content:center;gap:6px}
     .rfooter-btn:hover{border-color:#059669;color:#059669;background:#f0fdf4}
     .rfooter-btn.primary{background:#059669;color:#fff;border-color:#059669;font-weight:600}
-    .rfooter-btn.primary:hover{background:#047857;border-color:#047857;color:#fff}
-
-    /* ── Print Preview Overlay ── */
-    .print-preview-overlay{
-      position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:1100;
-      display:flex;flex-direction:column;align-items:center;
-      opacity:0;pointer-events:none;transition:opacity .25s;
-    }
-    .print-preview-overlay.open{opacity:1;pointer-events:all}
-
-    .print-preview-toolbar{
-      width:100%;background:#1f1f1f;padding:12px 24px;
-      display:flex;align-items:center;justify-content:space-between;
-      flex-shrink:0;
-    }
-    .print-preview-toolbar span{color:#ccc;font-size:13px;font-family:'IBM Plex Mono',monospace;letter-spacing:.05em}
-    .print-preview-toolbar-right{display:flex;gap:10px}
-
-    .pp-btn{
-      display:flex;align-items:center;gap:6px;
-      padding:8px 18px;border-radius:6px;font-size:13px;font-weight:600;
-      cursor:pointer;border:none;transition:all .2s;
-    }
-    .pp-btn-close{background:#3a3a3a;color:#ccc}
-    .pp-btn-close:hover{background:#555;color:#fff}
-    .pp-btn-print{background:#fff;color:#1a1a1a}
-    .pp-btn-print:hover{background:#e5e5e5}
-
-    .print-preview-body{
-      flex:1;overflow-y:auto;width:100%;
-      display:flex;justify-content:center;
-      padding:32px 24px;
-    }
-
-    .print-preview-paper{
-      background:#fff;
-      width:80mm;
-      padding:16px;
-      font-family:'IBM Plex Mono',monospace;
-      font-size:11px;color:#000;line-height:1.6;
-      box-shadow:0 4px 40px rgba(0,0,0,.5);
-      border-radius:2px;
-      filter:grayscale(100%);
-    }
-
-    /* Override all receipt styles inside print preview to B&W */
-    .print-preview-paper .rp-header{text-align:center;padding-bottom:12px;margin-bottom:12px;border-bottom:1px dashed #000}
-    .print-preview-paper .rp-header h1{font-size:15px;font-weight:700;letter-spacing:.04em;color:#000}
-    .print-preview-paper .rp-header .sub{font-size:10px;color:#333;margin-top:2px}
-    .print-preview-paper .rp-clinic{text-align:center;padding-bottom:10px;margin-bottom:10px;border-bottom:1px dashed #000}
-    .print-preview-paper .rp-clinic p{font-size:11px;color:#000}
-    .print-preview-paper .rp-stamp{display:inline-block;padding:2px 12px;border-radius:2px;font-size:9px;font-weight:700;letter-spacing:.1em;margin-top:4px;background:#000!important;color:#fff!important;border:none!important}
-    .print-preview-paper .rp-section{padding-bottom:10px;margin-bottom:10px;border-bottom:1px dashed #000}
-    .print-preview-paper .rp-section:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
-    .print-preview-paper .rp-title{text-align:center;font-weight:700;font-size:11px;letter-spacing:.08em;margin-bottom:5px;text-decoration:underline;color:#000}
-    .print-preview-paper .rp-warn{text-align:center;font-size:10px;font-style:italic;color:#333;padding:3px 0}
-    .print-preview-paper .rp-row{display:flex;justify-content:space-between;padding:2px 0;font-size:11px;color:#000}
-    .print-preview-paper .rp-row.total{font-weight:700;font-size:12px;padding:3px 0;color:#000}
-    .print-preview-paper .rp-row.sub{color:#333;font-size:10px}
-    .print-preview-paper .not-official{text-align:center;font-weight:700;font-size:10px;padding:5px 0;border-top:1px solid #000;border-bottom:1px solid #000;margin:6px 0;color:#000}
-    .print-preview-paper .rp-databox{background:#f0f0f0;border:1px solid #ccc;border-radius:2px;padding:6px 8px;margin:6px 0;font-size:9px;color:#333;word-break:break-all}
-    .print-preview-paper .rp-databox strong{display:block;font-size:10px;color:#000;margin-bottom:1px}
-    .print-preview-paper .rp-thank{text-align:center;font-weight:700;font-size:12px;letter-spacing:.15em;padding-top:12px;color:#000}
-    .print-preview-paper .watermark-proforma,.print-preview-paper .watermark-training{color:#000!important;border:2px solid #000!important;border-radius:2px;display:block;padding:2px;margin:6px 0;font-size:10px;font-weight:700;letter-spacing:.08em;text-align:center;width:100%}
-
-    @media print{
-      body > *{display:none!important}
-      .printable-frame{display:block!important;position:fixed;inset:0;z-index:9999;background:#fff}
-    }
+    .rfooter-btn.primary:hover{background:#047857}
+    .initiated-by{padding:9px 16px;font-size:11px;color:#6b7280;text-align:right;border-top:1px solid #f3f4f6}
+    @media print{body>*{display:none!important}.printable-frame{display:block!important;position:fixed;inset:0;z-index:9999;background:#fff}}
     .printable-frame{display:none}
   </style>
 </head>
 <body>
 <div class="container">
-
-  <!-- Sidebar -->
   <aside class="sidebar">
     <div class="logo"><span>Xana</span><span>Health</span></div>
     <nav class="nav-section">
       <div class="nav-label">RECEPTION/CASHIER</div>
-      <a href="#" class="nav-item">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard
-      </a>
-      <a href="new_patient.html" class="nav-item">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>New Patient File
-      </a>
-      <a href="patient_list.html" class="nav-item">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>Patients List
-      </a>
-      <a href="patient_visits.html" class="nav-item">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Patient Visits
-      </a>
-      <a href="appointments.html" class="nav-item">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Appointments
-      </a>
-     
-      <a href="billing.html" class="nav-item active">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>Billing
-      </a>
+      <a href="#" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard</a>
+      <a href="#" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>New Patient File</a>
+      <a href="#" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>Patients List</a>
+      <a href="#" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Patient Visits</a>
+      <a href="#" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Appointments</a>
+      <a href="#" class="nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>Billing</a>
     </nav>
     <div class="user-section">
       <div class="user-profile">
@@ -375,184 +269,89 @@
         <div class="user-info"><h4>Jane Doe</h4><p>Receptionist</p></div>
       </div>
       <div class="user-actions">
-        <a href="#" class="user-action">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Help
-        </a>
-        <a href="#" class="user-action">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Logout
-        </a>
+        <a href="#" class="user-action"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Help</a>
+        <a href="#" class="user-action"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Logout</a>
       </div>
     </div>
   </aside>
 
-  <!-- Main Content -->
   <main class="main-content">
     <header class="header">
       <h1>Billing</h1>
       <div class="header-right">
-        <svg class="notification-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-        </svg>
-        <div class="company-dropdown">
-          <span>Company Logo</span>
-          <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M6 9L1 4h10z"/></svg>
-        </div>
+        <svg class="notification-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <div class="company-dropdown"><span>Company Logo</span><svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M6 9L1 4h10z"/></svg></div>
       </div>
     </header>
-
     <div class="content-area">
       <div class="controls">
-        <div class="controls-left">
-          <button class="filter-btn">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/>
-              <line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/>
-              <line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/>
-            </svg>Filter by
-          </button>
-          <div class="search-box">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-            <input type="text" placeholder="Search all patients"/>
-          </div>
-          <button class="action-btn">Action <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M6 9L1 4h10z"/></svg></button>
-        </div>
+        <button class="filter-btn" onclick="openFilterModal()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>Filter by
+        </button>
+        <div class="search-box"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input type="text" placeholder="Search all patients"/></div>
+        <button class="clear-filter-btn" onclick="clearAllFilters()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Clear filter
+        </button>
       </div>
-
-      <div class="applied-filters">
+      <div class="applied-filters" id="appliedFiltersBar" style="display:none">
         <span class="filter-label">Applied Filter</span>
-        <div class="filter-tag">Recently added <span class="close">✕</span></div>
-        <div class="filter-tag">Recently Updated <span class="close">✕</span></div>
-        <span class="clear-filter">Clear filter</span>
+        <div class="filter-tag" id="filterTagDate" style="display:none"></div>
+        <div class="filter-tag" id="filterTagIns" style="display:none"></div>
+        <div class="filter-tag" id="filterTagStatus" style="display:none"></div>
       </div>
-
       <div class="table-container">
-        <table>
+        <table id="visitsTable">
           <thead>
             <tr>
               <th><input type="checkbox" class="checkbox"/></th>
-              <th>Date</th>
-              <th>Patient Name</th>
-              <th>Invoice</th>
-              <th>Department</th>
-              <th>Insurance</th>
-              <th>Insurance Cont.</th>
-              <th>Patient Cont.</th>
-              <th>Total</th>
-              <th>Actions</th>
+              <th>Date</th><th>Patient Name</th><th>Invoice</th>
+              <th>Doctor</th><th>Department</th>
+              <th>Insurance</th><th>Insurance Cont.</th><th>Patient Cont.</th>
+              <th>Total</th><th>Balance</th><th>Status</th><th>View</th>
             </tr>
           </thead>
           <tbody>
             <tr onclick="openInvoice('raekwon')">
               <td><input type="checkbox" class="checkbox" onclick="event.stopPropagation()"/></td>
-           
-              <td>23/05/2023</td>
-              <td>Raekwon Gbeho</td>
-              <td>#03336/2021</td>
-              <td>Consultation</td>
-              <td>RSSB</td>
-              <td>Rwf 10,322</td>
-              <td>Rwf 1,822</td>
-              <td>Rwf 12,144</td>
-              <td onclick="event.stopPropagation()">
-                <div class="ebm-wrapper" id="t-ebm-raekwon">
-                  <button class="ebm-btn" onclick="toggleEbm('t-ebm-raekwon')">
-                    EBM <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
-                  </button>
-                  <div class="ebm-menu" id="t-ebm-raekwon-menu">
-                    <div class="ebm-menu-header">Select Receipt Type</div>
-                    <div class="ebm-option" onclick="openReceipt('sale','Raekwon Gbeho','#03336/2021','152','Rwf 12,144')"><span class="ebm-option-dot dot-sale"></span><div class="ebm-option-info"><strong>Sale Receipt</strong><span>Normal / Official</span></div></div>
-                    <div class="ebm-option" onclick="openReceipt('refund','Raekwon Gbeho','#03336/2021','152','Rwf 12,144')"><span class="ebm-option-dot dot-refund"></span><div class="ebm-option-info"><strong>Refund Receipt</strong><span>Copy Refund (CR)</span></div></div>
-                    <div class="ebm-option" onclick="openReceipt('proforma','Raekwon Gbeho','#03336/2021','152','Rwf 12,144')"><span class="ebm-option-dot dot-proforma"></span><div class="ebm-option-info"><strong>Proforma Invoice</strong><span>Not Official</span></div></div>
-                    <div class="ebm-option" onclick="openReceipt('training','Raekwon Gbeho','#03336/2021','152','Rwf 12,144')"><span class="ebm-option-dot dot-training"></span><div class="ebm-option-info"><strong>Training Receipt</strong><span>Simulation Only</span></div></div>
-                  </div>
-                </div>
-              </td>
+              <td>05/23/2025</td><td>Raekwon Gbeho</td><td style="font-family:'IBM Plex Mono',monospace;font-size:11px">#03336/2021</td>
+              <td>Dr. Uwimana</td><td>Consultation</td>
+              <td>RSSB</td><td>Rwf 10,322</td><td>Rwf 1,822</td>
+              <td style="font-weight:600">Rwf 12,144</td><td style="color:#ef4444;font-weight:600">Rwf 403</td>
+              <td><span class="status-badge badge-partial">Partial</span></td>
+              <td onclick="event.stopPropagation()"><button class="eye-btn" onclick="openInvoice('raekwon')"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button></td>
             </tr>
             <tr onclick="openInvoice('milani')">
               <td><input type="checkbox" class="checkbox" onclick="event.stopPropagation()"/></td>
-            
-              <td>24/05/2023</td>
-              <td>Milani Mostafa</td>
-              <td>#03337/2021</td>
-              <td>Laboratory</td>
-              <td>MMI</td>
-              <td>Rwf 8,000</td>
-              <td>Rwf 2,000</td>
-              <td>Rwf 10,000</td>
-              <td onclick="event.stopPropagation()">
-                <div class="ebm-wrapper" id="t-ebm-milani">
-                  <button class="ebm-btn" onclick="toggleEbm('t-ebm-milani')">
-                    EBM <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
-                  </button>
-                  <div class="ebm-menu" id="t-ebm-milani-menu">
-                    <div class="ebm-menu-header">Select Receipt Type</div>
-                    <div class="ebm-option" onclick="openReceipt('sale','Milani Mostafa','#03337/2021','153','Rwf 10,000')"><span class="ebm-option-dot dot-sale"></span><div class="ebm-option-info"><strong>Sale Receipt</strong><span>Normal / Official</span></div></div>
-                    <div class="ebm-option" onclick="openReceipt('refund','Milani Mostafa','#03337/2021','153','Rwf 10,000')"><span class="ebm-option-dot dot-refund"></span><div class="ebm-option-info"><strong>Refund Receipt</strong><span>Copy Refund (CR)</span></div></div>
-                    <div class="ebm-option" onclick="openReceipt('proforma','Milani Mostafa','#03337/2021','153','Rwf 10,000')"><span class="ebm-option-dot dot-proforma"></span><div class="ebm-option-info"><strong>Proforma Invoice</strong><span>Not Official</span></div></div>
-                    <div class="ebm-option" onclick="openReceipt('training','Milani Mostafa','#03337/2021','153','Rwf 10,000')"><span class="ebm-option-dot dot-training"></span><div class="ebm-option-info"><strong>Training Receipt</strong><span>Simulation Only</span></div></div>
-                  </div>
-                </div>
-              </td>
+              <td>2025/05/24</td><td>Milani Mostafa</td><td style="font-family:'IBM Plex Mono',monospace;font-size:11px">#03337/2021</td>
+              <td>Dr. Nkusi</td><td>Laboratory</td>
+              <td>MMI</td><td>Rwf 8,000</td><td>Rwf 2,000</td>
+              <td style="font-weight:600">Rwf 10,000</td><td style="color:#ef4444;font-weight:600">Rwf 10,000</td>
+              <td><span class="status-badge badge-unpaid">Unpaid</span></td>
+              <td onclick="event.stopPropagation()"><button class="eye-btn" onclick="openInvoice('milani')"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button></td>
             </tr>
             <tr onclick="openInvoice('imani')">
               <td><input type="checkbox" class="checkbox" onclick="event.stopPropagation()"/></td>
-             
-              <td>25/05/2023</td>
-              <td>Imani Adimbaki</td>
-              <td>#03338/2021</td>
-              <td>Pharmacy</td>
-              <td>RSSB</td>
-              <td>Rwf 5,500</td>
-              <td>Rwf 1,419</td>
-              <td>Rwf 6,919</td>
-              <td onclick="event.stopPropagation()">
-                <div class="ebm-wrapper" id="t-ebm-imani">
-                  <button class="ebm-btn" onclick="toggleEbm('t-ebm-imani')">
-                    EBM <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
-                  </button>
-                  <div class="ebm-menu" id="t-ebm-imani-menu">
-                    <div class="ebm-menu-header">Select Receipt Type</div>
-                    <div class="ebm-option" onclick="openReceipt('sale','Imani Adimbaki','#03338/2021','154','Rwf 6,919')"><span class="ebm-option-dot dot-sale"></span><div class="ebm-option-info"><strong>Sale Receipt</strong><span>Normal / Official</span></div></div>
-                    <div class="ebm-option" onclick="openReceipt('refund','Imani Adimbaki','#03338/2021','154','Rwf 6,919')"><span class="ebm-option-dot dot-refund"></span><div class="ebm-option-info"><strong>Refund Receipt</strong><span>Copy Refund (CR)</span></div></div>
-                    <div class="ebm-option" onclick="openReceipt('proforma','Imani Adimbaki','#03338/2021','154','Rwf 6,919')"><span class="ebm-option-dot dot-proforma"></span><div class="ebm-option-info"><strong>Proforma Invoice</strong><span>Not Official</span></div></div>
-                    <div class="ebm-option" onclick="openReceipt('training','Imani Adimbaki','#03338/2021','154','Rwf 6,919')"><span class="ebm-option-dot dot-training"></span><div class="ebm-option-info"><strong>Training Receipt</strong><span>Simulation Only</span></div></div>
-                  </div>
-                </div>
-              </td>
+              <td>2025/05/24</td><td>Imani Adimbaki</td><td style="font-family:'IBM Plex Mono',monospace;font-size:11px">#03338/2021</td>
+              <td>Dr. Habimana</td><td>Pharmacy</td>
+              <td>RSSB</td><td>Rwf 5,500</td><td>Rwf 1,419</td>
+              <td style="font-weight:600">Rwf 6,919</td><td style="color:#059669;font-weight:600">Rwf 0</td>
+              <td><span class="status-badge badge-paid">Paid</span></td>
+              <td onclick="event.stopPropagation()"><button class="eye-btn" onclick="openInvoice('imani')"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button></td>
             </tr>
             <tr onclick="openInvoice('kwame')">
               <td><input type="checkbox" class="checkbox" onclick="event.stopPropagation()"/></td>
-           
-              <td>26/05/2023</td>
-              <td>Kwame Mensah</td>
-              <td>#03339/2021</td>
-              <td>Radiology</td>
-              <td>Activa</td>
-              <td>Rwf 14,000</td>
-              <td>Rwf 3,500</td>
-              <td>Rwf 17,500</td>
-              <td onclick="event.stopPropagation()">
-                <div class="ebm-wrapper" id="t-ebm-kwame">
-                  <button class="ebm-btn" onclick="toggleEbm('t-ebm-kwame')">
-                    EBM <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
-                  </button>
-                  <div class="ebm-menu" id="t-ebm-kwame-menu">
-                    <div class="ebm-menu-header">Select Receipt Type</div>
-                    <div class="ebm-option" onclick="openReceipt('sale','Kwame Mensah','#03339/2021','155','Rwf 17,500')"><span class="ebm-option-dot dot-sale"></span><div class="ebm-option-info"><strong>Sale Receipt</strong><span>Normal / Official</span></div></div>
-                    <div class="ebm-option" onclick="openReceipt('refund','Kwame Mensah','#03339/2021','155','Rwf 17,500')"><span class="ebm-option-dot dot-refund"></span><div class="ebm-option-info"><strong>Refund Receipt</strong><span>Copy Refund (CR)</span></div></div>
-                    <div class="ebm-option" onclick="openReceipt('proforma','Kwame Mensah','#03339/2021','155','Rwf 17,500')"><span class="ebm-option-dot dot-proforma"></span><div class="ebm-option-info"><strong>Proforma Invoice</strong><span>Not Official</span></div></div>
-                    <div class="ebm-option" onclick="openReceipt('training','Kwame Mensah','#03339/2021','155','Rwf 17,500')"><span class="ebm-option-dot dot-training"></span><div class="ebm-option-info"><strong>Training Receipt</strong><span>Simulation Only</span></div></div>
-                  </div>
-                </div>
-              </td>
+              <td>2025/05/24</td><td>Kwame Mensah</td><td style="font-family:'IBM Plex Mono',monospace;font-size:11px">#03339/2021</td>
+              <td>Dr. Mutoni</td><td>Radiology</td>
+              <td>Activa</td><td>Rwf 14,000</td><td>Rwf 3,500</td>
+              <td style="font-weight:600">Rwf 17,500</td><td style="color:#ef4444;font-weight:600">Rwf 17,500</td>
+              <td><span class="status-badge badge-unpaid">Unpaid</span></td>
+              <td onclick="event.stopPropagation()"><button class="eye-btn" onclick="openInvoice('kwame')"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button></td>
             </tr>
           </tbody>
         </table>
         <div class="pagination">
           <button class="page-btn" disabled>Previous</button>
-          <button class="page-btn active">1</button>
-          <button class="page-btn">2</button>
-          <button class="page-btn">3</button>
+          <button class="page-btn active">1</button><button class="page-btn">2</button><button class="page-btn">3</button>
           <button class="page-btn">Next</button>
           <span class="page-info">1/03</span>
         </div>
@@ -561,131 +360,286 @@
   </main>
 </div>
 
-<!-- ── Invoice Overlay ── -->
+<!-- Filter Report Modal -->
+<div class="filter-modal-overlay" id="filterModal" onclick="handleFilterOverlayClick(event)">
+  <div class="filter-modal">
+    <div class="filter-modal-header">
+      <h2>Filter Report</h2>
+      <button class="filter-close-btn" onclick="closeFilterModal()">×</button>
+    </div>
+    <div class="filter-modal-body">
+      <div class="filter-section">
+        <span class="filter-section-label">Date Range</span>
+        <div class="filter-date-row">
+          <input type="date" class="filter-date-input" id="filterDateFrom" value="2026-01-20"/>
+          <span class="filter-date-sep">to</span>
+          <input type="date" class="filter-date-input" id="filterDateTo" value="2026-02-19"/>
+        </div>
+        <div class="filter-date-hint">Maximum 31 days range</div>
+      </div>
+      <div class="filter-section">
+        <span class="filter-section-label">Insurance Provider</span>
+        <select class="filter-select" id="filterInsurance">
+          <option value="">All providers</option>
+          <option value="RSSB">RSSB</option>
+          <option value="MMI">MMI</option>
+          <option value="Activa">Activa</option>
+          <option value="Radiant">Radiant</option>
+          <option value="CORAR">CORAR</option>
+          <option value="none">None / Private Pay</option>
+        </select>
+      </div>
+      <div class="filter-section" style="margin-bottom:0">
+        <span class="filter-section-label">Claim Status</span>
+        <select class="filter-select" id="filterStatus">
+          <option value="">All</option>
+          <option value="paid">Paid</option>
+          <option value="unpaid">Unpaid</option>
+          <option value="partial">Partial</option>
+        </select>
+      </div>
+    </div>
+    <div class="filter-modal-footer">
+      <button class="filter-cancel-btn" onclick="closeFilterModal()">Cancel</button>
+      <button class="filter-apply-btn" onclick="applyFilters()">Apply Filters</button>
+    </div>
+  </div>
+</div>
+
+<!-- Invoice Overlay -->
 <div class="overlay" id="invoiceOverlay" onclick="handleInvoiceOverlayClick(event)">
-  <div class="invoice-page" id="invoicePage">
+  <div class="invoice-page">
     <div class="invoice-topbar">
       <div class="inv-topbar-left">
-        <button class="back-btn" onclick="closeInvoice()">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>Back
-        </button>
-        <span class="inv-title">Invoice</span>
+        <button class="back-btn" onclick="closeInvoice()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>Back</button>
+        <span class="inv-title">Patient Invoice <span id="invNumber" style="font-size:13px;color:#6b7280;font-family:'IBM Plex Mono',monospace;font-weight:400"></span></span>
       </div>
       <div class="inv-topbar-right">
-        <button class="inv-btn green">Send <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M6 9L1 4h10z"/></svg></button>
-        <button class="inv-btn">Print</button>
-
-        <!-- EBM dropdown inside invoice -->
-        <div class="inv-ebm-wrapper" id="inv-ebm">
-          <button class="inv-ebm-btn" onclick="toggleEbm('inv-ebm')">
-            EBM Receipt
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+        <button class="inv-btn" onclick="downloadInvoicePDF()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Download PDF
+        </button>
+        <div class="send-wrapper" id="sendWrapper">
+          <button class="send-btn" id="sendBtnEl" onclick="toggleSendMenu()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            Send
+            <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
           </button>
-          <div class="ebm-menu inv-ebm-menu" id="inv-ebm-menu">
-            <div class="ebm-menu-header">Select Receipt Type</div>
-            <div class="ebm-option" id="inv-opt-sale"   onclick="openReceiptFromInvoice('sale')"><div class="ebm-option-info"><strong>Generate EBM(Sale)</strong></div></div>
-            <div class="ebm-option" id="inv-opt-refund" onclick="openReceiptFromInvoice('refund')"><div class="ebm-option-info"><strong>Refund Receipt</strong></div></div>
-            <div class="ebm-option" id="inv-opt-proforma" onclick="openReceiptFromInvoice('proforma')"><div class="ebm-option-info"><strong>Proforma Invoice</strong></div></div>
-            <div class="ebm-option" id="inv-opt-training" onclick="openReceiptFromInvoice('training')"><div class="ebm-option-info"><strong>Training Receipt</strong></div></div>
+          <div class="send-menu" id="sendMenu">
+            <div class="send-option" onclick="sendViaWhatsApp()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#25D366" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+              Send via WhatsApp
+            </div>
+            <div class="send-option" onclick="sendViaEmail()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#4f46e5" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="2,4 12,13 22,4"/></svg>
+              Send via Email
+            </div>
           </div>
         </div>
-
+        <button class="inv-btn green">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Edit visit info
+        </button>
+        <div class="inv-ebm-wrapper" id="inv-ebm">
+          <button class="inv-ebm-btn" onclick="toggleEbm('inv-ebm')">
+            EBM Receipt <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="ebm-menu" id="inv-ebm-menu">
+            <div class="ebm-menu-header">Select Receipt Type</div>
+            <div class="ebm-option" onclick="openReceiptFromInvoice('sale')"><span class="ebm-option-dot dot-sale"></span><div class="ebm-option-info"><strong>Generate EBM (Sale)</strong><span>Normal / Official</span></div></div>
+            <div class="ebm-option" onclick="openReceiptFromInvoice('refund')"><span class="ebm-option-dot dot-refund"></span><div class="ebm-option-info"><strong>Refund Receipt</strong><span>Copy Refund (CR)</span></div></div>
+            <div class="ebm-option" onclick="openReceiptFromInvoice('proforma')"><span class="ebm-option-dot dot-proforma"></span><div class="ebm-option-info"><strong>Proforma Invoice</strong><span>Not Official</span></div></div>
+            <div class="ebm-option" onclick="openReceiptFromInvoice('training')"><span class="ebm-option-dot dot-training"></span><div class="ebm-option-info"><strong>Training Receipt</strong><span>Simulation Only</span></div></div>
+          </div>
+        </div>
         <button class="inv-btn red">Delete</button>
       </div>
     </div>
 
     <div class="invoice-body">
       <div class="invoice-main">
+        <!-- Visit Info -->
         <div class="inv-card">
           <div class="inv-card-header">
-            <h3>Patient Invoice</h3>
-            <span class="inv-number" id="invNumber">#03336/2021</span>
+            <h3>Visit information</h3>
+            <span id="invStatusBadge" class="status-badge badge-unpaid">UNPAID</span>
           </div>
-          <div class="clinic-patient-info">
-            <div class="clinic-col">
-              <h4>Shema Clinic</h4>
-              <div class="info-row">Phone: <span>+250000000000</span></div>
-              <div class="info-row">TIN: <span>111111111111</span></div>
-              <div class="info-row">Kigali, Rwanda</div>
-            </div>
-            <div class="patient-col">
-              <h4>Patient Information</h4>
-              <div class="info-row">Patient: <span id="invPatientName">—</span></div>
-              <div class="info-row">Phone: <span>+250000000000</span></div>
-              <div class="info-row">Visit Number: <span>057/2023</span> &nbsp;<span style="color:#059669;font-size:11px">Edit</span></div>
-              <div class="info-row">Date: <span id="invDate">—</span></div>
-              <div class="info-row">File Number: <span>001/7</span></div>
-            </div>
+          <div class="visit-info-grid">
+            <div class="visit-col"><h4>Shema Clinic</h4><div class="info-row">Kigali City, Rwanda</div><div class="info-row">Tel: +250000000000</div><div class="info-row">Email: info@shemaclinic.rw</div></div>
+            <div class="visit-col"><div class="info-row">Patient: <span id="invPatientName">—</span></div><div class="info-row">File No: <span id="invFileNo">—</span></div><div class="info-row">Phone: <span>+250 000 000 000</span></div></div>
+            <div class="visit-col"><div class="info-row">Visit No: <span id="invVisitNo" style="color:#059669;font-weight:600">—</span></div><div class="info-row">Department: <span id="invDept">—</span></div><div class="info-row">Insurance: <span id="invInsurance">—</span></div><div class="info-row">Copay: <span id="invCopay">—</span></div></div>
           </div>
-          <div class="patient-meta">
-            <div>In-Patient: <span id="invInpatient">—</span></div>
-            <div>Insurance: <span id="invInsurance">—</span></div>
+          <div class="visit-tags">
+            <span class="visit-tag tag-visit" id="invVisitTag">V/—</span>
+            <span class="visit-tag tag-dept" id="invDeptTag">—</span>
+            <span class="visit-tag tag-ins" id="invInsTag">—</span>
+            <span class="visit-tag tag-copay" id="invCopayTag">—</span>
+            <div style="margin-left:auto;font-size:11px;color:#6b7280" id="invDate">—</div>
           </div>
-          <div class="items-search">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-            <input type="text" placeholder="Search"/>
+        </div>
+
+        <!-- Invoice Items Card -->
+        <div class="inv-card">
+          <div class="inv-card-header">
+            <h3>Invoice items <span style="color:#9ca3af;font-size:12px;font-weight:400" id="invItemCount">(0)</span></h3>
           </div>
-          <table class="items-table">
-            <thead>
-              <tr><th>ID</th><th>Item</th><th>Quantity</th><th>Cost</th><th>Total</th><th>Copay</th><th>Patient</th><th>Insurance</th><th></th></tr>
-            </thead>
-            <tbody>
-              <tr><td>1</td><td>Paramedic Cons...</td><td>01</td><td>2,690</td><td>2,690</td><td>15%</td><td>404</td><td>404</td><td><span class="del-icon">🗑</span></td></tr>
-              <tr><td>2</td><td>Paramedic Cons...</td><td>01</td><td>2,690</td><td>2,690</td><td>15%</td><td>404</td><td>404</td><td><span class="del-icon">🗑</span></td></tr>
-              <tr><td>3</td><td>Paramedic Cons...</td><td>01</td><td>2,690</td><td>2,690</td><td>15%</td><td>404</td><td>404</td><td><span class="del-icon">🗑</span></td></tr>
-            </tbody>
+          <div id="categoryTablesContainer"></div>
+        </div>
+
+        <!-- Invoice Summary -->
+        <div class="inv-summary-card">
+          <div class="inv-card-header"><h3>Invoice Summary</h3></div>
+          <table class="inv-summary-table">
+            <tr><td>Sub-total (all items):</td><td id="sumSubtotal">0</td></tr>
+            <tr id="sumInsRow">
+              <td>
+                <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+                  <span>Insurance</span>
+                  <select id="summaryInsuranceSelect" onchange="onSummaryInsuranceChange()" style="padding:4px 28px 4px 9px;border:1px solid #d1d5db;border-radius:5px;font-size:12px;color:#374151;outline:none;background:#fff url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2210%22 height=%2210%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%236b7280%22 stroke-width=%222%22%3E%3Cpolyline points=%226 9 12 15 18 9%22/%3E%3C/svg%3E') no-repeat right 8px center;appearance:none;font-family:'Inter',sans-serif">
+                    <option value="none|0">None / Private</option>
+                    <option value="RSSB|85">RSSB (85%)</option>
+                    <option value="MMI|80">MMI (80%)</option>
+                    <option value="Activa|75">Activa (75%)</option>
+                    <option value="Radiant|70">Radiant (70%)</option>
+                    <option value="CORAR|65">CORAR (65%)</option>
+                  </select>
+                  <span id="sumInsPctLabel" style="font-size:12px;color:#059669;font-weight:600"></span>
+                </div>
+              </td>
+              <td id="sumInsurance" style="color:#059669">0</td>
+            </tr>
+            <tr><td>Patient contribution:</td><td id="sumPatient">0</td></tr>
+            <tr><td>Amount Paid (by patient):</td><td id="sumPaid">0</td></tr>
+            <tr class="balance-row"><td><strong>Patient Balance Due:</strong></td><td id="sumBalance" style="color:#ef4444"><strong>0</strong></td></tr>
           </table>
-          <div class="items-table-footer">
-            <button class="add-item-btn">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Item
-            </button>
-            <div class="item-pagination">
-              <button class="item-pg-btn">Previous</button>
-              <button class="item-pg-btn active">1</button>
-              <button class="item-pg-btn">Next</button>
-            </div>
-          </div>
-          <div class="totals-bar">
-            <div class="total-col"><label>Total</label><div class="val" id="invTotal">Rwf 12,144</div></div>
-            <div class="total-col"><label>Insurance Cont.</label><div class="val">Rwf 10,322</div></div>
-            <div class="total-col"><label>Patient Cont.</label><div class="val">Rwf 1,822</div></div>
-            <div class="total-col"><label>Paid</label><div class="val">Rwf 1,419</div></div>
-            <div class="total-col"><label>Balance</label><div class="val red">-403</div></div>
-          </div>
-          <div class="balance-due-row">Balance Due: <span>597</span></div>
-          <div class="payment-row">
-            <input class="payment-input" type="number" placeholder="Amount Paid"/>
-            <select class="cash-select"><option>Cash</option><option>Card</option><option>Mobile</option></select>
-            <button class="submit-btn">Submit</button>
-          </div>
-          <div class="balance-checkbox"><input type="checkbox" id="balGiven"/><label for="balGiven">Balance is given to client</label></div>
           <div class="initiated-by">Visit initiated by: <strong>Mrs. Agathe Amina Uwera</strong></div>
         </div>
 
+        <!-- RSSB Details -->
+        <div class="rssb-card" id="rssbSection" style="display:none">
+          <div class="rssb-card-header">RSSB Details</div>
+          <div class="rssb-body">
+            <div class="rssb-col">
+              <h4>Beneficiary Details</h4>
+              <div class="rssb-field"><strong>Full Name:</strong><input class="rssb-underline" type="text" placeholder="_______________"/></div>
+              <div class="rssb-field"><strong>Phone:</strong><input class="rssb-underline" type="text" placeholder="_______________"/></div>
+              <div class="rssb-field"><strong>Beneficiary relationship:</strong><input class="rssb-underline" type="text" value="Spouse"/></div>
+              <div class="rssb-field"><strong>Signature:</strong><input class="rssb-underline" type="text" placeholder="_______________"/></div>
+            </div>
+            <div class="rssb-col">
+              <h4>Treatment Information</h4>
+              <div class="rssb-field"><strong>Disease Type:</strong><input class="rssb-underline" type="text" value="Natural disease"/></div>
+              <div class="rssb-field"><strong>Status:</strong><input class="rssb-underline" type="text" placeholder="_______________"/></div>
+              <div class="rssb-field"><strong>Entry Date:</strong><input class="rssb-underline" type="text" id="rssbEntryDate"/></div>
+              <div class="rssb-field"><strong>Discharge Date:</strong><input class="rssb-underline" type="text" placeholder="_______________"/></div>
+            </div>
+            <div class="rssb-col">
+              <h4>Attending Doctor</h4>
+              <div class="rssb-field"><strong>Name:</strong><input class="rssb-underline" type="text" id="rssbDoctorName"/></div>
+              <div class="rssb-field"><strong>License #:</strong><input class="rssb-underline" type="text" placeholder="_______________"/></div>
+              <div class="rssb-field"><strong>Signature:</strong><input class="rssb-underline" type="text" placeholder="_______________"/></div>
+              <div class="rssb-field"><strong>Stamp:</strong><input class="rssb-underline" type="text" placeholder="_______________"/></div>
+            </div>
+          </div>
+          <div class="rssb-footer"><strong>Facility stamp:</strong> <input class="rssb-underline" type="text" placeholder="_______________" style="max-width:200px"/></div>
+        </div>
+
+        <!-- Cash Paid -->
         <div class="inv-card">
-          <div class="cash-paid-title">Cash Paid</div>
+          <div class="inv-card-header"><h3>Cash Paid</h3></div>
           <table class="cash-table">
-            <thead><tr><th>Date</th><th>Amount</th><th>Name</th><th>Method</th></tr></thead>
-            <tbody><tr><td>23/05/2023 &nbsp; 12:23</td><td>Rwf 10,322</td><td>Mrs. Agathe Amina Uwera</td><td>Cash</td></tr></tbody>
+            <thead><tr><th>Date</th><th>Amount</th><th>Received by</th><th>Method</th><th></th></tr></thead>
+            <tbody id="cashPaidBody">
+              <tr id="noCashRow"><td colspan="5" style="text-align:center;color:#9ca3af;font-size:12px;padding:14px">No payments recorded</td></tr>
+            </tbody>
           </table>
         </div>
       </div>
 
+      <!-- Right side -->
       <div class="invoice-side">
-        <div class="lab-orders-card">
-          <div class="lab-header">
-            <div style="display:flex;align-items:center"><h4>Laboratory Orders</h4><span class="lab-count">5</span></div>
-            <button class="actions-btn">Actions <svg width="10" height="10" viewBox="0 0 12 12" fill="currentColor"><path d="M6 9L1 4h10z"/></svg></button>
+        <!-- Add items -->
+        <div class="side-card">
+          <div class="side-card-header">Add items to this invoice</div>
+          <div class="side-card-body">
+            <div class="form-group">
+              <label>Select Product</label>
+              <select class="form-control" id="productSelect" onchange="onProductChange()">
+                <option value="">Search for a product...</option>
+                <optgroup label="Medical Acts">
+                  <option value="General Consultation|Medical Acts|2690">General Consultation — Rwf 2,690</option>
+                  <option value="Intra oral peri apical x-ray|Medical Acts|16000">Intra oral peri apical x-ray — Rwf 16,000</option>
+                  <option value="Indirect pulp caping|Medical Acts|23000">Indirect pulp caping — Rwf 23,000</option>
+                  <option value="Crown and bridge (per unit)|Medical Acts|240000">Crown and bridge (per unit) — Rwf 240,000</option>
+                  <option value="Reconstruction of fractured crown|Medical Acts|81000">Reconstruction of fractured crown — Rwf 81,000</option>
+                </optgroup>
+                <optgroup label="Laboratory">
+                  <option value="Full blood count (NFS)|Laboratory|500">Full blood count (NFS) — Rwf 500</option>
+                  <option value="Malaria RDT|Laboratory|200">Malaria RDT — Rwf 200</option>
+                  <option value="Blood glucose|Laboratory|300">Blood glucose — Rwf 300</option>
+                </optgroup>
+                <optgroup label="Pharmacy">
+                  <option value="Amoxicillin 500mg caps|Pharmacy|200">Amoxicillin 500mg caps — Rwf 200/unit</option>
+                  <option value="Ibuprofen 400mg tabs|Pharmacy|100">Ibuprofen 400mg tabs — Rwf 100/unit</option>
+                  <option value="Metronidazole 500mg|Pharmacy|150">Metronidazole 500mg — Rwf 150/unit</option>
+                </optgroup>
+                <optgroup label="Radiology">
+                  <option value="Chest X-ray|Radiology|8000">Chest X-ray — Rwf 8,000</option>
+                  <option value="Echocardiography|Radiology|25000">Echocardiography — Rwf 25,000</option>
+                </optgroup>
+              </select>
+            </div>
+            <div class="form-group" id="productInfoBox" style="display:none">
+              <div style="padding:9px 11px;background:#f9fafb;border:1px solid #e5e5e5;border-radius:6px;font-size:11px">
+                <div style="display:flex;justify-content:space-between;margin-bottom:3px"><span style="color:#6b7280">Category</span><span style="font-weight:600;color:#374151" id="pCategory">—</span></div>
+                <div style="display:flex;justify-content:space-between"><span style="color:#6b7280">Unit Price</span><span style="font-weight:600;color:#059669" id="pPrice">—</span></div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Quantity</label>
+              <input type="number" class="form-control" value="1" min="1" id="qtyInput"/>
+            </div>
+            <div class="form-group">
+              <label>Note <span style="font-weight:400;color:#9ca3af">(optional)</span></label>
+              <input type="text" class="form-control" id="itemNote" placeholder="e.g. tooth 16, take 3×/day…"/>
+            </div>
+            <button class="side-submit-btn green" onclick="addItemToInvoice()">Submit</button>
           </div>
-          <div class="lab-item"><input type="checkbox" checked/><span class="lab-item-name">NFS</span><span class="lab-item-price">500</span><button class="lab-add-btn primary">Add</button></div>
-          <div class="lab-item"><input type="checkbox"/><span class="lab-item-name">Malaria</span><span class="lab-item-price">200</span><button class="lab-add-btn added">Added</button></div>
-          <div class="lab-item"><input type="checkbox"/><span class="lab-item-name">Test 3</span><span class="lab-item-price">300</span><button class="lab-add-btn added">Added</button></div>
-          <div class="lab-item"><input type="checkbox"/><span class="lab-item-name">Test 4</span><span class="lab-item-price">600</span><button class="lab-add-btn added">Added</button></div>
-          <div class="lab-item"><input type="checkbox" checked/><span class="lab-item-name">Test 5</span><span class="lab-item-price">1000</span><button class="lab-add-btn primary">Add</button></div>
-          <div class="lab-totals">
-            <div>Grand Total: <strong>2,600</strong></div>
-            <div>Added: <strong>1,100</strong></div>
-            <div>Selected: <strong>1,500</strong></div>
+        </div>
+
+        <!-- Record Payment — only shown when balance > 0 -->
+        <div class="side-card" id="recordPaymentCard" style="display:none">
+          <div class="side-card-header">Record Payment</div>
+          <div class="side-card-body">
+            <div class="form-group"><label>Amount</label><input type="number" class="form-control" id="paymentAmount" placeholder="RWF"/></div>
+            <div class="form-group">
+              <label>Payment Method</label>
+              <select class="form-control" id="paymentMethod">
+                <option value="">Select payment method...</option>
+                <option>Cash</option><option>Mobile Money (MTN)</option><option>Mobile Money (Airtel)</option>
+                <option>Bank Card</option><option>Bank Transfer</option><option>Insurance Direct</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Transaction Reference</label>
+              <input type="text" class="form-control" id="paymentRef" placeholder="Required for non-cash payments"/>
+              <div style="font-size:10px;color:#9ca3af;margin-top:3px">Required for non-cash payments</div>
+            </div>
+            <button class="side-submit-btn green" onclick="recordPayment()">Submit</button>
+          </div>
+        </div>
+
+        <!-- Payments & Audit Trail -->
+        <div class="side-card">
+          <div class="side-card-header" style="display:flex;align-items:center;justify-content:space-between">
+            <span>Payments &amp; Audit Trail</span>
+            <span id="auditCount" style="background:#f3f4f6;border-radius:10px;padding:2px 8px;font-size:11px;color:#6b7280;font-weight:600">0</span>
+          </div>
+          <div id="auditTrailContainer">
+            <div class="audit-empty" id="auditEmptyMsg">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              No payments recorded
+            </div>
+            <div id="auditSectionLabel" class="audit-section-label" style="display:none">Payments</div>
+            <div id="auditItemsList"></div>
           </div>
         </div>
       </div>
@@ -693,28 +647,7 @@
   </div>
 </div>
 
-<!-- ── Print Preview Overlay ── -->
-<div class="print-preview-overlay" id="printPreview">
-  <div class="print-preview-toolbar">
-    <span id="ppTitle">EBM Receipt — Sale Receipt</span>
-    <div class="print-preview-toolbar-right">
-      <button class="pp-btn pp-btn-close" onclick="closePrintPreview()">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-        Close
-      </button>
-      <button class="pp-btn pp-btn-print" onclick="doPrint()">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
-        Print / Save PDF
-      </button>
-    </div>
-  </div>
-  <div class="print-preview-body">
-    <div class="print-preview-paper" id="ppPaper"></div>
-  </div>
-</div>
-
-<!-- Hidden printable frame (used by doPrint) -->
-<div class="printable-frame" id="printableFrame"></div>
+<!-- Receipt Modal -->
 <div class="receipt-modal-overlay" id="receiptModal" onclick="handleReceiptOverlayClick(event)">
   <div class="receipt-modal-box">
     <div class="receipt-topbar">
@@ -724,236 +657,621 @@
       </div>
       <button class="modal-close-btn" onclick="closeReceipt()">✕</button>
     </div>
-    <div class="receipt-scroll">
-      <div class="receipt-paper" id="receiptContent"></div>
-    </div>
+    <div class="receipt-scroll"><div class="receipt-paper" id="receiptContent"></div></div>
     <div class="receipt-footer">
-      <button class="rfooter-btn" onclick="openPrintPreview()">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
-        Print / Save PDF
-      </button>
       <button class="rfooter-btn primary" onclick="closeReceipt()">Close</button>
     </div>
   </div>
 </div>
+<div class="printable-frame" id="printableFrame"></div>
 
 <script>
-  // ── Patient data ──
-  const patients = {
-    raekwon: { name:'Raekwon Gbeho', invoice:'#03336/2021', total:'Rwf 12,144', recNum:'152', date:'23/05/2023 - 10:14', inpatient:'23/05/2023 – 25/05/2023 (2 nights)', insurance:'RSSB, 85%' },
-    milani:  { name:'Milani Mostafa', invoice:'#03337/2021', total:'Rwf 10,000', recNum:'153', date:'24/05/2023 - 11:05', inpatient:'24/05/2023 – 27/05/2023 (3 nights)', insurance:'MMI, 80%' },
-    imani:   { name:'Imani Adimbaki', invoice:'#03338/2021', total:'Rwf 6,919',  recNum:'154', date:'05/12/2023 - 12:34', inpatient:'05/12/2023 – 09/12/2023 (4 nights)', insurance:'RSSB, 85%' },
-    kwame:   { name:'Kwame Mensah',   invoice:'#03339/2021', total:'Rwf 17,500', recNum:'155', date:'26/05/2023 - 09:22', inpatient:'26/05/2023 – 29/05/2023 (3 nights)', insurance:'Activa, 75%' },
+const patients = {
+  raekwon: { name:'Raekwon Gbeho', invoice:'#03336/2021', total:12144, recNum:'152', date:'23/05/2023 - 10:14', insurance:'RSSB', copay:15, dept:'Consultation', visitNo:'V/RG/0336/2023', fileNo:'F/001/7', status:'partial', doctor:'Dr. Uwimana' },
+  milani:  { name:'Milani Mostafa', invoice:'#03337/2021', total:10000, recNum:'153', date:'24/05/2023 - 11:05', insurance:'MMI', copay:20, dept:'Laboratory', visitNo:'V/MM/0337/2023', fileNo:'F/002/7', status:'unpaid', doctor:'Dr. Nkusi' },
+  imani:   { name:'Imani Adimbaki', invoice:'#03338/2021', total:6919, recNum:'154', date:'05/12/2023 - 12:34', insurance:'RSSB', copay:15, dept:'Pharmacy', visitNo:'V/IA/0338/2023', fileNo:'F/003/7', status:'paid', doctor:'Dr. Habimana' },
+  kwame:   { name:'Kwame Mensah', invoice:'#03339/2021', total:17500, recNum:'155', date:'26/05/2023 - 09:22', insurance:'Activa', copay:25, dept:'Radiology', visitNo:'V/KM/0339/2023', fileNo:'F/004/7', status:'unpaid', doctor:'Dr. Mutoni' },
+};
+const defaultItems = {
+  raekwon: { 'Medical Acts': [ { name:'Intra oral peri apical x-ray', note:'16', qty:1, unitCost:16000, insPct:85 }, { name:'Indirect pulp caping', note:'tooth 16', qty:1, unitCost:23000, insPct:85 } ] },
+  milani:  { 'Laboratory': [ { name:'Full blood count (NFS)', note:'', qty:1, unitCost:500, insPct:80 }, { name:'Malaria RDT', note:'', qty:1, unitCost:200, insPct:80 } ] },
+  imani:   { 'Pharmacy': [ { name:'Amoxicillin 500mg caps', note:'Take 3×/day ×7 days', qty:21, unitCost:200, insPct:85 }, { name:'Ibuprofen 400mg tabs', note:'As needed', qty:10, unitCost:100, insPct:85 } ] },
+  kwame:   { 'Radiology': [ { name:'Chest X-ray', note:'', qty:1, unitCost:8000, insPct:75 } ] },
+};
+
+let currentPatientId = null, invoiceItems = {}, payments = [], totalPaid = 0;
+let currentReceiptHTML = '';
+let currentInsPct = 0; // summary-level insurance %
+
+function addItemToInvoice() {
+  const prodSel = document.getElementById('productSelect').value;
+  if (!prodSel) { alert('Please select a product'); return; }
+  const parts = prodSel.split('|');
+  const name = parts[0], category = parts[1], unitCost = Number(parts[2]);
+  const qty = Number(document.getElementById('qtyInput').value) || 1;
+  const note = document.getElementById('itemNote').value.trim();
+  if (!invoiceItems[category]) invoiceItems[category] = [];
+  invoiceItems[category].push({ name, note, qty, unitCost });
+  renderInvoiceTables();
+  document.getElementById('productSelect').value = '';
+  document.getElementById('qtyInput').value = 1;
+  document.getElementById('itemNote').value = '';
+  document.getElementById('productInfoBox').style.display = 'none';
+}
+
+function deleteItem(category, idx) {
+  invoiceItems[category].splice(idx, 1);
+  if (!invoiceItems[category].length) delete invoiceItems[category];
+  renderInvoiceTables();
+}
+
+function renderInvoiceTables() {
+  const container = document.getElementById('categoryTablesContainer');
+  container.innerHTML = '';
+  const categories = Object.keys(invoiceItems);
+  let grandTotal = 0, totalItems = 0;
+
+  if (!categories.length) {
+    container.innerHTML = '<div style="padding:20px;text-align:center;color:#9ca3af;font-size:12px">No items added yet.</div>';
+  }
+
+  categories.forEach(cat => {
+    const items = invoiceItems[cat];
+    let catTotal = 0;
+
+    const hdr = document.createElement('div');
+    hdr.className = 'category-header';
+    hdr.innerHTML = `<span class="category-title">${cat}</span>`;
+    container.appendChild(hdr);
+
+    const tbl = document.createElement('table');
+    tbl.className = 'items-table';
+    tbl.innerHTML = `<thead><tr><th>#</th><th>Description</th><th>Qty</th><th>Unit Cost</th><th>Total</th><th></th></tr></thead>`;
+    const tbody = document.createElement('tbody');
+
+    items.forEach((item, idx) => {
+      const lt = item.qty * item.unitCost;
+      catTotal += lt; totalItems++;
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${idx+1}</td><td>${item.name}${item.note ? `<div class="item-note">ⓘ ${item.note}</div>` : ''}</td><td>${item.qty}</td><td>${item.unitCost.toLocaleString()}</td><td>${lt.toLocaleString()}</td><td><button class="del-btn" onclick="deleteItem('${cat}',${idx})"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></button></td>`;
+      tbody.appendChild(tr);
+    });
+
+    // Subtotal row inside table
+    const stRow = document.createElement('tr');
+    stRow.className = 'subtotal-row';
+    stRow.innerHTML = `<td colspan="4" style="text-align:left;padding-left:12px;font-size:11px">Sub-total (${cat}):</td><td>${catTotal.toLocaleString()}</td><td></td>`;
+    tbody.appendChild(stRow);
+    tbl.appendChild(tbody);
+    container.appendChild(tbl);
+    grandTotal += catTotal;
+  });
+
+  document.getElementById('invItemCount').textContent = `(${totalItems})`;
+
+  // Insurance calculated on grand total
+  const insAmt = Math.round(grandTotal * currentInsPct / 100);
+  const patContrib = grandTotal - insAmt;
+  const balance = patContrib - totalPaid;
+
+  document.getElementById('sumSubtotal').textContent = grandTotal.toLocaleString();
+  document.getElementById('sumInsurance').textContent = insAmt.toLocaleString();
+  document.getElementById('sumPatient').textContent = patContrib.toLocaleString();
+  document.getElementById('sumPaid').textContent = totalPaid.toLocaleString();
+  document.getElementById('sumBalance').textContent = balance > 0 ? `-${balance.toLocaleString()}` : balance.toLocaleString();
+  document.getElementById('sumBalance').style.color = balance > 0 ? '#ef4444' : '#059669';
+
+  // Only show Record Payment if there's a balance AND invoice isn't fully paid
+  const p = currentPatientId ? patients[currentPatientId] : null;
+  const isPaid = p && p.status === 'paid';
+  document.getElementById('recordPaymentCard').style.display = (balance > 0 && !isPaid) ? 'block' : 'none';
+}
+
+function onSummaryInsuranceChange() {
+  const sel = document.getElementById('summaryInsuranceSelect').value;
+  const parts = sel.split('|');
+  currentInsPct = Number(parts[1]);
+  const label = document.getElementById('sumInsPctLabel');
+  label.textContent = currentInsPct > 0 ? `covers ${currentInsPct}%` : '';
+  renderInvoiceTables();
+}
+
+function recordPayment() {
+  const amt = Number(document.getElementById('paymentAmount').value);
+  const method = document.getElementById('paymentMethod').value;
+  if (!amt || amt <= 0) { alert('Please enter a valid amount'); return; }
+  if (!method) { alert('Please select a payment method'); return; }
+  const now = new Date();
+  const ds = now.toLocaleDateString('en-GB') + ' - ' + now.toTimeString().slice(0,8);
+  payments.push({ date:ds, amount:amt, method });
+  totalPaid += amt;
+
+  const nr = document.getElementById('noCashRow');
+  if (nr) nr.remove();
+  const cb = document.getElementById('cashPaidBody');
+  const tr = document.createElement('tr');
+  tr.innerHTML = `<td>${ds}</td><td>Rwf ${amt.toLocaleString()}</td><td>Jane Doe</td><td>${method}</td><td></td>`;
+  cb.appendChild(tr);
+
+  document.getElementById('auditEmptyMsg').style.display = 'none';
+  document.getElementById('auditSectionLabel').style.display = 'block';
+  const cnt = Number(document.getElementById('auditCount').textContent) + 1;
+  document.getElementById('auditCount').textContent = cnt;
+  const div = document.createElement('div');
+  div.className = 'audit-item';
+  div.innerHTML = `<div class="audit-item-top"><div><div class="audit-date">${ds}</div><div class="audit-meta">Received by: JANE DOE</div></div><div class="audit-amount">${amt.toLocaleString()}</div></div><button class="audit-del-btn" onclick="removePayment(this,${amt})"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></button>`;
+  document.getElementById('auditItemsList').appendChild(div);
+
+  document.getElementById('paymentAmount').value = '';
+  document.getElementById('paymentMethod').value = '';
+  document.getElementById('paymentRef').value = '';
+  renderInvoiceTables();
+}
+
+function removePayment(btn, amt) {
+  totalPaid = Math.max(0, totalPaid - amt);
+  btn.closest('.audit-item').remove();
+  const cnt = Number(document.getElementById('auditCount').textContent) - 1;
+  document.getElementById('auditCount').textContent = cnt;
+  if (cnt === 0) { document.getElementById('auditEmptyMsg').style.display = 'flex'; document.getElementById('auditSectionLabel').style.display = 'none'; }
+  renderInvoiceTables();
+}
+
+function onProductChange() {
+  const val = document.getElementById('productSelect').value;
+  const box = document.getElementById('productInfoBox');
+  if (!val) { box.style.display = 'none'; return; }
+  const p = val.split('|');
+  document.getElementById('pCategory').textContent = p[1];
+  document.getElementById('pPrice').textContent = 'Rwf ' + Number(p[2]).toLocaleString();
+  box.style.display = 'block';
+}
+
+function openInvoice(id) {
+  currentPatientId = id;
+  const p = patients[id];
+  invoiceItems = {}; payments = []; totalPaid = 0; currentInsPct = 0;
+  document.getElementById('cashPaidBody').innerHTML = '<tr id="noCashRow"><td colspan="5" style="text-align:center;color:#9ca3af;font-size:12px;padding:14px">No payments recorded</td></tr>';
+  document.getElementById('auditItemsList').innerHTML = '';
+  document.getElementById('auditCount').textContent = '0';
+  document.getElementById('auditEmptyMsg').style.display = 'flex';
+  document.getElementById('auditSectionLabel').style.display = 'none';
+
+  document.getElementById('invNumber').textContent = p.invoice;
+  document.getElementById('invPatientName').textContent = p.name;
+  document.getElementById('invDate').textContent = p.date;
+  document.getElementById('invDept').textContent = p.dept;
+  document.getElementById('invInsurance').textContent = p.insurance;
+  document.getElementById('invCopay').textContent = p.copay+'%';
+  document.getElementById('invVisitNo').textContent = p.visitNo;
+  document.getElementById('invFileNo').textContent = p.fileNo;
+  document.getElementById('invVisitTag').textContent = p.visitNo;
+  document.getElementById('invDeptTag').textContent = p.dept;
+  document.getElementById('invInsTag').textContent = p.insurance;
+  document.getElementById('invCopayTag').textContent = p.copay+'% Copay';
+
+  // Set summary insurance selector to match patient's insurance
+  const insCoverageMap = { RSSB:'RSSB|85', MMI:'MMI|80', Activa:'Activa|75', Radiant:'Radiant|70', CORAR:'CORAR|65' };
+  const insVal = insCoverageMap[p.insurance] || 'none|0';
+  const insSel = document.getElementById('summaryInsuranceSelect');
+  insSel.value = insVal;
+  currentInsPct = Number(insVal.split('|')[1]);
+  document.getElementById('sumInsPctLabel').textContent = currentInsPct > 0 ? `covers ${currentInsPct}%` : '';
+
+  const badge = document.getElementById('invStatusBadge');
+  badge.textContent = p.status.toUpperCase();
+  badge.className = 'status-badge '+(p.status==='paid'?'badge-paid':p.status==='partial'?'badge-partial':'badge-unpaid');
+
+  document.getElementById('rssbSection').style.display = (p.insurance==='RSSB') ? 'block' : 'none';
+  document.getElementById('rssbEntryDate').value = p.date.split(' ')[0]||'';
+  document.getElementById('rssbDoctorName').value = p.doctor;
+
+  const defs = defaultItems[id]||{};
+  Object.entries(defs).forEach(([cat,items]) => { invoiceItems[cat] = items.map(i=>({...i})); });
+  renderInvoiceTables();
+
+  document.getElementById('invoiceOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeInvoice() {
+  document.getElementById('invoiceOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+  currentPatientId = null;
+}
+function handleInvoiceOverlayClick(e) { if (e.target===document.getElementById('invoiceOverlay')) closeInvoice(); }
+
+// Download full invoice as PDF
+function downloadInvoicePDF() {
+  if (!currentPatientId) return;
+  const p = patients[currentPatientId];
+
+  const thS = `
+    padding:10px 14px;
+    text-align:left;
+    font-size:9px;
+    font-weight:700;
+    color:#94a3b8;
+    text-transform:uppercase;
+    letter-spacing:1.2px;
+    border-bottom:1px solid #e2e8f0;
+    background:#f8fafc;
+  `;
+  const tdS = `
+    padding:10px 14px;
+    font-size:12px;
+    color:#334155;
+    border-bottom:1px solid #f1f5f9;
+    vertical-align:top;
+  `;
+
+  // Build invoice items
+  let categoriesHTML = '';
+  let grandTotal = 0;
+  Object.entries(invoiceItems).forEach(([cat, items]) => {
+    let rows = '', catTotal = 0;
+    items.forEach((item, idx) => {
+      const lt = item.qty * item.unitCost;
+      catTotal += lt;
+      rows += `<tr>
+        <td style="${tdS}color:#94a3b8;font-size:11px">${String(idx + 1).padStart(2, '0')}</td>
+        <td style="${tdS}">
+          <span style="font-weight:500">${item.name}</span>
+          ${item.note ? `<br><span style="font-size:10px;color:#94a3b8;margin-top:2px;display:block">↳ ${item.note}</span>` : ''}
+        </td>
+        <td style="${tdS}text-align:center">${item.qty}</td>
+        <td style="${tdS}text-align:right;font-variant-numeric:tabular-nums">${item.unitCost.toLocaleString()} <span style="font-size:10px;color:#94a3b8">RWF</span></td>
+        <td style="${tdS}text-align:right;font-weight:600;font-variant-numeric:tabular-nums">${lt.toLocaleString()} <span style="font-size:10px;color:#94a3b8">RWF</span></td>
+      </tr>`;
+    });
+    categoriesHTML += `
+    <div style="margin-bottom:20px;border-radius:8px;overflow:hidden;border:1px solid #e2e8f0;box-shadow:0 1px 3px rgba(0,0,0,0.04)">
+      <div style="background:linear-gradient(135deg,#0f766e,#0d9488);padding:9px 16px;display:flex;align-items:center;justify-content:space-between">
+        <span style="font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:#fff">${cat}</span>
+        <span style="font-size:10px;color:rgba(255,255,255,0.7)">Sub-total</span>
+      </div>
+      <table style="width:100%;border-collapse:collapse">
+        <thead>
+          <tr>
+            <th style="${thS}width:36px">#</th>
+            <th style="${thS}">Description</th>
+            <th style="${thS}text-align:center">Qty</th>
+            <th style="${thS}text-align:right">Unit Cost</th>
+            <th style="${thS}text-align:right">Total</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+        <tfoot>
+          <tr style="background:#f0fdf9">
+            <td colspan="4" style="${tdS}font-weight:700;font-size:11px;color:#0f766e;border-bottom:none">
+              Sub-total · ${cat}
+            </td>
+            <td style="${tdS}font-weight:700;text-align:right;color:#0f766e;border-bottom:none;font-variant-numeric:tabular-nums">
+              ${catTotal.toLocaleString()} <span style="font-size:10px">RWF</span>
+            </td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>`;
+    grandTotal += catTotal;
+  });
+
+  const insAmt = Math.round(grandTotal * currentInsPct / 100);
+  const patContrib = grandTotal - insAmt;
+  const balance = patContrib - totalPaid;
+  const insSel = document.getElementById('summaryInsuranceSelect');
+  const insName = insSel.options[insSel.selectedIndex].text;
+
+  const statusConfig = {
+    unpaid: { bg: '#fef2f2', color: '#b91c1c', dot: '#ef4444' },
+    paid:   { bg: '#f0fdf4', color: '#166534', dot: '#22c55e' },
+    partial:{ bg: '#fffbeb', color: '#92400e', dot: '#f59e0b' },
   };
+  const sc = statusConfig[p.status] || statusConfig.unpaid;
 
-  let currentPatientId = null;
-  let currentReceiptHTML = '';
-  let currentReceiptTitle = '';
-
-  // ── Receipt meta ──
-  const receiptMeta = {
-    sale:     { title:'Sale Receipt',     badgeClass:'badge-sale',     badgeText:'SALE',     stamp:'<span class="rp-stamp stamp-official">OFFICIAL</span>', typeLabel:'Normal Receipt (NR)',    section:'SALE',     notOfficial:false, watermark:'' },
-    refund:   { title:'Refund Receipt',   badgeClass:'badge-refund',   badgeText:'CR',       stamp:'<span class="rp-stamp stamp-copy">COPY</span>',          typeLabel:'Copy Refund (CR)',        section:'REFUND',   notOfficial:true,  watermark:'' },
-    proforma: { title:'Proforma Invoice', badgeClass:'badge-proforma', badgeText:'PROFORMA', stamp:'<span class="rp-stamp stamp-draft">PROFORMA</span>',      typeLabel:'Proforma Invoice (PI)',   section:'PROFORMA', notOfficial:true,  watermark:'<div style="text-align:center;margin:8px 0"><span class="watermark-proforma">⚠ PROFORMA — NOT VALID FOR TAX</span></div>' },
-    training: { title:'Training Receipt', badgeClass:'badge-training', badgeText:'TRAINING', stamp:'<span class="rp-stamp stamp-training">TRAINING</span>',   typeLabel:'Training / Simulation',  section:'TRAINING', notOfficial:true,  watermark:'<div style="text-align:center;margin:8px 0"><span class="watermark-training">⚠ TRAINING MODE — NOT OFFICIAL</span></div>' },
-  };
-
-  function buildReceiptHTML(type, patientName, invoice, recNum, total) {
-    const m = receiptMeta[type];
-    const refundExtra = type === 'refund'
-      ? `<div class="rp-row"><span>REF. NORMAL RECEIPT#:</span><span>${recNum}</span></div>
-         <div class="rp-warn">REFUND IS APPROVED ONLY<br>FOR ORIGINAL SALES RECEIPT</div>`
-      : '';
-
-    return `
-      <div class="rp-header">
-        <h1>EBM Receipt</h1>
-        <div class="sub">${m.typeLabel}</div>
+  const rssbHTML = p.insurance === 'RSSB' ? `
+  <div style="border:1px solid #e2e8f0;border-radius:8px;overflow:hidden;margin-bottom:20px;box-shadow:0 1px 3px rgba(0,0,0,0.04)">
+    <div style="background:linear-gradient(135deg,#1e40af,#3b82f6);padding:11px 18px;display:flex;align-items:center;gap:8px">
+      <span style="font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:1.2px;color:#fff">RSSB Details</span>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr">
+      <div style="padding:14px 16px;border-right:1px solid #f1f5f9">
+        <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;color:#64748b">Beneficiary</div>
+        ${[['Full Name','_______________'],['Phone','_______________'],['Relationship','Spouse'],['Signature','_______________']].map(([k,v])=>`
+        <p style="font-size:11px;margin-bottom:6px;color:#334155"><span style="color:#94a3b8">${k}</span><br><strong>${v}</strong></p>`).join('')}
       </div>
-      <div class="rp-clinic">
-        <p>Shema Clinic</p><p>Kigali, Rwanda</p><p>TIN: 0000000000</p>
-        ${m.stamp}
+      <div style="padding:14px 16px;border-right:1px solid #f1f5f9">
+        <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;color:#64748b">Treatment</div>
+        ${[['Disease Type','Natural disease'],['Status','_______________'],['Entry Date',p.date.split(' ')[0]],['Discharge Date','_______________']].map(([k,v])=>`
+        <p style="font-size:11px;margin-bottom:6px;color:#334155"><span style="color:#94a3b8">${k}</span><br><strong>${v}</strong></p>`).join('')}
       </div>
-      <div class="rp-section">
-        <div class="rp-title">${m.section}</div>
-        ${refundExtra}
-        <div class="rp-row"><span>Patient Name:</span><span>${patientName}</span></div>
-        <div class="rp-row"><span>Invoice:</span><span>${invoice}</span></div>
-        <div class="rp-row"><span>Patient File:</span><span>001/17</span></div>
+      <div style="padding:14px 16px">
+        <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;color:#64748b">Attending Doctor</div>
+        ${[['Name',p.doctor],['License #','_______________'],['Signature','_______________'],['Stamp','_______________']].map(([k,v])=>`
+        <p style="font-size:11px;margin-bottom:6px;color:#334155"><span style="color:#94a3b8">${k}</span><br><strong>${v}</strong></p>`).join('')}
       </div>
-      <div class="rp-section">
-        <div class="rp-row"><span>Medical Services</span><span></span></div>
-        <div class="rp-row sub"><span>1.00 × ${total}</span><span>${total} A-EX</span></div>
-        ${m.watermark}
-        ${m.notOfficial ? '<div class="not-official">THIS IS NOT AN OFFICIAL RECEIPT</div>' : ''}
-        <div class="rp-row total"><span>TOTAL</span><span>${total}</span></div>
-        <div class="rp-row sub"><span>TOTAL A-EX</span><span>${total}</span></div>
-        <div class="rp-row sub"><span>TOTAL TAX</span><span>0.00</span></div>
-        <div class="rp-row sub" style="margin-top:6px"><span>CASH</span><span>${total}</span></div>
-        <div class="rp-row sub"><span>ITEMS NUMBER</span><span>1</span></div>
-      </div>
-      <div class="rp-section">
-        <div class="rp-title">SDC INFORMATION</div>
-        <div class="rp-row"><span>Date: 25/12/2023</span><span>Time: 11:07:35</span></div>
-        <div class="rp-row"><span>SDC ID</span><span>SDC001000001</span></div>
-        <div class="rp-row"><span>RECEIPT NUMBER:</span><span>168/258 NS</span></div>
-        <div class="rp-databox"><strong>Internal Data:</strong>TE68-SLA2-34J5-EAV3-N569-88LJ-Q7</div>
-        <div class="rp-databox"><strong>Receipt Signature:</strong>V249-J39C-FJ48-HE2W</div>
-      </div>
-      <div class="rp-section">
-        <div class="rp-row"><span>RECEIPT NUMBER:</span><span>${recNum}</span></div>
-        <div class="rp-row"><span>DATE: 25/05/2023</span><span>TIME: 11:09:32</span></div>
-        <div class="rp-row"><span>MRC:</span><span>AAACCI23456</span></div>
-      </div>
-      <div class="rp-thank">— THANK YOU —</div>
-    `;
-  }
+    </div>
+    <div style="padding:10px 16px;border-top:1px solid #f1f5f9;font-size:11px;color:#334155;background:#f8fafc">
+      <span style="color:#94a3b8">Facility stamp:</span> _______________
+    </div>
+  </div>` : '';
 
-  // ── Open/close receipt modal ──
-  function openReceipt(type, patientName, invoice, recNum, total) {
-    closeAllEbmMenus();
-    const m = receiptMeta[type];
-    currentReceiptHTML = buildReceiptHTML(type, patientName, invoice, recNum, total);
-    currentReceiptTitle = 'EBM Receipt — ' + m.title;
-
-    const badge = document.getElementById('receiptBadge');
-    badge.textContent = m.badgeText;
-    badge.className = 'rtype-badge ' + m.badgeClass;
-    document.getElementById('receiptTitle').textContent = m.title;
-    document.getElementById('receiptContent').innerHTML = currentReceiptHTML;
-    document.getElementById('receiptModal').classList.add('open');
-    document.body.style.overflow = 'hidden';
-  }
-
-  function openReceiptFromInvoice(type) {
-    if (!currentPatientId) return;
-    const p = patients[currentPatientId];
-    openReceipt(type, p.name, p.invoice, p.recNum, p.total);
-  }
-
-  function closeReceipt() {
-    document.getElementById('receiptModal').classList.remove('open');
-    document.body.style.overflow = '';
-  }
-
-  function handleReceiptOverlayClick(e) {
-    if (e.target === document.getElementById('receiptModal')) closeReceipt();
-  }
-
-  // ── Print Preview ──
-  function openPrintPreview() {
-    document.getElementById('ppPaper').innerHTML = currentReceiptHTML;
-    document.getElementById('ppTitle').textContent = currentReceiptTitle || 'EBM Receipt';
-    document.getElementById('printPreview').classList.add('open');
-  }
-
-  function closePrintPreview() {
-    document.getElementById('printPreview').classList.remove('open');
-  }
-
-  function doPrint() {
-    const paperHTML = document.getElementById('ppPaper').innerHTML;
-    const printWin = window.open('', '_blank', 'width=500,height=750');
-    printWin.document.write(`<!DOCTYPE html>
+  const html = `<!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8"/>
-  <title>EBM Receipt</title>
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
-  <style>
-    *{margin:0;padding:0;box-sizing:border-box}
-    body{background:#fff;display:flex;justify-content:center;padding:20px;font-family:'IBM Plex Mono',monospace;color:#000}
-    .receipt-print{width:80mm;padding:16px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#000;line-height:1.6}
-    .rp-header{text-align:center;padding-bottom:12px;margin-bottom:12px;border-bottom:1px dashed #000}
-    .rp-header h1{font-size:15px;font-weight:700;letter-spacing:.04em}
-    .rp-header .sub{font-size:10px;margin-top:2px}
-    .rp-clinic{text-align:center;padding-bottom:10px;margin-bottom:10px;border-bottom:1px dashed #000}
-    .rp-clinic p{font-size:11px}
-    .rp-stamp{display:inline-block;padding:2px 12px;font-size:9px;font-weight:700;letter-spacing:.1em;margin-top:4px;background:#000!important;color:#fff!important}
-    .rp-section{padding-bottom:10px;margin-bottom:10px;border-bottom:1px dashed #000}
-    .rp-section:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
-    .rp-title{text-align:center;font-weight:700;font-size:11px;letter-spacing:.08em;margin-bottom:5px;text-decoration:underline}
-    .rp-warn{text-align:center;font-size:10px;font-style:italic;padding:3px 0}
-    .rp-row{display:flex;justify-content:space-between;padding:2px 0;font-size:11px}
-    .rp-row.total{font-weight:700;font-size:12px;padding:3px 0}
-    .rp-row.sub{color:#444;font-size:10px}
-    .not-official{text-align:center;font-weight:700;font-size:10px;padding:5px 0;border-top:1px solid #000;border-bottom:1px solid #000;margin:6px 0}
-    .rp-databox{background:#f0f0f0;border:1px solid #ccc;padding:6px 8px;margin:6px 0;font-size:9px;word-break:break-all}
-    .rp-databox strong{display:block;font-size:10px;color:#000;margin-bottom:1px}
-    .rp-thank{text-align:center;font-weight:700;font-size:12px;letter-spacing:.15em;padding-top:12px}
-    .watermark-proforma,.watermark-training{color:#000!important;border:2px solid #000!important;display:block;padding:2px;margin:6px 0;font-size:10px;font-weight:700;text-align:center;width:100%}
-    @media print{body{padding:0}@page{margin:8mm;size:80mm auto}}
-  </style>
+<meta charset="UTF-8"/>
+<title>Invoice ${p.invoice}</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'DM Sans',sans-serif;background:#fff;color:#334155;padding:32px 36px;font-size:12px;line-height:1.5}
+  @media print{body{padding:16px}@page{margin:10mm;size:A4}}
+</style>
 </head>
 <body>
-  <div class="receipt-print">${paperHTML}</div>
-  <script>window.onload=function(){window.print();setTimeout(function(){window.close();},800);}<\/script>
-</body>
-</html>`);
-    printWin.document.close();
+
+<!-- Header Bar -->
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:20px;border-bottom:2px solid #f1f5f9;margin-bottom:24px">
+  <div style="display:flex;align-items:center;gap:10px">
+    <div style="width:36px;height:36px;background:linear-gradient(135deg,#0f766e,#0d9488);border-radius:8px;display:flex;align-items:center;justify-content:center">
+      <span style="color:#fff;font-weight:800;font-size:16px">S</span>
+    </div>
+    <div>
+      <div style="font-weight:700;font-size:15px;color:#0f172a;letter-spacing:-0.3px">Shema Clinic</div>
+      <div style="font-size:10px;color:#94a3b8;letter-spacing:0.5px">MEDICAL CENTER · KIGALI</div>
+    </div>
+  </div>
+  <div style="text-align:right">
+    <div style="font-size:10px;color:#94a3b8;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">Patient Invoice</div>
+    <div style="font-family:'DM Mono',monospace;font-size:14px;font-weight:500;color:#0f172a;letter-spacing:0.5px">${p.invoice}</div>
+    <div style="margin-top:6px;display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;background:${sc.bg}">
+      <span style="width:6px;height:6px;background:${sc.dot};border-radius:50%;display:inline-block"></span>
+      <span style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:${sc.color}">${p.status}</span>
+    </div>
+  </div>
+</div>
+
+<!-- Patient Info Card -->
+<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:18px 20px;margin-bottom:24px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px">
+  <div>
+    <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#94a3b8;margin-bottom:8px">Patient</div>
+    <p style="font-weight:600;font-size:13px;color:#0f172a;margin-bottom:4px">${p.name}</p>
+    <p style="font-size:11px;color:#64748b">File No: <span style="color:#334155;font-weight:500">${p.fileNo}</span></p>
+    <p style="font-size:11px;color:#64748b">Phone: <span style="color:#334155;font-weight:500">+250 000 000 000</span></p>
+  </div>
+  <div style="border-left:1px solid #e2e8f0;padding-left:16px">
+    <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#94a3b8;margin-bottom:8px">Visit Details</div>
+    <p style="font-size:11px;color:#64748b;margin-bottom:4px">Visit No: <span style="color:#0d9488;font-weight:600">${p.visitNo}</span></p>
+    <p style="font-size:11px;color:#64748b;margin-bottom:4px">Dept: <span style="color:#334155;font-weight:500">${p.dept}</span></p>
+    <p style="font-size:11px;color:#64748b">Doctor: <span style="color:#334155;font-weight:500">${p.doctor}</span></p>
+  </div>
+  <div style="border-left:1px solid #e2e8f0;padding-left:16px">
+    <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#94a3b8;margin-bottom:8px">Insurance</div>
+    <p style="font-size:11px;color:#64748b;margin-bottom:4px">Provider: <span style="color:#334155;font-weight:500">${p.insurance}</span></p>
+    <p style="font-size:11px;color:#64748b;margin-bottom:4px">Copay: <span style="color:#334155;font-weight:500">${p.copay}%</span></p>
+    <p style="font-size:11px;color:#64748b">Date: <span style="color:#334155;font-weight:500">${p.date}</span></p>
+  </div>
+</div>
+
+<!-- Section Title -->
+<div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+  <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#0f172a">Invoice Items</span>
+  <div style="flex:1;height:1px;background:#e2e8f0"></div>
+</div>
+
+${categoriesHTML}
+
+<!-- Summary -->
+<div style="display:flex;justify-content:flex-end;margin-bottom:20px">
+  <div style="width:340px;border:1px solid #e2e8f0;border-radius:10px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.05)">
+    <div style="padding:12px 16px;font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:1px;background:#f8fafc;border-bottom:1px solid #e2e8f0;color:#64748b">Invoice Summary</div>
+    <div style="padding:4px 0">
+      ${[
+        ['Sub-total (all items)', grandTotal.toLocaleString() + ' RWF', '#334155', false],
+        [`Insurance (${insName})`, '−' + insAmt.toLocaleString() + ' RWF', '#0d9488', false],
+        ['Patient contribution', patContrib.toLocaleString() + ' RWF', '#334155', false],
+        ['Amount Paid', '−' + totalPaid.toLocaleString() + ' RWF', '#64748b', false],
+      ].map(([label, val, color]) => `
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 16px;border-bottom:1px solid #f1f5f9">
+        <span style="font-size:11px;color:#64748b">${label}</span>
+        <span style="font-size:12px;font-weight:500;color:${color};font-variant-numeric:tabular-nums">${val}</span>
+      </div>`).join('')}
+    </div>
+    <div style="padding:12px 16px;background:${balance > 0 ? 'linear-gradient(135deg,#7f1d1d,#991b1b)' : 'linear-gradient(135deg,#14532d,#166534)'};display:flex;justify-content:space-between;align-items:center">
+      <span style="font-size:11px;font-weight:600;color:rgba(255,255,255,0.8)">Balance Due</span>
+      <span style="font-size:15px;font-weight:700;color:#fff;font-variant-numeric:tabular-nums">${balance > 0 ? '−' : ''}${Math.abs(balance).toLocaleString()} <span style="font-size:11px;font-weight:400">RWF</span></span>
+    </div>
+    <div style="padding:8px 16px;background:#f8fafc;border-top:1px solid #e2e8f0;font-size:10px;color:#94a3b8;text-align:right">
+      Initiated by <strong style="color:#64748b">Mrs. Agathe Amina Uwera</strong>
+    </div>
+  </div>
+</div>
+
+${rssbHTML}
+
+<!-- Footer -->
+<div style="margin-top:32px;padding-top:16px;border-top:1px solid #f1f5f9;display:flex;justify-content:space-between;align-items:center">
+  <span style="font-size:10px;color:#cbd5e1">This document is computer-generated and valid without signature.</span>
+  <span style="font-size:10px;color:#94a3b8">Generated by <strong style="color:#0d9488">XanaHEALTH</strong></span>
+</div>
+
+<script>window.onload=function(){window.print();}<\/script>
+</body></html>`;
+
+  const w = window.open('', '_blank', 'width=900,height=700');
+  w.document.write(html);
+  w.document.close();
+}
+
+// Filter modal
+function openFilterModal() {
+  document.getElementById('filterModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeFilterModal() {
+  document.getElementById('filterModal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function handleFilterOverlayClick(e) {
+  if (e.target === document.getElementById('filterModal')) closeFilterModal();
+}
+
+function applyFilters() {
+  
+  const from = document.getElementById('filterDateFrom').value;
+  const to = document.getElementById('filterDateTo').value;
+  const ins = document.getElementById('filterInsurance').value;
+  const status = document.getElementById('filterStatus').value;
+
+  // Validate 31-day range
+  if (from && to) {
+    const diff = (new Date(to) - new Date(from)) / (1000*60*60*24);
+    if (diff < 0) { alert('End date must be after start date'); return; }
+    if (diff > 31) { alert('Maximum date range is 31 days'); return; }
   }
 
+  const bar = document.getElementById('appliedFiltersBar');
+  const tagDate = document.getElementById('filterTagDate');
+  const tagIns = document.getElementById('filterTagIns');
+  const tagStatus = document.getElementById('filterTagStatus');
+  let hasFilter = false;
 
-  function openInvoice(id) {
-    currentPatientId = id;
-    const p = patients[id];
-    document.getElementById('invNumber').textContent = p.invoice;
-    document.getElementById('invPatientName').textContent = p.name;
-    document.getElementById('invDate').textContent = p.date;
-    document.getElementById('invInpatient').textContent = p.inpatient;
-    document.getElementById('invInsurance').textContent = p.insurance;
-    document.getElementById('invTotal').textContent = p.total;
-    document.getElementById('invoiceOverlay').classList.add('open');
-    document.body.style.overflow = 'hidden';
+  if (from && to) {
+    tagDate.textContent = `${from} → ${to}`;
+    tagDate.style.display = 'flex';
+    hasFilter = true;
+  } else tagDate.style.display = 'none';
+
+  if (ins) {
+    tagIns.textContent = ins;
+    tagIns.style.display = 'flex';
+    hasFilter = true;
+  } else tagIns.style.display = 'none';
+
+  if (status) {
+    tagStatus.textContent = status.charAt(0).toUpperCase()+status.slice(1);
+    tagStatus.style.display = 'flex';
+    hasFilter = true;
+  } else tagStatus.style.display = 'none';
+
+  bar.style.display = hasFilter ? 'flex' : 'none';
+  closeFilterModal();
+ filterData(from, to, ins, status);
+  
+}
+function filterData(from, to, ins, status) {
+  const table = document.getElementById('visitsTable');
+  const rows = table.tBodies[0].rows;
+
+  const fromObj = from ? new Date(from) : null;
+  const toObj = to ? new Date(to) : null;
+
+  for (let row of rows) {
+    const dateObj = new Date(row.cells[1].textContent);  // column 1 = Date
+    const insurance = row.cells[6].textContent;          // column 6 = Insurance
+    const rowStatus = row.cells[11].textContent.toLowerCase(); // column 11 = Status
+
+    let show = true;
+
+    if (fromObj && toObj && (dateObj < fromObj || dateObj > toObj)) show = false;
+    if (ins && insurance !== ins) show = false;
+    if (status && rowStatus !== status.toLowerCase()) show = false;
+
+    row.style.display = show ? '' : 'none';
   }
+}
+function clearAllFilters() {
+  // Clear the filter inputs
+  document.getElementById('filterDateFrom').value = '';
+  document.getElementById('filterDateTo').value = '';
+  document.getElementById('filterInsurance').value = '';
+  document.getElementById('filterStatus').value = '';
 
-  function closeInvoice() {
-    document.getElementById('invoiceOverlay').classList.remove('open');
-    document.body.style.overflow = '';
-    currentPatientId = null;
+  // Hide the applied filters bar
+  document.getElementById('appliedFiltersBar').style.display = 'none';
+  document.getElementById('filterTagDate').style.display = 'none';
+  document.getElementById('filterTagIns').style.display = 'none';
+  document.getElementById('filterTagStatus').style.display = 'none';
+
+  // Show all rows in the table
+  const table = document.getElementById('visitsTable');
+  const rows = table.tBodies[0].rows;
+  for (let row of rows) {
+    row.style.display = ''; // reset to default (visible)
   }
+}
 
-  function handleInvoiceOverlayClick(e) {
-    if (e.target === document.getElementById('invoiceOverlay')) closeInvoice();
+// Send
+let sendMenuOpen = false;
+function toggleSendMenu() {
+  sendMenuOpen = !sendMenuOpen;
+  document.getElementById('sendMenu').classList.toggle('open', sendMenuOpen);
+  document.getElementById('sendBtnEl').classList.toggle('open', sendMenuOpen);
+}
+function sendViaWhatsApp() {
+  if (!currentPatientId) return;
+  const p = patients[currentPatientId];
+  window.open('https://wa.me/?text='+encodeURIComponent(`Hello, please find your invoice ${p.invoice} from Shema Clinic. Total: Rwf ${p.total.toLocaleString()}. Thank you.`),'_blank');
+  toggleSendMenu();
+}
+function sendViaEmail() {
+  if (!currentPatientId) return;
+  const p = patients[currentPatientId];
+  window.open('mailto:?subject='+encodeURIComponent(`Invoice ${p.invoice} - Shema Clinic`)+'&body='+encodeURIComponent(`Dear ${p.name},\n\nPlease find your invoice ${p.invoice}.\n\nTotal: Rwf ${p.total.toLocaleString()}\n\nThank you.`));
+  toggleSendMenu();
+}
+
+// EBM
+let openEbmId = null;
+function toggleEbm(id) {
+  const menu = document.getElementById(id+'-menu'), btn = document.querySelector('#'+id+' .inv-ebm-btn');
+  if (!menu) return;
+  const was = menu.classList.contains('open'); closeAllEbmMenus();
+  if (!was) { menu.classList.add('open'); if(btn)btn.classList.add('open'); openEbmId = id; }
+}
+function closeAllEbmMenus() {
+  document.querySelectorAll('.ebm-menu').forEach(m=>m.classList.remove('open'));
+  document.querySelectorAll('.inv-ebm-btn').forEach(b=>b.classList.remove('open'));
+  openEbmId = null;
+}
+const receiptMeta = {
+  sale:     {title:'Sale Receipt',badgeClass:'badge-sale',badgeText:'SALE',stamp:'<span class="rp-stamp stamp-official">OFFICIAL</span>',typeLabel:'Normal Receipt (NR)',section:'SALE',notOfficial:false,watermark:''},
+  refund:   {title:'Refund Receipt',badgeClass:'badge-refund',badgeText:'CR',stamp:'<span class="rp-stamp stamp-copy">COPY</span>',typeLabel:'Copy Refund (CR)',section:'REFUND',notOfficial:true,watermark:''},
+  proforma: {title:'Proforma Invoice',badgeClass:'badge-proforma',badgeText:'PROFORMA',stamp:'<span class="rp-stamp stamp-draft">PROFORMA</span>',typeLabel:'Proforma Invoice (PI)',section:'PROFORMA',notOfficial:true,watermark:'<div style="text-align:center;margin:7px 0"><span class="watermark-proforma">⚠ PROFORMA — NOT VALID FOR TAX</span></div>'},
+  training: {title:'Training Receipt',badgeClass:'badge-training',badgeText:'TRAINING',stamp:'<span class="rp-stamp stamp-training">TRAINING</span>',typeLabel:'Training / Simulation',section:'TRAINING',notOfficial:true,watermark:'<div style="text-align:center;margin:7px 0"><span class="watermark-training">⚠ TRAINING MODE — NOT OFFICIAL</span></div>'},
+};
+function buildReceiptHTML(type,pName,inv,recNum,total) {
+  const m=receiptMeta[type], re=type==='refund'?`<div class="rp-row"><span>REF. RECEIPT#:</span><span>${recNum}</span></div><div class="rp-warn">REFUND APPROVED ONLY FOR ORIGINAL RECEIPT</div>`:'';
+  return `<div class="rp-header"><h1>EBM Receipt</h1><div class="sub">${m.typeLabel}</div></div><div class="rp-clinic"><p>Shema Clinic</p><p>Kigali, Rwanda</p><p>TIN: 0000000000</p>${m.stamp}</div><div class="rp-section"><div class="rp-title">${m.section}</div>${re}<div class="rp-row"><span>Patient:</span><span>${pName}</span></div><div class="rp-row"><span>Invoice:</span><span>${inv}</span></div></div><div class="rp-section"><div class="rp-row"><span>Medical Services</span></div><div class="rp-row sub"><span>1.00 × ${total}</span><span>${total} A-EX</span></div>${m.watermark}${m.notOfficial?'<div class="not-official">NOT AN OFFICIAL RECEIPT</div>':''}<div class="rp-row total"><span>TOTAL</span><span>${total}</span></div><div class="rp-row sub"><span>TOTAL TAX</span><span>0.00</span></div></div><div class="rp-section"><div class="rp-title">SDC INFORMATION</div><div class="rp-row"><span>Date: 25/12/2023</span><span>11:07:35</span></div><div class="rp-row"><span>SDC ID</span><span>SDC001000001</span></div><div class="rp-databox"><strong>Internal Data:</strong>TE68-SLA2-34J5-EAV3-N569-88LJ-Q7</div><div class="rp-databox"><strong>Signature:</strong>V249-J39C-FJ48-HE2W</div></div><div class="rp-section"><div class="rp-row"><span>RECEIPT#:</span><span>${recNum}</span></div><div class="rp-row"><span>DATE: 25/05/2023</span><span>11:09:32</span></div><div class="rp-row"><span>MRC:</span><span>AAACCI23456</span></div></div><div class="rp-thank">— THANK YOU —</div>`;
+}
+function openReceipt(type,pName,inv,recNum,total) {
+  closeAllEbmMenus();
+  const m=receiptMeta[type]; currentReceiptHTML=buildReceiptHTML(type,pName,inv,recNum,total);
+  const badge=document.getElementById('receiptBadge'); badge.textContent=m.badgeText; badge.className='rtype-badge '+m.badgeClass;
+  document.getElementById('receiptTitle').textContent=m.title;
+  document.getElementById('receiptContent').innerHTML=currentReceiptHTML;
+  document.getElementById('receiptModal').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function openReceiptFromInvoice(type) {
+  if (!currentPatientId) return;
+  const p=patients[currentPatientId];
+  openReceipt(type,p.name,p.invoice,p.recNum,'Rwf '+p.total.toLocaleString());
+}
+function closeReceipt() { document.getElementById('receiptModal').classList.remove('open'); document.body.style.overflow=''; }
+function handleReceiptOverlayClick(e) { if (e.target===document.getElementById('receiptModal')) closeReceipt(); }
+
+document.addEventListener('click', e => {
+  if (openEbmId && !e.target.closest('.inv-ebm-wrapper')) closeAllEbmMenus();
+  if (sendMenuOpen && !e.target.closest('.send-wrapper')) {
+    sendMenuOpen=false;
+    document.getElementById('sendMenu').classList.remove('open');
+    document.getElementById('sendBtnEl').classList.remove('open');
   }
-
-  // ── EBM dropdown logic ──
-  let openEbmId = null;
-
-  function toggleEbm(id) {
-    const menu = document.getElementById(id + '-menu');
-    const btn = document.querySelector('#' + id + ' .ebm-btn, #' + id + ' .inv-ebm-btn');
-    if (!menu) return;
-
-    const isOpen = menu.classList.contains('open');
-    closeAllEbmMenus();
-    if (!isOpen) {
-      menu.classList.add('open');
-      if (btn) btn.classList.add('open');
-      openEbmId = id;
-    }
-  }
-
-  function closeAllEbmMenus() {
-    document.querySelectorAll('.ebm-menu').forEach(m => m.classList.remove('open'));
-    document.querySelectorAll('.ebm-btn, .inv-ebm-btn').forEach(b => b.classList.remove('open'));
-    openEbmId = null;
-  }
-
-  document.addEventListener('click', function(e) {
-    if (openEbmId && !e.target.closest('.ebm-wrapper') && !e.target.closest('.inv-ebm-wrapper')) {
-      closeAllEbmMenus();
-    }
-  });
-
-  document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') {
-      if (document.getElementById('printPreview').classList.contains('open')) { closePrintPreview(); return; }
-      closeReceipt();
-      closeInvoice();
-      closeAllEbmMenus();
-    }
-  });
+});
+document.addEventListener('keydown', e => {
+  if (e.key==='Escape') { closeReceipt(); closeInvoice(); closeAllEbmMenus(); closeFilterModal(); }
+});
 </script>
 </body>
 </html>
