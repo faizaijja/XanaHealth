@@ -220,6 +220,25 @@
         </header>
 
         <div class="content-area">
+
+          <!-- ── Lab Results Notification Panel ── -->
+          <!-- Lab results toast notification (fixed bottom-right) -->
+          <div id="lab-results-notification" style="display:none;position:fixed;bottom:24px;right:24px;z-index:3000;width:360px;background:#fff;border:1px solid #86efac;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,0.15);overflow:hidden;">
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:#f0fdf4;border-bottom:1px solid #bbf7d0;">
+              <div style="display:flex;align-items:center;gap:9px;">
+                <div style="width:28px;height:28px;background:#22c55e;border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><path d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/></svg>
+                </div>
+                <div>
+                  <div style="font-size:12px;font-weight:700;color:#14532d;"><span id="lab-results-count">0</span> Lab Result(s) Ready</div>
+                  <div style="font-size:10px;color:#16a34a;margin-top:1px;">Tap a result below to view or save</div>
+                </div>
+              </div>
+              <button onclick="dismissLabNotification()" style="width:26px;height:26px;display:flex;align-items:center;justify-content:center;background:none;border:1px solid #bbf7d0;border-radius:6px;cursor:pointer;color:#6b7280;font-size:16px;line-height:1;flex-shrink:0;">&times;</button>
+            </div>
+            <div id="lab-results-list" style="max-height:260px;overflow-y:auto;padding:10px 12px;display:flex;flex-direction:column;gap:8px;"></div>
+          </div>
+
           <div class="controls">
             <div class="controls-left">
               <button class="filter-btn">
@@ -389,6 +408,10 @@
       function submitTreatmentForm() {
         if (currentEditIdx < 0) return;
         const data = collectTreatmentFormData();
+        // Preserve any existing lab results already saved
+        const existing = treatmentData[currentEditIdx] || {};
+        data.labResults = existing.labResults || '';
+        data.labResultsRaw = existing.labResultsRaw || [];
         treatmentData[currentEditIdx] = data;
         localStorage.setItem(TREATMENT_KEY, JSON.stringify(treatmentData));
         // Show confirmation
@@ -472,6 +495,104 @@
           `<div style="display:flex;align-items:center;gap:8px;padding:7px 11px;background:#e8f5f0;border-radius:6px;margin-bottom:7px;font-size:12px;font-weight:500;color:#374151;">${item}</div>`
         ).join('') || '<p style="color:#9ca3af;font-size:13px;">No HMIS items recorded.</p>';
 
+        // ── LAB RESULTS (from lab page) ──
+        const labCard = document.getElementById('tp-lab-results-card');
+        const labBody = document.getElementById('tp-lab-results-body');
+        if (labCard && labBody) {
+          // Look up completed orders for this patient
+          const allOrders = JSON.parse(localStorage.getItem('xana_lab_orders') || '[]');
+          const v = allVisits[idx];
+          const patientName = ((v.firstName || '') + ' ' + (v.lastName || '')).trim().toLowerCase();
+          const patientOrders = allOrders.filter(o =>
+            o.status === 'completed' && o.patient.trim().toLowerCase() === patientName
+          );
+
+          if (patientOrders.length === 0 && !td.labResults) {
+            labCard.style.display = 'none';
+          } else {
+            labCard.style.display = 'block';
+            // Render each completed order as a results block
+            let html = '';
+            if (patientOrders.length > 0) {
+              patientOrders.forEach(o => {
+                const vals = o.result?.values || [];
+                // Use result.values as the source of truth for test names + values
+                const rows = vals.length > 0 ? vals : [...o.simpleTests, ...o.fbcTests].map((t, i) => ({
+                  test: t.name, value: '—', refLow: t.refLow, refHigh: t.refHigh
+                }));
+
+                html += `
+                  <div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:14px 16px;margin-bottom:12px;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+                      <div style="font-size:12px;font-weight:700;color:#1f2937;">Lab Order — ${o.orderedAt}</div>
+                      <span style="background:#d0f0e4;color:#1a5c3a;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;">By ${o.result?.completedBy}</span>
+                    </div>`;
+
+                rows.forEach((row, i) => {
+                  const testName = row.test || row.name || '—';
+                  const val = row.value || '—';
+                  // Try to get ref range from original order if not in result
+                  const origTest = [...o.simpleTests, ...o.fbcTests][i] || {};
+                  const refLow  = row.refLow  || origTest.refLow;
+                  const refHigh = row.refHigh || origTest.refHigh;
+                  let flag = '', valColor = '#1f2937', rowBg = '#fff', borderLeft = '3px solid #e5e7eb';
+                  if (refLow && refHigh && val !== '—') {
+                    const n = parseFloat(val), lo = parseFloat(refLow), hi = parseFloat(refHigh);
+                    if (!isNaN(n)) {
+                      if (n < lo)      { flag = `<span style="background:#eff6ff;color:#2563eb;font-size:9px;font-weight:700;padding:1px 6px;border-radius:4px;margin-left:6px;">L</span>`; valColor='#2563eb'; rowBg='#fef2f2'; borderLeft='3px solid #ef4444'; }
+                      else if (n > hi) { flag = `<span style="background:#fef2f2;color:#c0392b;font-size:9px;font-weight:700;padding:1px 6px;border-radius:4px;margin-left:6px;">H</span>`; valColor='#c0392b'; rowBg='#fef2f2'; borderLeft='3px solid #ef4444'; }
+                      else             { flag = `<span style="background:#d0f0e4;color:#1a7a5e;font-size:9px;font-weight:700;padding:1px 6px;border-radius:4px;margin-left:6px;">N</span>`; rowBg='#f0fdf4'; borderLeft='3px solid #22c55e'; }
+                    }
+                  }
+                  const refText = (refLow && refHigh) ? `<span style="font-size:10px;color:#9ca3af;margin-left:4px;">Ref: ${refLow}–${refHigh}</span>` : '';
+                  html += `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;margin-bottom:3px;border-radius:6px;background:${rowBg};border-left:${borderLeft};">
+                    <div>
+                      <span style="font-size:12px;color:#374151;font-weight:500;">${testName}</span>
+                      ${refText}
+                    </div>
+                    <span style="display:flex;align-items:center;font-family:'Courier New',monospace;font-size:13px;font-weight:700;color:${valColor};">${val}${flag}</span>
+                  </div>`;
+                });
+                html += `</div>`;
+
+                // Mark as saved to treatment
+                if (!o.savedToTreatment) {
+                  const orders = JSON.parse(localStorage.getItem('xana_lab_orders') || '[]');
+                  const oi = orders.findIndex(x => x.id === o.id);
+                  if (oi !== -1) { orders[oi].savedToTreatment = true; localStorage.setItem('xana_lab_orders', JSON.stringify(orders)); }
+                }
+              });
+            } else if (td.labResults) {
+              html = `<pre style="font-size:12px;color:#374151;white-space:pre-wrap;font-family:inherit;">${td.labResults}</pre>`;
+            }
+            labBody.innerHTML = html;
+
+            // Show "Confirm & Save" button if any order is not yet confirmed, and pulse the card
+            const allOrders2 = JSON.parse(localStorage.getItem('xana_lab_orders') || '[]');
+            const hasUnsaved = allOrders2.some(o => o.status === 'completed' && !o.savedToTreatment &&
+              o.patient.trim().toLowerCase() === patientName);
+            const confirmBtn = document.getElementById('tp-lab-confirm-btn');
+            const statusBadge = document.getElementById('tp-lab-status-badge');
+            if (confirmBtn) {
+              if (hasUnsaved) {
+                confirmBtn.style.display = 'inline-block';
+                statusBadge.textContent = 'New Results!';
+                statusBadge.style.background = '#fef3c7';
+                statusBadge.style.color = '#92400e';
+                labCard.classList.add('lab-pulse');
+                setTimeout(() => labCard.classList.remove('lab-pulse'), 5000);
+              } else {
+                confirmBtn.style.display = 'none';
+                statusBadge.textContent = 'From Lab ✓';
+                statusBadge.style.background = '#d0f0e4';
+                statusBadge.style.color = '#1a5c3a';
+              }
+            }
+            // Store current preview idx for confirmLabResultsFromPreview
+            labCard._previewPatient = patientName;
+          }
+        }
+
         // If no saved data, show a note
         if (!treatmentData[idx]) {
           const note = document.createElement('div');
@@ -518,6 +639,9 @@
           management: getV('tp-management'),
           prescription: rxRows,
           savedAt: new Date().toLocaleString(),
+          // preserve lab results if already saved
+          labResults: existing.labResults || '',
+          labResultsRaw: existing.labResultsRaw || [],
         });
         localStorage.setItem(TREATMENT_KEY, JSON.stringify(treatmentData));
         // Feedback
@@ -622,6 +746,303 @@
         allVisits = stored ? JSON.parse(stored) : SAMPLE_VISITS;
         if (!stored) localStorage.setItem(VISITS_KEY, JSON.stringify(SAMPLE_VISITS));
         renderTable(allVisits);
+        // Poll for completed lab results from the lab page
+        pollLabResults();
+        setInterval(pollLabResults, 5000);
+      }
+
+      let _labNotifDismissed = false;
+      let _labNotifLastCount = 0;
+
+      function dismissLabNotification() {
+        _labNotifDismissed = true;
+        document.getElementById('lab-results-notification').style.display = 'none';
+      }
+
+      function pollLabResults() {
+        const orders = JSON.parse(localStorage.getItem('xana_lab_orders') || '[]');
+        const completed = orders.filter(o => o.status === 'completed');
+        const panel = document.getElementById('lab-results-notification');
+        if (!panel) return;
+
+        // If there are new results since last poll, un-dismiss so the doctor sees them
+        if (completed.length > _labNotifLastCount) {
+          _labNotifDismissed = false;
+        }
+        _labNotifLastCount = completed.length;
+
+        if (completed.length === 0 || _labNotifDismissed) {
+          panel.style.display = 'none';
+          return;
+        }
+
+        panel.style.display = 'block';
+        document.getElementById('lab-results-count').textContent = completed.length;
+        document.getElementById('lab-results-list').innerHTML = completed.map(o => {
+          const tests = [...o.simpleTests.map(t=>t.name), ...(o.fbcTests.length?['FBC Panel']:[])].join(', ');
+          const savedToForm = o.savedToTreatment ? true : false;
+          return `
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;gap:10px;">
+            <div style="flex:1;min-width:0;">
+              <div style="font-size:12px;font-weight:600;color:#1a1a1a;">${o.patient}</div>
+              <div style="font-size:10px;color:#6b7280;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${tests}</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+              ${savedToForm
+                ? `<span style="background:#d1fae5;color:#065f46;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;">Saved ✓</span>
+                   <button onclick="openPatientTreatmentForm('${o.id}')" style="padding:4px 9px;background:#fff;border:1px solid #d1d5db;border-radius:6px;font-size:11px;font-weight:500;color:#4a8f75;cursor:pointer;font-family:inherit;">Open →</button>`
+                : `<button onclick="viewLabResults('${o.id}')" style="padding:4px 9px;background:#fff;border:1px solid #d1d5db;border-radius:6px;font-size:11px;color:#374151;cursor:pointer;font-family:inherit;">View</button>
+                   <button onclick="saveResultsToForm('${o.id}');setTimeout(()=>openPatientTreatmentForm('${o.id}'),400)" style="padding:4px 9px;background:#4a8f75;border:none;border-radius:6px;font-size:11px;font-weight:600;color:#fff;cursor:pointer;font-family:inherit;">Save →</button>`
+              }
+            </div>
+          </div>`;
+        }).join('');
+      }
+
+      /* ── VIEW LAB RESULTS MODAL ── */
+      function viewLabResults(orderId) {
+        const orders = JSON.parse(localStorage.getItem('xana_lab_orders') || '[]');
+        const o = orders.find(x => x.id === orderId);
+        if (!o || !o.result) return;
+
+        const allTests = [
+          ...o.simpleTests.map(t => ({ name: t.name, value: null, type: 'simple', refLow: null, refHigh: null })),
+          ...o.fbcTests.map(t => ({ name: t.name, value: t.value, refLow: t.refLow, refHigh: t.refHigh, type: 'fbc' }))
+        ];
+
+        // match entered values from result.values — prefer stored ref ranges from lab tech
+        const vals = o.result.values || [];
+        vals.forEach((v, i) => {
+          if (i < allTests.length) {
+            allTests[i].value   = v.value;
+            allTests[i].refLow  = v.refLow  || allTests[i].refLow;
+            allTests[i].refHigh = v.refHigh || allTests[i].refHigh;
+            if (v.test && v.test !== '—') allTests[i].name = v.test;
+          }
+        });
+
+        document.getElementById('lr-modal-patient').textContent = o.patient;
+        document.getElementById('lr-modal-meta').textContent =
+          `Ordered by ${o.orderedBy} · Completed by ${o.result.completedBy} · ${o.result.completedAt}`;
+
+        document.getElementById('lr-modal-body').innerHTML = allTests.map(t => {
+          let flagHtml = '', valColor = '#1f2937', rowBg = 'transparent', borderLeft = 'none';
+          // Use refLow/refHigh from result values (saved by lab tech) or fallback to test object
+          const refLow  = t.refLow  || (t.type === 'fbc' ? t.refLow  : null);
+          const refHigh = t.refHigh || (t.type === 'fbc' ? t.refHigh : null);
+          if (refLow && refHigh && t.value && t.value !== '—') {
+            const v = parseFloat(t.value), lo = parseFloat(refLow), hi = parseFloat(refHigh);
+            if (!isNaN(v)) {
+              if (v < lo)      { flagHtml = `<span style="background:#eff6ff;color:#2563eb;font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;margin-left:8px;">L</span>`; valColor='#2563eb'; rowBg='#fef2f2'; borderLeft='3px solid #ef4444'; }
+              else if (v > hi) { flagHtml = `<span style="background:#fef2f2;color:#c0392b;font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;margin-left:8px;">H</span>`; valColor='#c0392b'; rowBg='#fef2f2'; borderLeft='3px solid #ef4444'; }
+              else             { flagHtml = `<span style="background:#d0f0e4;color:#1a7a5e;font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;margin-left:8px;">N</span>`; rowBg='#f0fdf4'; borderLeft='3px solid #22c55e'; }
+            }
+          }
+          const refText = (refLow && refHigh) ? `<span style="font-size:10px;color:#9ca3af;margin-left:6px;">Ref: ${refLow}–${refHigh}</span>` : '';
+          return `
+            <div style="display:grid;grid-template-columns:1fr auto;align-items:center;padding:10px 12px;margin:3px 0;border-radius:7px;background:${rowBg};border-left:${borderLeft};">
+              <div>
+                <div style="font-size:13px;font-weight:500;color:#374151;">${t.name}</div>
+                ${refText}
+              </div>
+              <div style="display:flex;align-items:center;gap:4px;">
+                <span style="font-family:'DM Mono',monospace;font-size:14px;font-weight:700;color:${valColor};">${t.value || '—'}</span>
+                ${flagHtml}
+              </div>
+            </div>`;
+        }).join('');
+
+        // show/hide Save to Form button inside modal
+        const saveBtn = document.getElementById('lr-modal-save-btn');
+        const openFormBtn = document.getElementById('lr-modal-open-form-btn');
+        if (o.savedToTreatment) {
+          saveBtn.textContent = '✓ Saved to treatment form';
+          saveBtn.style.background = '#d1fae5';
+          saveBtn.style.color = '#065f46';
+          saveBtn.disabled = true;
+          if (openFormBtn) {
+            openFormBtn.style.display = 'inline-flex';
+            openFormBtn.onclick = () => { closeLabResultsModal(); openPatientTreatmentForm(orderId); };
+          }
+        } else {
+          saveBtn.textContent = 'Save to Treatment Form';
+          saveBtn.style.background = '#4a8f75';
+          saveBtn.style.color = '#fff';
+          saveBtn.disabled = false;
+          saveBtn.onclick = () => {
+            saveResultsToForm(orderId);
+            // After saving, swap to "Open in form" flow
+            setTimeout(() => {
+              closeLabResultsModal();
+              openPatientTreatmentForm(orderId);
+            }, 600);
+          };
+          if (openFormBtn) openFormBtn.style.display = 'none';
+        }
+
+        document.getElementById('labResultsModal').style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+      }
+
+      function closeLabResultsModal() {
+        document.getElementById('labResultsModal').style.display = 'none';
+        document.body.style.overflow = '';
+      }
+
+      /* ── CONFIRM LAB RESULTS FROM WITHIN TREATMENT PREVIEW ── */
+      function confirmLabResultsFromPreview() {
+        // Find the current patient being previewed
+        const overlay = document.getElementById('treatmentPreviewOverlay');
+        const idx = overlay._previewIdx;
+        if (idx === undefined) return;
+
+        const v = allVisits[idx];
+        const patientName = ((v.firstName || '') + ' ' + (v.lastName || '')).trim().toLowerCase();
+
+        // Find all unsaved completed orders for this patient
+        const orders = JSON.parse(localStorage.getItem('xana_lab_orders') || '[]');
+        const toSave = orders.filter(o =>
+          o.status === 'completed' && !o.savedToTreatment &&
+          o.patient.trim().toLowerCase() === patientName
+        );
+
+        if (toSave.length === 0) return;
+
+        // Save each order to treatment data
+        toSave.forEach(o => saveResultsToForm(o.id));
+
+        // Update the confirm button UI
+        const confirmBtn = document.getElementById('tp-lab-confirm-btn');
+        const statusBadge = document.getElementById('tp-lab-status-badge');
+        if (confirmBtn) {
+          confirmBtn.textContent = '✓ Confirmed!';
+          confirmBtn.style.background = '#d0f0e4';
+          confirmBtn.style.color = '#1a5c3a';
+          setTimeout(() => { confirmBtn.style.display = 'none'; }, 1500);
+        }
+        if (statusBadge) {
+          statusBadge.textContent = 'From Lab ✓';
+          statusBadge.style.background = '#d0f0e4';
+          statusBadge.style.color = '#1a5c3a';
+        }
+      }
+
+      /* ── OPEN PATIENT'S TREATMENT FORM AND SCROLL TO LAB CARD ── */
+      function openPatientTreatmentForm(orderId) {
+        const orders = JSON.parse(localStorage.getItem('xana_lab_orders') || '[]');
+        const o = orders.find(x => x.id === orderId);
+        if (!o) return;
+
+        // Find the matching visit index
+        const matchIdx = allVisits.findIndex(v =>
+          (v.firstName + ' ' + v.lastName).trim().toLowerCase() === o.patient.trim().toLowerCase()
+        );
+        const idx = matchIdx >= 0 ? matchIdx : 0;
+
+        // Open the treatment preview (the full-screen view with all cards)
+        openTreatmentPreview(idx);
+
+        // After it opens, scroll to the lab results card and pulse it
+        setTimeout(() => {
+          const labCard = document.getElementById('tp-lab-results-card');
+          if (labCard) {
+            labCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            labCard.style.transition = 'box-shadow .3s, border-color .3s';
+            labCard.style.boxShadow = '0 0 0 4px rgba(74,143,117,0.35)';
+            labCard.style.borderColor = '#4a8f75';
+            setTimeout(() => {
+              labCard.style.boxShadow = '';
+              labCard.style.borderColor = '#4a8f75'; // keep the green border
+            }, 2500);
+          }
+        }, 200);
+      }
+
+      /* ── SAVE RESULTS TO TREATMENT FORM ── */
+      function saveResultsToForm(orderId) {
+        const orders = JSON.parse(localStorage.getItem('xana_lab_orders') || '[]');
+        const idx = orders.findIndex(x => x.id === orderId);
+        if (idx === -1) return;
+        const o = orders[idx];
+        if (!o.result) return;
+
+        // Mark as saved
+        orders[idx].savedToTreatment = true;
+        localStorage.setItem('xana_lab_orders', JSON.stringify(orders));
+
+        // Build the lab results text block — use stored result.values names where available
+        const vals = o.result.values || [];
+        const labLines = vals.length > 0
+          ? vals.map(v => `${v.test || '—'}: ${v.value}`)
+          : [...o.simpleTests, ...o.fbcTests].map((t, i) => `${t.name}: ${vals[i]?.value || '—'}`);
+
+        const labSummary = labLines.join('\n');
+        const labBlock = `[Lab Results — ${o.result.completedAt}]\nCompleted by: ${o.result.completedBy}\n${labSummary}`;
+
+        // Find which visit this belongs to and save into treatmentData
+        const TREATMENT_KEY = 'xana_treatments';
+        const treatmentData = JSON.parse(localStorage.getItem(TREATMENT_KEY) || '{}');
+
+        // Try to match by patient name → visit index
+        let matchIdx = allVisits.findIndex(v =>
+          (v.firstName + ' ' + v.lastName).toLowerCase() === o.patient.toLowerCase()
+        );
+        if (matchIdx === -1) matchIdx = 0; // fallback to first visit
+
+        if (!treatmentData[matchIdx]) treatmentData[matchIdx] = {};
+        // Append to existing lab results or create new
+        const existing = treatmentData[matchIdx].labResults || '';
+        treatmentData[matchIdx].labResults = existing
+          ? existing + '\n\n' + labBlock
+          : labBlock;
+        treatmentData[matchIdx].labResultsRaw = o.result.values || [];
+        localStorage.setItem(TREATMENT_KEY, JSON.stringify(treatmentData));
+
+        // Visual confirmation
+        pollLabResults(); // re-render panel to show "Saved ✓"
+
+        // Keep outer treatmentData in sync so openTreatmentPreview sees the new data immediately
+        loadTreatmentData();
+
+        // Flash the save button if inside the modal
+        const saveBtn = document.getElementById('lr-modal-save-btn');
+        if (saveBtn && !saveBtn.disabled) {
+          saveBtn.textContent = '✓ Saved to Treatment Form!';
+          saveBtn.style.background = '#d1fae5';
+          saveBtn.style.color = '#065f46';
+          saveBtn.disabled = true;
+        }
+
+        // If the treatment form is currently open, refresh the lab section live
+        refreshLabSectionInForm(matchIdx);
+      }
+
+      /* ── REFRESH LAB CARD IN OPEN TREATMENT FORM ── */
+      function refreshLabSectionInForm(visitIdx) {
+        const TREATMENT_KEY = 'xana_treatments';
+        const treatmentData = JSON.parse(localStorage.getItem(TREATMENT_KEY) || '{}');
+        const td = treatmentData[visitIdx];
+        if (!td || !td.labResultsRaw) return;
+
+        // If consultation overlay is open, update the lab rows live
+        const overlay = document.getElementById('consultationOverlay');
+        if (!overlay || overlay.style.display === 'none') return;
+
+        // Highlight the lab card header to signal new results
+        const labHeaders = overlay.querySelectorAll('.c-card-title');
+        labHeaders.forEach(h => {
+          if (h.textContent.trim() === 'Laboratory Test') {
+            const card = h.closest('.c-card');
+            if (card) {
+              card.style.border = '2px solid #4a8f75';
+              card.style.boxShadow = '0 0 0 3px rgba(74,143,117,0.15)';
+              setTimeout(() => {
+                card.style.border = '';
+                card.style.boxShadow = '';
+              }, 3000);
+            }
+          }
+        });
       }
 
       init();
@@ -1121,7 +1542,7 @@
 
           <!-- Laboratory Test -->
           <div class="c-card">
-            <div class="c-card-header"><span class="c-card-title">Laboratory Test</span><button class="c-btn c-btn-outline c-btn-sm">Print</button></div>
+            <div class="c-card-header"><span class="c-card-title">Laboratory Test</span><div style="display:flex;gap:6px;align-items:center;"><button class="c-btn c-btn-green c-btn-sm" id="sendLabBtn" onclick="sendLabOrders()">Send to Lab</button><button class="c-btn c-btn-outline c-btn-sm">Print</button></div></div>
             <div class="c-card-body">
               <div class="c-lab-row">
                 <div class="c-lab-lbl">Malaria (T/DR)</div>
@@ -1252,6 +1673,20 @@
 
           <p class="c-page-note">Pneumonia</p>
 
+          <!-- ── Lab Results Card (populated from lab tech results) ── -->
+          <div class="c-card" id="c-lab-results-card" style="display:none;">
+            <div class="c-card-header" style="background:var(--c-green-light);border-bottom:1px solid #b6ddd1;">
+              <span class="c-card-title" style="color:var(--c-green);display:flex;align-items:center;gap:7px;">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10 2v7.527a2 2 0 0 1-.211.896L4.72 18.523A1 1 0 0 0 5.596 20h12.808a1 1 0 0 0 .876-1.477l-5.069-8.1A2 2 0 0 1 14 9.527V2"/><line x1="8.5" y1="2" x2="15.5" y2="2"/></svg>
+                Lab Results
+              </span>
+              <span id="c-lab-results-badge" style="background:var(--c-green);color:#fff;font-size:10px;font-weight:700;padding:2px 9px;border-radius:20px;">From Lab ✓</span>
+            </div>
+            <div class="c-card-body" id="c-lab-results-body" style="padding:10px 14px;">
+              <!-- populated by refreshLabResultsInConsultation() -->
+            </div>
+          </div>
+
           <!-- Submit Treatment Form Button -->
           <div style="display:flex;justify-content:flex-end;padding:8px 0 4px;">
             <button id="tf-submit-btn" onclick="submitTreatmentForm()" style="padding:11px 32px;background:var(--c-green);color:#fff;border:none;border-radius:8px;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:8px;transition:opacity 0.15s;">
@@ -1343,7 +1778,175 @@
           cDragging = false; cDivider.classList.remove('active');
           document.body.style.cursor = ''; document.body.style.userSelect = '';
         });
+
+        /* ─── SEND TO LAB ─── */
+        function sendLabOrders() {
+          // Collect simple lab tests (Malaria, Pregnancy, etc.)
+          const simpleTests = [];
+          document.querySelectorAll('#consultationOverlay .c-lab-row').forEach(row => {
+            const name = row.querySelector('.c-lab-lbl');
+            const statusEl = row.querySelector('.c-b-pending, .c-b-negative');
+            if (name) simpleTests.push({
+              name: name.textContent.trim(),
+              status: statusEl ? statusEl.textContent.trim() : 'Pending'
+            });
+          });
+
+          // Collect FBC panel tests
+          const fbcTests = [];
+          document.querySelectorAll('#fbc-active-grid .c-fbc-cell').forEach(cell => {
+            const name = cell.querySelector('.c-fbc-name');
+            const input = cell.querySelector('input');
+            if (name) fbcTests.push({
+              name: name.textContent.trim(),
+              refLow: cell.dataset.refLow,
+              refHigh: cell.dataset.refHigh,
+              value: input ? input.value : ''
+            });
+          });
+
+          if (simpleTests.length === 0 && fbcTests.length === 0) {
+            alert('No lab tests to send. Please add at least one test first.');
+            return;
+          }
+
+          // Get patient info from the currently open visit (via currentEditIdx)
+          const currentVisit = (typeof currentEditIdx !== 'undefined' && currentEditIdx >= 0 && window.allVisits)
+            ? window.allVisits[currentEditIdx] : null;
+
+          const patientName = currentVisit
+            ? ((currentVisit.firstName || '') + ' ' + (currentVisit.lastName || '')).trim()
+            : (document.querySelectorAll('#consultationOverlay .c-pt-val')[0]?.textContent.trim() || 'Unknown');
+          const invoiceNum = currentVisit ? (currentVisit.invoiceNum || '—')
+            : (document.querySelectorAll('#consultationOverlay .c-pt-val')[1]?.textContent.trim() || '—');
+          const gender = currentVisit ? (currentVisit.gender || '—')
+            : (document.querySelectorAll('#consultationOverlay .c-pt-val')[2]?.textContent.trim() || '—');
+          const insurance = currentVisit ? (currentVisit.insurance || '—') : '—';
+
+          // Build order object
+          const order = {
+            id: 'ORD-' + Date.now(),
+            patient: patientName,
+            invoice: invoiceNum,
+            gender: gender,
+            insurance: insurance,
+            orderedBy: 'Dr. Jane Doe',
+            orderedAt: new Date().toLocaleString(),
+            status: 'pending',
+            simpleTests: simpleTests,
+            fbcTests: fbcTests,
+            result: null
+          };
+
+          // Save to shared localStorage
+          const existing = JSON.parse(localStorage.getItem('xana_lab_orders') || '[]');
+          existing.unshift(order); // newest first
+          localStorage.setItem('xana_lab_orders', JSON.stringify(existing));
+
+          // Visual feedback on button
+          const btn = document.getElementById('sendLabBtn');
+          const orig = btn.innerHTML;
+          btn.innerHTML = '✓ Sent!';
+          btn.style.background = '#145f48';
+          btn.disabled = true;
+          setTimeout(() => { btn.innerHTML = orig; btn.style.background = ''; btn.disabled = false; }, 3000);
+        }
+
+        /* ─── POLL FOR COMPLETED RESULTS & UPDATE IN-FORM CARD ─── */
+        function checkLabResults() {
+          // Update the visits page notification panel
+          if (typeof pollLabResults === 'function') pollLabResults();
+          // Update the in-form lab results card
+          refreshLabResultsInConsultation();
+        }
+
+        function refreshLabResultsInConsultation() {
+          const card = document.getElementById('c-lab-results-card');
+          const body = document.getElementById('c-lab-results-body');
+          if (!card || !body) return;
+
+          const orders = JSON.parse(localStorage.getItem('xana_lab_orders') || '[]');
+          const completed = orders.filter(o => o.status === 'completed');
+
+          if (completed.length === 0) {
+            card.style.display = 'none';
+            return;
+          }
+
+          card.style.display = 'block';
+
+          body.innerHTML = completed.map(o => {
+            // Use result.values as the source of truth (lab tech entered these)
+            const vals = o.result?.values || [];
+            const rows = vals.length > 0 ? vals : [...o.simpleTests, ...o.fbcTests].map(t => ({
+              test: t.name, value: '—', refLow: t.refLow, refHigh: t.refHigh
+            }));
+
+            const rowsHtml = rows.map((row, i) => {
+              const testName = row.test || row.name || '—';
+              const val = row.value || '—';
+              const origTest = [...o.simpleTests, ...o.fbcTests][i] || {};
+              const refLow  = row.refLow  || origTest.refLow;
+              const refHigh = row.refHigh || origTest.refHigh;
+              let flag = '', valColor = 'var(--c-gray-800)', bgColor = 'transparent', refBadge = '';
+              if (refLow && refHigh) refBadge = `<span style="font-size:9px;color:var(--c-gray-400);margin-left:5px;">Ref ${refLow}–${refHigh}</span>`;
+              if (refLow && refHigh && val !== '—') {
+                const n = parseFloat(val), lo = parseFloat(refLow), hi = parseFloat(refHigh);
+                if (!isNaN(n)) {
+                  if (n < lo)      { flag = `<span style="background:#eff6ff;color:#2563eb;font-size:9px;font-weight:700;padding:1px 6px;border-radius:3px;margin-left:5px;">L</span>`; valColor='#2563eb'; bgColor='#fef2f2'; }
+                  else if (n > hi) { flag = `<span style="background:#fef2f2;color:#c0392b;font-size:9px;font-weight:700;padding:1px 6px;border-radius:3px;margin-left:5px;">H</span>`; valColor='#c0392b'; bgColor='#fef2f2'; }
+                  else             { flag = `<span style="background:#d0f0e4;color:#1a7a5e;font-size:9px;font-weight:700;padding:1px 6px;border-radius:3px;margin-left:5px;">N</span>`; bgColor='#f0fdf4'; }
+                }
+              }
+              return `<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 10px;border-radius:6px;margin-bottom:3px;background:${bgColor};">
+                <span style="font-size:12px;color:var(--c-gray-700);">${testName}${refBadge}</span>
+                <span style="display:flex;align-items:center;font-family:'DM Mono',monospace;font-size:13px;font-weight:700;color:${valColor};">${val}${flag}</span>
+              </div>`;
+            }).join('');
+
+            return `
+              <div style="margin-bottom:12px;">
+                <div style="font-size:11px;color:var(--c-gray-500);font-weight:600;margin-bottom:6px;display:flex;justify-content:space-between;">
+                  <span>${o.patient}</span>
+                  <span>By ${o.result?.completedBy} · ${o.result?.completedAt}</span>
+                </div>
+                ${rowsHtml}
+              </div>`;
+          }).join('');
+        }
+
+        // Poll every 5 seconds so the doctor sees results as soon as the lab submits
+        setInterval(checkLabResults, 5000);
+        checkLabResults();
       </script>
+    </div>
+
+    <!-- ── Lab Results Modal ── -->
+    <div id="labResultsModal" style="display:none;position:fixed;inset:0;z-index:5000;background:rgba(0,0,0,0.5);align-items:center;justify-content:center;">
+      <div style="background:#fff;border-radius:14px;width:560px;max-width:95vw;max-height:90vh;display:flex;flex-direction:column;box-shadow:0 24px 64px rgba(0,0,0,0.25);overflow:hidden;">
+        <!-- Modal header -->
+        <div style="padding:20px 24px 16px;border-bottom:1px solid #f3f4f6;display:flex;justify-content:space-between;align-items:flex-start;flex-shrink:0;">
+          <div>
+            <div style="font-size:17px;font-weight:700;color:#111827;">Lab Results</div>
+            <div id="lr-modal-patient" style="font-size:14px;font-weight:600;color:#4a8f75;margin-top:2px;"></div>
+            <div id="lr-modal-meta" style="font-size:11px;color:#9ca3af;margin-top:3px;"></div>
+          </div>
+          <button onclick="closeLabResultsModal()" style="width:32px;height:32px;border-radius:6px;border:1px solid #e5e5e5;background:#fff;cursor:pointer;font-size:18px;color:#6b7280;display:flex;align-items:center;justify-content:center;flex-shrink:0;">×</button>
+        </div>
+        <!-- Result rows -->
+        <div id="lr-modal-body" style="flex:1;overflow-y:auto;padding:4px 24px 8px;"></div>
+        <!-- Footer actions -->
+        <div style="padding:16px 24px;border-top:1px solid #f3f4f6;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-shrink:0;background:#fafafa;">
+          <button id="lr-modal-open-form-btn" onclick="" style="display:none;padding:9px 18px;background:#fff;border:1px solid #4a8f75;border-radius:8px;color:#4a8f75;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;align-items:center;gap:6px;">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            Open in Treatment Form
+          </button>
+          <div style="display:flex;gap:8px;margin-left:auto;">
+            <button onclick="closeLabResultsModal()" style="padding:9px 20px;border:1px solid #d1d5db;border-radius:8px;background:#fff;color:#374151;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;">Close</button>
+            <button id="lr-modal-save-btn" style="padding:9px 22px;background:#4a8f75;border:none;border-radius:8px;color:#fff;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">Save to Treatment Form</button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- ── Treatment Preview Overlay ── -->
@@ -1505,6 +2108,31 @@
             <div class="tp-card-header">HMIS Reporting</div>
             <div class="tp-card-body" id="tp-hmis-body">
               <!-- filled by JS -->
+            </div>
+          </div>
+
+          <!-- ── Lab Results (from Lab Tech) ── -->
+          <div class="tp-card" id="tp-lab-results-card" style="display:none;border:2px solid #4a8f75;">
+            <style>
+              @keyframes labPulse {
+                0%   { box-shadow: 0 0 0 0 rgba(74,143,117,0.5); }
+                70%  { box-shadow: 0 0 0 8px rgba(74,143,117,0); }
+                100% { box-shadow: 0 0 0 0 rgba(74,143,117,0); }
+              }
+              .lab-pulse { animation: labPulse 1.4s ease-out 3; }
+            </style>
+            <div class="tp-card-header" style="background:#e8f5f0;display:flex;justify-content:space-between;align-items:center;">
+              <div style="display:flex;align-items:center;gap:8px;">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2e7d5e" stroke-width="2.5"><path d="M10 2v7.527a2 2 0 0 1-.211.896L4.72 18.523A1 1 0 0 0 5.596 20h12.808a1 1 0 0 0 .876-1.477l-5.069-8.1A2 2 0 0 1 14 9.527V2"/><line x1="8.5" y1="2" x2="15.5" y2="2"/></svg>
+                <span style="color:#1a5c3a;">Laboratory Results</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;">
+                <span id="tp-lab-status-badge" style="background:#d0f0e4;color:#1a5c3a;font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;">From Lab ✓</span>
+                <button id="tp-lab-confirm-btn" onclick="confirmLabResultsFromPreview()" style="display:none;padding:5px 12px;background:#4a8f75;border:none;border-radius:6px;font-size:11px;font-weight:600;color:#fff;cursor:pointer;font-family:inherit;">Confirm & Save</button>
+              </div>
+            </div>
+            <div class="tp-card-body" id="tp-lab-results-body">
+              <!-- filled by openTreatmentPreview JS -->
             </div>
           </div>
 
