@@ -1,842 +1,283 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>XanaHealth - Patients List</title>
-    <style>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
 
-      body {
-        font-family:
-          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-          "Helvetica Neue", Arial, sans-serif;
-        background-color: #f5f5f5;
-        color: #333;
-      }
-
-      .container {
-        display: flex;
-        min-height: 100vh;
-      }
-
-      /* Sidebar */
-      .sidebar {
-        width: 240px;
-        background-color: #fff;
-        border-right: 1px solid #e5e5e5;
-        display: flex;
-        flex-direction: column;
-      }
-
-      .logo {
-        padding: 20px 24px;
-        font-size: 20px;
-        font-weight: 600;
-      }
-
-      .logo span:first-child {
-        color: #333;
-      }
-
-      .logo span:last-child {
-        color: #059669;
-      }
-
-      .nav-section {
-        padding: 12px 0;
-      }
-
-      .nav-label {
-        padding: 8px 24px;
-        font-size: 11px;
-        font-weight: 600;
-        color: #9ca3af;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-      }
-
-      .nav-item {
-        display: flex;
-        align-items: center;
-        padding: 10px 24px;
-        color: #6b7280;
-        text-decoration: none;
-        font-size: 14px;
-        cursor: pointer;
-        transition: background-color 0.2s;
-      }
-
-      .nav-item:hover {
-        background-color: #f9fafb;
-      }
-
-      .nav-item.active {
-        background-color: #f0fdf4;
-        color: #059669;
-        border-right: 3px solid #059669;
-      }
-
-      .nav-item svg {
-        width: 18px;
-        height: 18px;
-        margin-right: 12px;
-        opacity: 0.6;
-      }
-
-      .user-section {
-        margin-top: auto;
-        padding: 20px 24px;
-        border-top: 1px solid #e5e5e5;
-      }
-
-      .user-profile {
-        display: flex;
-        align-items: center;
-        margin-bottom: 16px;
-      }
-
-      .user-avatar {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        background-color: #fecaca;
-        margin-right: 12px;
-      }
-
-      .user-info h4 {
-        font-size: 14px;
-        font-weight: 600;
-        color: #333;
-      }
-
-      .user-info p {
-        font-size: 12px;
-        color: #9ca3af;
-      }
-
-      .user-actions {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-      }
-
-      .user-action {
-        display: flex;
-        align-items: center;
-        padding: 8px 0;
-        color: #6b7280;
-        text-decoration: none;
-        font-size: 14px;
-        cursor: pointer;
-      }
-
-      .user-action svg {
-        width: 18px;
-        height: 18px;
-        margin-right: 12px;
-        opacity: 0.6;
-      }
-
-      /* Main Content */
-      .main-content {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-      }
-
-      /* Header */
-      .header {
-        background-color: #fff;
-        padding: 16px 32px;
-        border-bottom: 1px solid #e5e5e5;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
-
-      .header h1 {
-        font-size: 24px;
-        font-weight: 600;
-        color: #111827;
-      }
-
-      .header-right {
-        display: flex;
-        align-items: center;
-        gap: 20px;
-      }
-
-      .notification-icon {
-        width: 20px;
-        height: 20px;
-        cursor: pointer;
-      }
-
-      .company-dropdown {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        padding: 8px 16px;
-        background-color: #fff;
-        border: 1px solid #e5e5e5;
-        border-radius: 6px;
-        cursor: pointer;
-        color: #9ca3af;
-      }
-
-      /* Content Area */
-      .content-area {
-        padding: 24px 32px;
-        flex: 1;
-        background-color: #f9fafb;
-      }
-
-      .controls {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 16px;
-        gap: 16px;
-      }
-
-      .controls-left {
-        display: flex;
-        gap: 12px;
-        flex: 1;
-      }
-
-      .filter-btn,
-      .action-btn {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        padding: 10px 16px;
-        background-color: #fff;
-        border: 1px solid #d1d5db;
-        border-radius: 6px;
-        cursor: pointer;
-        font-size: 14px;
-        color: #374151;
-      }
-
-      .search-box {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        padding: 10px 16px;
-        background-color: #fff;
-        border: 1px solid #d1d5db;
-        border-radius: 6px;
-        flex: 1;
-        max-width: 300px;
-      }
-
-      .search-box input {
-        border: none;
-        outline: none;
-        flex: 1;
-        font-size: 14px;
-        color: #6b7280;
-      }
-
-      .controls-right {
-        display: flex;
-        gap: 12px;
-      }
-
-      .export-btn,
-      .import-btn {
-        padding: 10px 20px;
-        background-color: #fff;
-        border: 1px solid #d1d5db;
-        border-radius: 6px;
-        cursor: pointer;
-        font-size: 14px;
-        color: #374151;
-        font-weight: 500;
-      }
-
-      .add-patient-btn {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        padding: 10px 20px;
-        background-color: #059669;
-        border: none;
-        border-radius: 6px;
-        cursor: pointer;
-        font-size: 14px;
-        color: #fff;
-        font-weight: 500;
-      }
-
-      /* Filters */
-      .applied-filters {
-        display: flex;
-        gap: 8px;
-        margin-bottom: 16px;
-        align-items: center;
-        flex-wrap: wrap;
-      }
-
-      .filter-label {
-        font-size: 13px;
-        color: #6b7280;
-      }
-
-      .filter-tag {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        padding: 6px 12px;
-        background-color: #f3f4f6;
-        border-radius: 4px;
-        font-size: 13px;
-        color: #374151;
-      }
-
-      .filter-tag .close {
-        cursor: pointer;
-        opacity: 0.6;
-      }
-
-      .clear-filter {
-        color: #ef4444;
-        font-size: 13px;
-        cursor: pointer;
-        font-weight: 500;
-      }
-
-      /* Table */
-      .table-container {
-        background-color: #fff;
-        border-radius: 8px;
-        overflow: hidden;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-      }
-
-      table {
-        width: 100%;
-        border-collapse: collapse;
-      }
-
-      thead {
-        background-color: #f9fafb;
-        border-bottom: 1px solid #e5e5e5;
-      }
-
-      th {
-        padding: 12px 16px;
-        text-align: left;
-        font-size: 12px;
-        font-weight: 600;
-        color: #6b7280;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-      }
-
-      td {
-        padding: 16px;
-        border-bottom: 1px solid #f3f4f6;
-        font-size: 14px;
-        color: #374151;
-      }
-
-      tbody tr:hover {
-        background-color: #f9fafb;
-      }
-
-      .checkbox {
-        width: 16px;
-        height: 16px;
-        border: 1px solid #d1d5db;
-        border-radius: 3px;
-        cursor: pointer;
-      }
-
-      .patient-image {
-        width: 36px;
-        height: 36px;
-        border-radius: 50%;
-        object-fit: cover;
-      }
-
-      .new-visit-btn {
-        padding: 6px 16px;
-        background-color: #d1fae5;
-        border: 1px solid #a7f3d0;
-        border-radius: 6px;
-        cursor: pointer;
-        font-size: 13px;
-        color: #065f46;
-        font-weight: 500;
-      }
-
-      .action-icons {
-        display: flex;
-        gap: 12px;
-      }
-
-      .action-icon {
-        width: 18px;
-        height: 18px;
-        opacity: 0.5;
-        cursor: pointer;
-      }
-
-      .action-icon:hover {
-        opacity: 1;
-      }
-
-      /* Pagination */
-      .pagination {
-        display: flex;
-        justify-content: flex-end;
-        align-items: center;
-        padding: 16px 24px;
-        gap: 8px;
-      }
-
-      .page-btn {
-        padding: 8px 12px;
-        border: 1px solid #d1d5db;
-        background-color: #fff;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 14px;
-        color: #374151;
-      }
-
-      .page-btn.active {
-        background-color: #059669;
-        color: #fff;
-        border-color: #059669;
-      }
-
-      .page-btn:disabled {
-        opacity: 0.4;
-        cursor: not-allowed;
-      }
-
-      .page-info {
-        font-size: 14px;
-        color: #9ca3af;
-        margin-left: 8px;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="container">
-      <!-- Sidebar -->
-      <aside class="sidebar">
-        <div class="logo">
-          <span>Xana</span><span>Health</span>
-          <p>Settings</p>
-        </div>
-
-        <nav class="nav-section">
-          <div class="nav-label">NAVIGATION</div>
-          <a href="#" class="nav-item">
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-            >
-              <rect x="3" y="3" width="7" height="7"></rect>
-              <rect x="14" y="3" width="7" height="7"></rect>
-              <rect x="14" y="14" width="7" height="7"></rect>
-              <rect x="3" y="14" width="7" height="7"></rect>
-            </svg>
-            Departments
-          </a>
-
-          <a href="#" class="nav-item active">
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-            >
-              <path
-                d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
-              ></path>
-              <polyline points="14 2 14 8 20 8"></polyline>
-              <line x1="16" y1="13" x2="8" y2="13"></line>
-              <line x1="16" y1="17" x2="8" y2="17"></line>
-              <polyline points="10 9 9 9 8 9"></polyline>
-            </svg>
-            System Users
-          </a>
-          <a href="#" class="nav-item">
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-            >
-              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-              <circle cx="9" cy="7" r="4"></circle>
-              <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-            </svg>
-            Insurance Providers
-          </a>
-          <a href="#" class="nav-item">
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-            >
-              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-              <line x1="16" y1="2" x2="16" y2="6"></line>
-              <line x1="8" y1="2" x2="8" y2="6"></line>
-              <line x1="3" y1="10" x2="21" y2="10"></line>
-            </svg>
-            All Products
-          </a>
-
-          <div class="nav-label">OPD</div>
-          <a href="#" class="nav-item">
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-            >
-              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-              <line x1="16" y1="2" x2="16" y2="6"></line>
-              <line x1="8" y1="2" x2="8" y2="6"></line>
-              <line x1="3" y1="10" x2="21" y2="10"></line>
-            </svg>
-            Patient Visits
-          </a>
-
-          <div class="nav-label">IN-PATIENTS</div>
-          <a href="#" class="nav-item">
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-            >
-              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-              <line x1="16" y1="2" x2="16" y2="6"></line>
-              <line x1="8" y1="2" x2="8" y2="6"></line>
-              <line x1="3" y1="10" x2="21" y2="10"></line>
-            </svg>
-            Rooms
-          </a>
-          <a href="#" class="nav-item">
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-            >
-              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-              <line x1="16" y1="2" x2="16" y2="6"></line>
-              <line x1="8" y1="2" x2="8" y2="6"></line>
-              <line x1="3" y1="10" x2="21" y2="10"></line>
-            </svg>
-            Admissions
-          </a>
-
-          <div class="nav-label">HMIS</div>
-          <a href="#" class="nav-item">
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-            >
-              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-              <line x1="16" y1="2" x2="16" y2="6"></line>
-              <line x1="8" y1="2" x2="8" y2="6"></line>
-              <line x1="3" y1="10" x2="21" y2="10"></line>
-            </svg>
-            HMIS Categories
-          </a>
-          <a href="#" class="nav-item">
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-            >
-              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-              <line x1="16" y1="2" x2="16" y2="6"></line>
-              <line x1="8" y1="2" x2="8" y2="6"></line>
-              <line x1="3" y1="10" x2="21" y2="10"></line>
-            </svg>
-            HMIS Indicators
-          </a>
-
-          <div class="nav-label">STOCK MANAGEMENT</div>
-          <a href="#" class="nav-item">
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-            >
-              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-              <line x1="16" y1="2" x2="16" y2="6"></line>
-              <line x1="8" y1="2" x2="8" y2="6"></line>
-              <line x1="3" y1="10" x2="21" y2="10"></line>
-            </svg>
-            Initial Product Inventory
-          </a>
-          <a href="#" class="nav-item">
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-            >
-              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-              <line x1="16" y1="2" x2="16" y2="6"></line>
-              <line x1="8" y1="2" x2="8" y2="6"></line>
-              <line x1="3" y1="10" x2="21" y2="10"></line>
-            </svg>
-            Admissions
-          </a>
-        </nav>
-
-        <div class="user-section">
-          <div class="user-profile">
-            <div class="user-avatar"></div>
-            <div class="user-info">
-              <h4>Jane Doe</h4>
-              <p>Receptionist</p>
-            </div>
-          </div>
-          <div class="user-actions">
-            <a href="#" class="user-action">
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-              >
-                <circle cx="12" cy="12" r="10"></circle>
-                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
-                <line x1="12" y1="17" x2="12.01" y2="17"></line>
-              </svg>
-              Help
-            </a>
-            <a href="#" class="user-action">
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-              >
-                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-                <polyline points="16 17 21 12 16 7"></polyline>
-                <line x1="21" y1="12" x2="9" y2="12"></line>
-              </svg>
-              Logout
-            </a>
-          </div>
-        </div>
-      </aside>
-
-      <!-- Main Content -->
-      <main class="main-content">
-        <!-- Header -->
-        <header class="header">
-          <h1>Insurance Providers</h1>
-          <div class="header-right">
-            <svg
-              class="notification-icon"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-            >
-              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-              <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
-            </svg>
-            <div class="company-dropdown">
-              <span>Company Logo</span>
-              <svg
-                width="12"
-                height="12"
-                viewBox="0 0 12 12"
-                fill="currentColor"
-              >
-                <path d="M6 9L1 4h10z"></path>
-              </svg>
-            </div>
-          </div>
-        </header>
-
-        <!-- Content Area -->
-        <div class="content-area">
-          <!-- Controls -->
-          <div class="controls">
-            <div class="controls-left">
-              <button class="filter-btn">
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                >
-                  <line x1="4" y1="21" x2="4" y2="14"></line>
-                  <line x1="4" y1="10" x2="4" y2="3"></line>
-                  <line x1="12" y1="21" x2="12" y2="12"></line>
-                  <line x1="12" y1="8" x2="12" y2="3"></line>
-                  <line x1="20" y1="21" x2="20" y2="16"></line>
-                  <line x1="20" y1="12" x2="20" y2="3"></line>
-                  <line x1="1" y1="14" x2="7" y2="14"></line>
-                  <line x1="9" y1="8" x2="15" y2="8"></line>
-                  <line x1="17" y1="16" x2="23" y2="16"></line>
-                </svg>
-                Filter by
-              </button>
-              <div class="search-box">
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                >
-                  <circle cx="11" cy="11" r="8"></circle>
-                  <path d="m21 21-4.35-4.35"></path>
-                </svg>
-                <input type="text" placeholder="Search " />
-              </div>
-              <button class="action-btn">
-                Action
-                <svg
-                  width="12"
-                  height="12"
-                  viewBox="0 0 12 12"
-                  fill="currentColor"
-                >
-                  <path d="M6 9L1 4h10z"></path>
-                </svg>
-              </button>
-            </div>
-            <div class="controls-right">
-                 <button class="export-btn">Export to Excel</button>
-              <button class="add-patient-btn">
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                >
-                  <line x1="12" y1="5" x2="12" y2="19"></line>
-                  <line x1="5" y1="12" x2="19" y2="12"></line>
-                </svg>
-                Add New
-              </button>
-            </div>
-          </div>
-
-          <!-- Applied Filters -->
-          <div class="applied-filters">
-            <span class="filter-label">Applied Filter</span>
-            <div class="filter-tag">
-              Recently added
-              <span class="close">✕</span>
-            </div>
-            <div class="filter-tag">
-              Recently updated 
-              <span class="close">✕</span>
-            </div>
-            <span class="clear-filter">Clear filter</span>
-          </div>
-
-          <!-- Table -->
-          <div class="table-container">
-            <table>
-              <thead>
-                <tr>
-                  <th><input type="checkbox" class="checkbox" /></th>
-
-                  <th>Facility Code</th>
-                  <th>Name </th>
-                  <th>Phone Number</th>
-                  <th>Email</th>
-                  <th>Date Added</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><input type="checkbox" class="checkbox" /></td>
-
-                  <td>112/001</td>
-                  <td>Raekwon Gbeho</td>
-                  <td>Raekwon Gb...</td>
-                  <td>Female</td>
-                  <td>Female</td>
-                  
-                 
-                  <td>  <div class="action-icons">
-                        <svg
-                          class="action-icon"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          stroke-width="2"
-                        >
-                          <path
-                            d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"
-                          ></path>
-                          <path
-                            d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"
-                          ></path>
-                        </svg>
-                        <svg
-                          class="action-icon"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          stroke-width="2"
-                        >
-                          <path
-                            d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"
-                          ></path>
-                          <circle cx="12" cy="12" r="3"></circle>
-                        </svg>
-                      </div></td>
-                </tr>
-               
-              
-                
-                </tr>
-              </tbody>
-            </table>
-
-            <!-- Pagination -->
-            <div class="pagination">
-              <button class="page-btn" disabled>Previous</button>
-              <button class="page-btn active">1</button>
-              <button class="page-btn">2</button>
-              <button class="page-btn">3</button>
-              <button class="page-btn">Next</button>
-              <span class="page-info">1/03</span>
-            </div>
-          </div>
-        </div>
-      </main>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font-sans, -apple-system, sans-serif); font-size: 13px; color: var(--color-text-primary); }
+  .app { display: flex; height: 100vh; min-height: 700px; background: var(--color-background-tertiary, #f5f5f2); }
+  .sidebar { width: 220px; min-width: 220px; background: var(--color-background-primary, #fff); border-right: 0.5px solid var(--color-border-tertiary); display: flex; flex-direction: column; padding: 0 0 1rem 0; overflow-y: auto; }
+  .sidebar-logo { padding: 20px 18px 12px; }
+  .logo-text { font-size: 18px; font-weight: 500; }
+  .logo-xana { color: #1d9e75; }
+  .logo-health { color: var(--color-text-primary); }
+  .logo-settings { font-size: 13px; font-weight: 500; color: #1d9e75; margin-top: 2px; }
+  .nav-section { padding: 12px 18px 4px; font-size: 10px; font-weight: 500; color: var(--color-text-secondary); letter-spacing: 0.06em; text-transform: uppercase; }
+  .nav-item { display: flex; align-items: center; gap: 10px; padding: 7px 18px; font-size: 13px; color: var(--color-text-secondary); cursor: pointer; }
+  .nav-item:hover { background: var(--color-background-secondary); }
+  .nav-item.active { color: #1d9e75; font-weight: 500; }
+  .nav-item svg { width: 16px; height: 16px; flex-shrink: 0; }
+  .nav-sub { padding: 5px 18px 5px 44px; font-size: 12px; color: var(--color-text-secondary); cursor: pointer; display: flex; align-items: center; gap: 6px; }
+  .nav-sub::before { content: ''; display: inline-block; width: 12px; height: 0.5px; background: var(--color-border-secondary); flex-shrink: 0; }
+  .nav-sub:hover { color: #1d9e75; }
+  .nav-chevron { margin-left: auto; }
+  .sidebar-footer { margin-top: auto; padding: 12px 18px; border-top: 0.5px solid var(--color-border-tertiary); display: flex; align-items: center; gap: 10px; }
+  .footer-avatar { width: 32px; height: 32px; border-radius: 50%; background: #ccc; overflow: hidden; flex-shrink: 0; }
+  .footer-avatar img { width: 100%; height: 100%; object-fit: cover; }
+  .footer-name { font-size: 13px; font-weight: 500; }
+  .footer-role { font-size: 11px; color: #1d9e75; }
+  .footer-links { display: flex; flex-direction: column; gap: 2px; padding: 0 8px 4px; }
+  .footer-link { display: flex; align-items: center; gap: 10px; padding: 7px 10px; font-size: 13px; color: var(--color-text-secondary); cursor: pointer; border-radius: 6px; }
+  .footer-link:hover { background: var(--color-background-secondary); }
+
+  .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+  .topbar { background: var(--color-background-primary); border-bottom: 0.5px solid var(--color-border-tertiary); padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; }
+  .topbar-title { font-size: 18px; font-weight: 500; }
+  .topbar-right { display: flex; align-items: center; gap: 14px; }
+  .topbar-bell { width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; color: var(--color-text-secondary); cursor: pointer; }
+  .topbar-user { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+  .topbar-avatar { width: 32px; height: 32px; border-radius: 50%; background: #bbb; overflow: hidden; }
+  .topbar-avatar img { width: 100%; height: 100%; object-fit: cover; }
+  .topbar-name { font-size: 13px; font-weight: 500; }
+  .topbar-role { font-size: 11px; color: var(--color-text-secondary); }
+
+  .content { flex: 1; padding: 20px 24px; overflow-y: auto; }
+  .toolbar { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
+  .btn-filter { display: flex; align-items: center; gap: 6px; padding: 7px 14px; border: 1px solid var(--color-border-primary, #ccc); border-radius: 8px; background: var(--color-background-primary); font-size: 13px; cursor: pointer; color: var(--color-text-primary); }
+  .btn-filter:hover { background: var(--color-background-secondary); }
+  .search-box { display: flex; align-items: center; gap: 8px; padding: 7px 14px; border: 1px solid var(--color-border-primary, #ccc); border-radius: 8px; background: var(--color-background-primary); flex: 1; max-width: 340px; }
+  .search-box input { border: none; background: transparent; font-size: 13px; color: var(--color-text-primary); outline: none; width: 100%; }
+  .search-box input::placeholder { color: var(--color-text-tertiary); }
+  .btn-action { display: flex; align-items: center; gap: 6px; padding: 7px 14px; border: 1px solid var(--color-border-primary, #ccc); border-radius: 8px; background: var(--color-background-primary); font-size: 13px; cursor: pointer; color: var(--color-text-primary); }
+  .btn-export { display: flex; align-items: center; gap: 6px; padding: 7px 16px; border-radius: 8px; background: #1d9e75; color: #fff; font-size: 13px; font-weight: 500; border: none; cursor: pointer; margin-left: auto; }
+  .btn-export:hover { background: #0f6e56; }
+  .filter-tags { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
+  .filter-label { font-size: 12px; color: var(--color-text-secondary); }
+  .filter-tag { display: flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 20px; background: var(--color-background-secondary); border: 0.5px solid var(--color-border-tertiary); font-size: 12px; color: var(--color-text-secondary); }
+  .filter-tag span.x { cursor: pointer; color: var(--color-text-tertiary); font-size: 11px; }
+  .clear-filter { font-size: 12px; color: #e24b4a; cursor: pointer; font-weight: 500; }
+
+  .table-wrap { background: var(--color-background-primary); border-radius: 10px; border: 0.5px solid var(--color-border-tertiary); overflow: hidden; }
+  table { width: 100%; border-collapse: collapse; }
+  thead th { padding: 10px 12px; text-align: left; font-size: 12px; font-weight: 500; color: var(--color-text-secondary); border-bottom: 0.5px solid var(--color-border-tertiary); white-space: nowrap; background: var(--color-background-primary); }
+  thead th:first-child { width: 36px; }
+  tbody tr { border-bottom: 0.5px solid var(--color-border-tertiary); }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: var(--color-background-secondary); }
+  tbody td { padding: 12px 12px; font-size: 13px; color: var(--color-text-primary); vertical-align: middle; }
+  .cb { width: 15px; height: 15px; border: 1.5px solid #aaa; border-radius: 3px; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; }
+  .cb.checked { background: #1d9e75; border-color: #1d9e75; }
+  .cb.checked::after { content: ''; display: block; width: 5px; height: 9px; border: 2px solid #fff; border-top: none; border-left: none; transform: rotate(45deg) translate(-1px, -1px); }
+  .tariff-link { color: #1d9e75; font-size: 12px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 160px; display: block; }
+  .dots { color: var(--color-text-tertiary); font-size: 18px; cursor: pointer; padding: 2px 6px; border-radius: 4px; }
+  .dots:hover { background: var(--color-background-secondary); }
+  .pagination { display: flex; align-items: center; justify-content: flex-end; gap: 4px; padding: 14px 16px; }
+  .page-btn { width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 6px; border: 0.5px solid var(--color-border-tertiary); font-size: 13px; cursor: pointer; color: var(--color-text-secondary); background: var(--color-background-primary); }
+  .page-btn.active { background: #1d9e75; color: #fff; border-color: #1d9e75; }
+  .page-btn:hover:not(.active) { background: var(--color-background-secondary); }
+  .page-text { font-size: 12px; color: var(--color-text-secondary); padding: 0 6px; }
+</style>
+
+<div class="app">
+  <div class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-text"><span class="logo-xana">Xana</span><span class="logo-health">Health</span></div>
+      <div class="logo-settings">Settings</div>
     </div>
-  </body>
-</html>
+
+    <div class="nav-section">Navigation</div>
+    <div class="nav-item">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="2" y="2" width="5" height="5" rx="1"/><rect x="9" y="2" width="5" height="5" rx="1"/><rect x="2" y="9" width="5" height="5" rx="1"/><rect x="9" y="9" width="5" height="5" rx="1"/></svg>
+      Departments
+    </div>
+    <div class="nav-item">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="6" cy="5" r="2.5"/><circle cx="11" cy="5" r="2.5"/><path d="M1 13c0-2.5 2-4 5-4s5 1.5 5 4"/><path d="M11 9c2.5 0 4 1.2 4 3"/></svg>
+      System Users
+    </div>
+    <div class="nav-item">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="3" y="2" width="10" height="12" rx="1"/><line x1="6" y1="6" x2="10" y2="6"/><line x1="6" y1="9" x2="10" y2="9"/></svg>
+      Insurance Providers
+    </div>
+    <div class="nav-item active">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="8" cy="8" r="5.5"/><path d="M8 5v3l2 2"/></svg>
+      All Products
+      <svg class="nav-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" width="14" height="14"><path d="M5 7l3 3 3-3"/></svg>
+    </div>
+    <div class="nav-sub">Consumables</div>
+    <div class="nav-sub">Lab Tests</div>
+    <div class="nav-sub">Medical acts</div>
+    <div class="nav-sub">Drugs (imiti)</div>
+
+    <div class="nav-section" style="margin-top:8px;">OPD</div>
+    <div class="nav-item">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="8" cy="5" r="2.5"/><path d="M3 13c0-2.8 2.2-5 5-5s5 2.2 5 5"/></svg>
+      Patient Visits
+    </div>
+
+    <div class="nav-section" style="margin-top:8px;">In-Patients</div>
+    <div class="nav-item">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="2" y="6" width="12" height="8" rx="1"/><path d="M5 6V4a3 3 0 016 0v2"/></svg>
+      Rooms
+    </div>
+    <div class="nav-item">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="8" cy="5" r="2.5"/><path d="M3 13c0-2.8 2.2-5 5-5s5 2.2 5 5"/></svg>
+      Admissions
+    </div>
+
+    <div class="nav-section" style="margin-top:8px;">HMIS</div>
+    <div class="nav-item">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="2" y="2" width="5" height="5" rx="1"/><rect x="9" y="2" width="5" height="5" rx="1"/><rect x="2" y="9" width="5" height="5" rx="1"/><rect x="9" y="9" width="5" height="5" rx="1"/></svg>
+      HMIS Categories
+    </div>
+    <div class="nav-item">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><line x1="3" y1="13" x2="3" y2="7"/><line x1="7" y1="13" x2="7" y2="4"/><line x1="11" y1="13" x2="11" y2="9"/><line x1="15" y1="13" x2="15" y2="2"/></svg>
+      HMIS Indicators
+    </div>
+
+    <div class="nav-section" style="margin-top:8px;">Stock Management</div>
+    <div class="nav-item">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="1" y="4" width="14" height="9" rx="1"/><path d="M5 4V3a3 3 0 016 0v1"/></svg>
+      Initial product inventory
+    </div>
+
+    <div style="flex:1;"></div>
+    <div class="footer-links">
+      <div class="footer-link">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="8" cy="8" r="6"/><path d="M8 7v4"/><circle cx="8" cy="5.5" r="0.5" fill="currentColor"/></svg>
+        Help
+      </div>
+      <div class="footer-link">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M6 3H3a1 1 0 00-1 1v8a1 1 0 001 1h3"/><polyline points="10 11 14 8 10 5"/><line x1="14" y1="8" x2="6" y2="8"/></svg>
+        Homepage
+      </div>
+    </div>
+    <div class="sidebar-footer">
+      <div class="footer-avatar">
+        <div style="width:100%;height:100%;background:#8fbfb0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:#fff;">JD</div>
+      </div>
+      <div>
+        <div class="footer-name">Dr Jane Doe</div>
+        <div class="footer-role">System Admin</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-title">All Products</div>
+      <div class="topbar-right">
+        <div class="topbar-bell">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 2a5 5 0 00-5 5v3l-1.5 2.5h13L14 10V7a5 5 0 00-5-5z"/><path d="M7.5 15a1.5 1.5 0 003 0"/></svg>
+        </div>
+        <div class="topbar-user">
+          <div class="topbar-avatar">
+            <div style="width:100%;height:100%;background:#8fbfb0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:#fff;">JD</div>
+          </div>
+          <div>
+            <div class="topbar-name">Dr Jane Doe</div>
+            <div class="topbar-role">System Admin</div>
+          </div>
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-left:4px;"><path d="M3 5l3 3 3-3"/></svg>
+        </div>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="toolbar">
+        <button class="btn-filter">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4"><line x1="2" y1="4" x2="12" y2="4"/><line x1="3.5" y1="7" x2="10.5" y2="7"/><line x1="5" y1="10" x2="9" y2="10"/></svg>
+          Filter by
+        </button>
+        <div class="search-box">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="6" cy="6" r="4"/><line x1="9.5" y1="9.5" x2="12" y2="12"/></svg>
+          <input type="text" placeholder="Search all products" />
+        </div>
+        <button class="btn-action">
+          Action
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 5l3 3 3-3"/></svg>
+        </button>
+        <button class="btn-export">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="10" height="10" rx="1"/><path d="M5 7l2 2 2-2"/><line x1="7" y1="3" x2="7" y2="9"/></svg>
+          Export
+        </button>
+      </div>
+      <div class="filter-tags">
+        <span class="filter-label">Applied Filter</span>
+        <span class="filter-tag">Recently added <span class="x">✕</span></span>
+        <span class="filter-tag">Ascending <span class="x">✕</span></span>
+        <span class="clear-filter">Clear filter</span>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th><div class="cb" style="margin:0 auto;"></div></th>
+              <th>Item Code</th>
+              <th>Name<br>(French)</th>
+              <th>Name<br>(English)</th>
+              <th>Product<br>Category</th>
+              <th>Tax<br>Category</th>
+              <th>Tax<br>Rate</th>
+              <th>Active</th>
+              <th>Tarrifs</th>
+              <th>Last<br>Updated</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+        <div class="pagination">
+          <button class="page-btn">Previous</button>
+          <button class="page-btn active">1</button>
+          <button class="page-btn">2</button>
+          <button class="page-btn">3</button>
+          <button class="page-btn">Next</button>
+          <span class="page-text">1/60</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const rows = [
+  { code: '1110', fr: 'Transpare...', en: 'Transpare...', cat: 'Consum...', taxCat: 'A', taxRate: '12%', active: true,  date: '10/ 05/23 15:33' },
+  { code: '1110', fr: 'Transpare...', en: 'Transpare...', cat: 'Consum...', taxCat: 'B', taxRate: '12%', active: false, date: '10/ 05/23 15:33' },
+  { code: '1110', fr: 'Transpare...', en: 'Transpare...', cat: 'Consum...', taxCat: 'A', taxRate: '12%', active: true,  date: '10/ 05/23 15:33' },
+  { code: '1110', fr: 'Transpare...', en: 'Transpare...', cat: 'Consum...', taxCat: 'C', taxRate: '12%', active: false, date: '10/ 05/23 15:33' },
+  { code: '1110', fr: 'Transpare...', en: 'Transpare...', cat: 'Consum...', taxCat: 'D', taxRate: '12%', active: true,  date: '10/ 05/23 15:33' },
+  { code: '1110', fr: 'Transpare...', en: 'Transpare...', cat: 'Consum...', taxCat: 'D', taxRate: '12%', active: false, date: '10/ 05/23 15:33' },
+  { code: '1110', fr: 'Transpare...', en: 'Transpare...', cat: 'Consum...', taxCat: 'A', taxRate: '12%', active: true,  date: '10/ 05/23 15:33' },
+  { code: '1110', fr: 'Transpare...', en: 'Transpare...', cat: 'Consum...', taxCat: 'A', taxRate: '12%', active: true,  date: '10/ 05/23 15:33' },
+  { code: '1110', fr: 'Transpare...', en: 'Transpare...', cat: 'Consum...', taxCat: 'A', taxRate: '12%', active: true,  date: '10/ 05/23 15:33' },
+  { code: '1110', fr: 'Transpare...', en: 'Transpare...', cat: 'Consum...', taxCat: 'A', taxRate: '12%', active: true,  date: '10/ 05/23 15:33' },
+];
+
+const tbody = document.getElementById('tableBody');
+rows.forEach(r => {
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td><div class="cb${r.active ? '' : ''}"></div></td>
+    <td>${r.code}</td>
+    <td>${r.fr}</td>
+    <td>${r.en}</td>
+    <td>${r.cat}</td>
+    <td>${r.taxCat}</td>
+    <td>${r.taxRate}</td>
+    <td><div class="cb${r.active ? ' checked' : ''}"></div></td>
+    <td><span class="tariff-link">Private : 1622, RSSB : 1622,...</span></td>
+    <td style="font-size:12px;color:var(--color-text-secondary);white-space:nowrap;">${r.date}</td>
+    <td><span class="dots">⋮</span></td>
+  `;
+  tbody.appendChild(tr);
+});
+
+document.querySelectorAll('.cb').forEach(cb => {
+  cb.addEventListener('click', () => cb.classList.toggle('checked'));
+});
+document.querySelectorAll('.page-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    if (btn.textContent === 'Previous' || btn.textContent === 'Next') return;
+    document.querySelectorAll('.page-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  });
+});
+</script>
