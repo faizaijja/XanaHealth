@@ -5,1202 +5,232 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>XanaHealth - EMR Dashboard</title>
     <style>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-
-      body {
-        font-family:
-          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-          "Helvetica Neue", Arial, sans-serif;
-        background: #f5f5f5;
-        overflow-x: hidden;
-      }
-      .decor {
-        position: absolute;
-        top: 1250px;
-        width: 180px;
-        height: 180px;
-        background: #e3efe9;
-        z-index: 1;
-        overflow: visible;
-      }
-
-      .decor::after {
-        content: "";
-        position: absolute;
-        bottom: -50px;
-
-        width: 180px;
-        height: 180px;
-
-        background-image: radial-gradient(#6fa493 3px, transparent 3px);
-        background-size: 22px 22px;
-
-        z-index: -1;
-      }
-
-      .decor-right::after {
-        left: -30px;
-      }
-
-      .decor-left::after {
-        right: -30px;
-      }
-      .decor-left {
-        left: 20px;
-        border-top-right-radius: 18px;
-      }
-
-      .decor-right {
-        right: 20px;
-        border-top-left-radius: 18px;
-      }
-      /* Background Hero Section */
-      .hero-section {
-        position: relative;
-        height: 700px;
-        background-image: url("portrait-woman-working-as-medic-office-healthcare-clinic.jpg");
-        background-size: cover;
-        background-position: center;
-      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background: #f5f5f5; overflow-x: hidden; }
 
       /* Top Navigation */
-      .top-nav {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 20px 40px;
-        background: white;
-      }
+      .top-nav { display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; background: white; }
+      .logo { font-size: 24px; font-weight: 600; color: #2d3748; }
+      .logo-accent { color: #48bb78; }
+      .nav-links { display: flex; gap: 30px; align-items: center; }
+      .nav-links a { text-decoration: none; color: #2d3748; font-size: 14px; font-weight: 500; }
+      .nav-buttons { display: flex; gap: 15px; }
+      .btn-login { padding: 8px 20px; background: white; border: 1px solid #e2e8f0; border-radius: 5px; color: #2d3748; font-size: 14px; cursor: pointer; }
+      .btn-get-started { padding: 8px 20px; background: #488063; border: none; border-radius: 5px; color: white; font-size: 14px; cursor: pointer; }
 
-      .logo {
-        font-size: 24px;
-        font-weight: 600;
-        color: #2d3748;
-      }
+      /* Hero — tall enough to show background but ends just after the buttons */
+      .hero-section { position: relative; height: 500px; background-image: url("portrait-woman-working-as-medic-office-healthcare-clinic.jpg"); background-size: cover; background-position: center; }
+      .hero-content { text-align: center; padding-top: 60px; color: white; }
+      .hero-content h1 { font-size: 48px; font-weight: 600; margin-bottom: 20px; line-height: 1.2; }
+      .hero-content p { font-size: 16px; margin-bottom: 30px; line-height: 1.6; max-width: 600px; margin-left: auto; margin-right: auto; }
+      .hero-buttons { display: flex; gap: 15px; justify-content: center; }
+      .btn-hero-primary { padding: 12px 30px; background: #488063; border: none; border-radius: 5px; color: white; font-size: 14px; cursor: pointer; font-weight: 500; }
+      .btn-hero-secondary { padding: 12px 30px; background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.5); border-radius: 5px; color: white; font-size: 14px; cursor: pointer; font-weight: 500; }
 
-      .logo-accent {
-        color: #48bb78;
-      }
+      /* Page */
+      .page { background: white; }
 
-      .nav-links {
-        display: flex;
-        gap: 30px;
-        align-items: center;
-      }
-
-      .nav-links a {
-        text-decoration: none;
-        color: #2d3748;
-        font-size: 14px;
-        font-weight: 500;
-      }
-
-      .nav-buttons {
-        display: flex;
-        gap: 15px;
-      }
-
-      .btn-login {
-        padding: 8px 20px;
-        background: white;
-        border: 1px solid #e2e8f0;
-        border-radius: 5px;
-        color: #2d3748;
-        font-size: 14px;
-        cursor: pointer;
-      }
-
-      .btn-get-started {
-        padding: 8px 20px;
-        background: #488063;
-        border: none;
-        border-radius: 5px;
-        color: white;
-        font-size: 14px;
-        cursor: pointer;
-      }
-
-      /* Hero Content */
-      .hero-content {
-        text-align: center;
-        padding-top: 80px;
-        color: white;
-      }
-
-      .hero-content h1 {
-        font-size: 48px;
-        font-weight: 600;
-        margin-bottom: 20px;
-        line-height: 1.2;
-      }
-
-      .hero-content p {
-        font-size: 16px;
-        margin-bottom: 30px;
-        line-height: 1.6;
-        max-width: 600px;
-        margin-left: auto;
-        margin-right: auto;
-      }
-
-      .hero-buttons {
-        display: flex;
-        gap: 15px;
-        justify-content: center;
-      }
-
-      .btn-hero-primary {
-        padding: 12px 30px;
-        background: #488063;
-        border: none;
-        border-radius: 5px;
-        color: white;
-        font-size: 14px;
-        cursor: pointer;
-        font-weight: 500;
-      }
-
-      .btn-hero-secondary {
-        padding: 12px 30px;
-        background: rgba(255, 255, 255, 0.2);
-        border: 1px solid rgba(255, 255, 255, 0.5);
-        border-radius: 5px;
-        color: white;
-        font-size: 14px;
-        cursor: pointer;
-        font-weight: 500;
-      }
-
-      /* Dashboard Container */
-     .main-content {
-  position: relative;
-  width: 90%;
-  max-width: 1200px;
-  margin: -300px auto 50px;
-  overflow: hidden;
-  z-index: 10;
-}
-
-      .page{
-         background: white;
-      }
-    
-      /* Tab Navigation */
-      .tab-nav {
-        display: flex;
-        gap: 30px;
-        border-bottom: 2px solid #e2e8f0;
-        margin-bottom: 20px;
-      }
-
-      .tab {
-        padding: 12px 0;
-        color: #718096;
-        font-size: 14px;
-        font-weight: 500;
-        cursor: pointer;
-        border-bottom: 2px solid transparent;
-        margin-bottom: -2px;
-      }
-
-      .tab.active {
-        color: #48bb78;
-        border-bottom-color: #48bb78;
-      }
-
-      /* Header Section */
-      .content-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 20px;
-      }
-
-      .user-info {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-      }
-
-      .user-avatar {
-        width: 32px;
-        height: 32px;
-        border-radius: 50%;
-        background: #e2e8f0;
-      }
-
-      .user-name {
-        font-size: 14px;
-        color: #2d3748;
-        font-weight: 500;
-      }
-
-      /* Filters and Actions */
-      .filters-actions {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 20px;
-        flex-wrap: wrap;
-        gap: 15px;
-      }
-
-      .filters {
-        display: flex;
-        gap: 10px;
-        flex-wrap: wrap;
-      }
-
-      .filter-input,
-      .filter-select {
-        padding: 8px 12px;
-        border: 1px solid #e2e8f0;
-        border-radius: 5px;
-        font-size: 13px;
-        background: white;
-      }
-
-      .filter-input {
-        width: 120px;
-      }
-
-      .actions {
-        display: flex;
-        gap: 10px;
-      }
-
-      .btn-action {
-        padding: 8px 16px;
-        border: 1px solid #e2e8f0;
-        border-radius: 5px;
-        background: white;
-        font-size: 13px;
-        cursor: pointer;
-        color: #2d3748;
-      }
-
-      .btn-action.primary {
-        background: #48bb78;
-        color: white;
-        border-color: #48bb78;
-      }
-
-      /* Patient Table */
-      .patient-table {
+      /* Screenshot overlaps up into the bottom of the hero */
+      .main-content {
         width: 100%;
-        border-collapse: collapse;
-      }
-
-      .patient-table thead {
-        background: #f8f9fa;
-      }
-
-      .patient-table th {
-        padding: 12px;
-        text-align: left;
-        font-size: 12px;
-        font-weight: 600;
-        color: #718096;
-        border-bottom: 1px solid #e2e8f0;
-      }
-
-      .patient-table td {
-        padding: 12px;
-        font-size: 13px;
-        color: #2d3748;
-        border-bottom: 1px solid #e2e8f0;
-      }
-
-      .profile-section {
-        margin-top: 400px;
-      }
-
-      .patient-table tbody tr:hover {
-        background: #f8f9fa;
-      }
-
-      .patient-avatar {
-        width: 32px;
-        height: 32px;
-        border-radius: 50%;
-        background: #e2e8f0;
-      }
-
-      .status-badge {
-        padding: 4px 10px;
-        border-radius: 12px;
-        font-size: 11px;
-        font-weight: 500;
-        display: inline-block;
-      }
-
-      .status-new-visit {
-        background: #c6f6d5;
-        color: #22543d;
-      }
-
-      .action-icons {
-        display: flex;
-        gap: 10px;
-      }
-
-      .action-icon {
-        width: 16px;
-        height: 16px;
-        cursor: pointer;
-        opacity: 0.5;
-      }
-
-      .action-icon:hover {
-        opacity: 1;
-      }
-
-      /* Pagination */
-      .pagination {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 5px;
-        margin-top: 20px;
-        padding: 20px;
-      }
-
-      .page-btn {
-        width: 32px;
-        height: 32px;
-        border: 1px solid #e2e8f0;
-        background: white;
-        border-radius: 5px;
-        cursor: pointer;
-        font-size: 13px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-
-      .page-btn.active {
-        background: #48bb78;
-        color: white;
-        border-color: #48bb78;
-      }
-
-      @media (max-width: 768px) {
-        .sidebar {
-          width: 60px;
-        }
-
-        .main-content {
-          margin-left: 60px;
-        }
-
-        .sidebar-item span {
-          display: none;
-        }
-      }
-
-      .playback-section h1 {
+        background: transparent;
         text-align: center;
-      }
-      .playback-section p {
-        text-align: center;
-      }
-      .playback-section{
-        margin-top:200px;
-      }
-
-      .playback {
+        margin-top: -80px;   /* pulls image up so it starts just below the buttons */
         position: relative;
-        width: 85%;
-        max-width: 1200px;
-        height: 500px;
-        margin: 40px auto 0;
-
-        background: #e3efe9;
-        border-radius: 16px;
-
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        z-index: 10;
+        padding-bottom: 40px;
       }
-
-      /* Play button circle */
-      .play-button {
-        width: 72px;
-        height: 72px;
-        background: white;
-        border-radius: 50%;
-        position: relative;
-        cursor: pointer;
-
-        box-shadow: 0 10px 24px rgba(0, 0, 0, 0.15);
-        transition:
-          transform 0.2s ease,
-          box-shadow 0.2s ease;
-      }
-
-      /* Triangle */
-      .play-button::before {
-        content: "";
-        position: absolute;
-        left: 52%;
-        top: 50%;
-        transform: translate(-50%, -50%);
-
-        width: 0;
-        height: 0;
-
-        border-top: 12px solid transparent;
-        border-bottom: 12px solid transparent;
-        border-left: 18px solid #4f8f75;
-      }
-
-      /* Hover effect */
-      .play-button:hover {
-        transform: scale(1.05);
-        box-shadow: 0 14px 32px rgba(0, 0, 0, 0.2);
-      }
-      .features-section {
-        width: 85%;
-        max-width: 1200px;
-        margin: 80px auto;
-
-      }
-
-      .features-section h1 {
-        margin-bottom: 40px;
-      }
-      .features-wrapper {
-        display: grid;
-        grid-template-columns: 1fr 1.2fr;
-        gap: 48px;
-        align-items: start;
-      }
-      .features {
-        display: flex;
-        flex-direction: column;
-        gap: 28px;
-      }
-
-      .feature-item {
-        display: flex;
-        gap: 16px;
-        align-items: flex-start;
-      }
-
-      .feature-item .icon {
-        font-size: 28px;
-        color: #4f8f75;
-        flex-shrink: 0;
-      }
-      
-       
-      
-     
-      .feature-images {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 16px;
-        position: relative;
-        margin-right:12px;
-      }
-
-      .feature-images div {
-        border-radius: 12px;
-        overflow: hidden;
-      }
-
-      .feature-images img {
-        width: 250px;
-        height: 100%;
-        object-fit: cover;
+      .main-content img {
         display: block;
-        position: absolute;
+        width: 85%;
+        max-width: 1200px;
+        height: auto;
+        margin: 0 auto;
+        border-radius: 12px;
+        box-shadow: 0 8px 40px rgba(0,0,0,0.25);
       }
 
-      @media (max-width: 900px) {
-        .features-wrapper {
-          grid-template-columns: 1fr;
-        }
+      /* Playback */
+      .playback-section { margin-top: 80px; }
+      .playback-section h1 { text-align: center; }
+      .playback-section p { text-align: center; }
+      .playback { position: relative; width: 85%; max-width: 1200px; height: 500px; margin: 40px auto 0; background: #e3efe9; border-radius: 16px; display: flex; align-items: center; justify-content: center; }
+      .play-button { width: 72px; height: 72px; background: white; border-radius: 50%; position: relative; cursor: pointer; box-shadow: 0 10px 24px rgba(0,0,0,0.15); transition: transform 0.2s ease, box-shadow 0.2s ease; }
+      .play-button::before { content: ""; position: absolute; left: 52%; top: 50%; transform: translate(-50%,-50%); width: 0; height: 0; border-top: 12px solid transparent; border-bottom: 12px solid transparent; border-left: 18px solid #4f8f75; }
+      .play-button:hover { transform: scale(1.05); box-shadow: 0 14px 32px rgba(0,0,0,0.2); }
 
-        .feature-images {
-          grid-template-columns: 1fr 1fr;
-        }
-      }
-      .feature-icon {
-        width: 64px;
-        height: 64px;
-        border-radius: 50%;
-        background: rgba(79, 143, 117, 0.08); /* lime */
-        color: #2f6f55; /* icon color */
+      /* Features */
+      .features-section { width: 85%; max-width: 1200px; margin: 80px auto; }
+      .features-section h1 { margin-bottom: 40px; }
+      .features-wrapper { display: grid; grid-template-columns: 1fr 1.2fr; gap: 48px; align-items: start; }
+      .features { display: flex; flex-direction: column; gap: 28px; }
+      .feature-item { display: flex; gap: 20px; align-items: flex-start; }
+      .feature-icon { width: 64px; height: 64px; border-radius: 50%; background: rgba(79,143,117,0.08); color: #2f6f55; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+      .feature-icon svg { width: 22px; height: 22px; }
+      .feature-caption { display: flex; flex-direction: column; flex: 1; font-size: 15px; font-weight: 500; color: #2f3e3a; }
+      h3 { font-size: 22px; }
+      p { font-size: 16px; }
+      .feature-images { display: grid; grid-template-columns: repeat(2,1fr); gap: 16px; position: relative; margin-right: 12px; }
+      .feature-images div { border-radius: 12px; overflow: hidden; }
+      .feature-images img { width: 250px; height: 100%; object-fit: cover; display: block; position: absolute; }
+      @media (max-width: 900px) { .features-wrapper { grid-template-columns: 1fr; } .feature-images { grid-template-columns: 1fr 1fr; } }
 
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-      }
+      /* Contact */
+      .contact-section { background: #4f8f75; position: relative; width: 95%; height: 800px; margin: 40px auto 0; display: flex; align-items: center; justify-content: center; }
+      .details { border-radius: 16px; }
 
-      .feature-icon svg {
-        width: 22px;
-        height: 22px;
-      }
-      .feature-caption {
-        display: flex; 
-        flex-direction: column; 
-        flex: 1;
-      }
-
-      /* Text */
-      .feature-caption {
-        font-size: 15px;
-        font-weight: 500;
-        color: #2f3e3a;
-        white-space: nowrap;
-      }
-
-      /* Optional hover (sidebar-like) */
-     h3{
-      font-size: 22px;
-     }
-     p{
-      font-size:16px;
-     }
-      .contact-section {
-        background: #4f8f75;
-        position: relative;
-        width: 95%;
-        height: 800px;
-        margin: 40px auto 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-      .details {
-        border-radius: 16px;
-      }
-            .footer {
-            background-color: #f5f5f5;
-            padding: 60px 80px 40px;
-        }
-
-        .footer-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            max-width: 1400px;
-            margin: 0 auto;
-            gap: 60px;
-        }
-
-        .footer-left {
-            flex: 1;
-            max-width: 500px;
-        }
-
-        .footer-logo {
-            font-size: 32px;
-            font-weight: 400;
-            margin-bottom: 30px;
-        }
-
-        .footer-logo .xana {
-            color: #333;
-        }
-
-        .footer-logo .health {
-            color: #4a9d7e;
-            font-weight: 600;
-        }
-
-        .footer-description {
-            color: #888;
-            font-size: 15px;
-            line-height: 1.8;
-            margin-bottom: 30px;
-        }
-
-        .social-icons {
-            display: flex;
-            gap: 20px;
-        }
-
-        .social-icons a {
-            width: 36px;
-            height: 36px;
-            background-color: #666;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            text-decoration: none;
-            font-size: 18px;
-            transition: background-color 0.3s;
-        }
-
-        .social-icons a:hover {
-            background-color: #4a9d7e;
-        }
-
-        .footer-right {
-            display: flex;
-            gap: 120px;
-        }
-
-        .footer-column h3 {
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 25px;
-            color: #333;
-        }
-
-        .footer-column ul {
-            list-style: none;
-        }
-
-        .footer-column ul li {
-            margin-bottom: 15px;
-        }
-
-        .footer-column ul li a {
-            color: #666;
-            text-decoration: none;
-            font-size: 15px;
-            transition: color 0.3s;
-        }
-
-        .footer-column ul li a:hover {
-            color: #4a9d7e;
-        }
-
-        .footer-bottom {
-            border-top: 1px solid #ddd;
-            margin-top: 50px;
-            padding-top: 30px;
-            text-align: center;
-        }
-
-        .footer-bottom p {
-            color: #999;
-            font-size: 14px;
-            line-height: 1.8;
-        }
-
-        @media (max-width: 768px) {
-            .footer {
-                padding: 40px 20px;
-            }
-
-            .footer-content {
-                flex-direction: column;
-                gap: 40px;
-            }
-
-            .footer-right {
-                flex-direction: column;
-                gap: 30px;
-            }
-        }
+      /* Footer */
+      .footer { background-color: #f5f5f5; padding: 60px 80px 40px; }
+      .footer-content { display: flex; justify-content: space-between; align-items: flex-start; max-width: 1400px; margin: 0 auto; gap: 60px; }
+      .footer-left { flex: 1; max-width: 500px; }
+      .footer-logo { font-size: 32px; font-weight: 400; margin-bottom: 30px; }
+      .footer-logo .xana { color: #333; }
+      .footer-logo .health { color: #4a9d7e; font-weight: 600; }
+      .footer-description { color: #888; font-size: 15px; line-height: 1.8; margin-bottom: 30px; }
+      .social-icons { display: flex; gap: 20px; }
+      .social-icons a { width: 36px; height: 36px; background-color: #666; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; font-size: 18px; transition: background-color 0.3s; }
+      .social-icons a:hover { background-color: #4a9d7e; }
+      .footer-right { display: flex; gap: 120px; }
+      .footer-column h3 { font-size: 18px; font-weight: 600; margin-bottom: 25px; color: #333; }
+      .footer-column ul { list-style: none; }
+      .footer-column ul li { margin-bottom: 15px; }
+      .footer-column ul li a { color: #666; text-decoration: none; font-size: 15px; transition: color 0.3s; }
+      .footer-column ul li a:hover { color: #4a9d7e; }
+      .footer-bottom { border-top: 1px solid #ddd; margin-top: 50px; padding-top: 30px; text-align: center; }
+      .footer-bottom p { color: #999; font-size: 14px; line-height: 1.8; }
+      @media (max-width: 768px) { .footer { padding: 40px 20px; } .footer-content { flex-direction: column; gap: 40px; } .footer-right { flex-direction: column; gap: 30px; } }
     </style>
   </head>
   <body>
-    <!-- Top Navigation -->
     <div class="top-nav">
       <div class="logo"><span class="logo-accent">Xana</span>Health</div>
-      <div class="nav-links">
-        <a href="#">Features</a>
-        <a href="#">About</a>
-        <a href="#">Careers</a>
-      </div>
+      <div class="nav-links"><a href="#">Features</a><a href="#">About</a><a href="#">Careers</a></div>
       <div class="nav-buttons">
-        <a href="login.html">
-          <button class="btn-login">Log In</button>
-        </a>
-        
-        <a href="signup.html">
-           <button class="btn-get-started">Get Started</button>
-        </a>
-       
+        <a href="login.html"><button class="btn-login">Log In</button></a>
+        <a href="signup.html"><button class="btn-get-started">Get Started</button></a>
       </div>
     </div>
 
-    <!-- Hero Section -->
     <div class="hero-section">
       <div class="hero-content">
         <h1 style="font-weight:bolder;">The best EMR for your<br />medical practice</h1>
-        <p style="font-size:20px; font-weight:bold;">
-          Digitize your medical practice in less than 24 hours. Save $2 on
-          each OPD visit, increase transparency, generate important
-          reports, and file insurance claims effortlessly.
-        </p>
+        <p style="font-size:20px; font-weight:bold;">Digitize your medical practice in less than 24 hours. Save $2 on each OPD visit, increase transparency, generate important reports, and file insurance claims effortlessly.</p>
         <div class="hero-buttons">
-
-         <a href="signup.html">
-           <button class="btn-hero-primary">Get Started</button>
-         </a>
+          <a href="signup.html"><button class="btn-hero-primary">Get Started</button></a>
           <button class="btn-hero-secondary">Talk to Sales</button>
         </div>
       </div>
     </div>
 
-    <!-- Dashboard Container -->
     <div class="page">
-        <!-- Main Content -->
-     
-         <div class="main-content">
-          <!-- Tab Navigation -->
-          <img src="product screen & background.png" style="width: 100%; height: auto; display: block;" />
-  
-        </div>
-     
-     
 
-      <!----Playback section------->
+      <!-- FIXED: product screenshot now scales uniformly -->
+      <div class="main-content">
+        <img src="product screen & background.png" alt="XanaHealth dashboard" />
+      </div>
+
       <div class="playback-section">
         <div>
           <h1>How XanaHealth Works</h1>
-          <p>
-            See how our intuitive EMR helps you record,store and <br />organize
-            patient data digitally
-          </p>
+          <p>See how our intuitive EMR helps you record, store and <br />organize patient data digitally</p>
         </div>
         <div class="playback">
-          <div class="playback-video">
-            <div class="play-button"></div>
-          </div>
+          <div class="playback-video"><div class="play-button"></div></div>
         </div>
       </div>
 
-      <!------- Features Section ------>
       <div class="features-section">
         <h1>Our Features and Services</h1>
-
         <div class="features-wrapper">
-          <!-- LEFT: Features list -->
           <div class="features">
-    <div class="feature-item" style="display: flex; align-items: flex-start; gap: 20px;">
-  <div class="feature-icon" style="flex-shrink: 0;">
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="2"
-      style="width: 48px; height: 48px;"
-    >
-      <path d="M4 3v6a4 4 0 0 0 8 0V3" />
-      <path d="M12 9a4 4 0 1 0 8 0V7" />
-      <circle cx="20" cy="5" r="2" />
-    </svg>
-  </div>
 
-  <div class="feature-caption" style="display: flex; flex-direction: column;">
-    <h3 style="margin: 0;">Patient Care</h3>
-    <p style="margin-top: 8px; line-height: 1.5;">
-      XanaHealth Patient Card reduces hospital time with <br>self check-ins and secure access to medical history
-    </p>
-  </div>
+            <div class="feature-item">
+              <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:48px;height:48px;"><path d="M4 3v6a4 4 0 0 0 8 0V3"/><path d="M12 9a4 4 0 1 0 8 0V7"/><circle cx="20" cy="5" r="2"/></svg></div>
+              <div class="feature-caption"><h3 style="margin:0;">Patient Care</h3><p style="margin-top:8px;line-height:1.5;">XanaHealth Patient Card reduces hospital time with self check-ins and secure access to medical history</p></div>
+            </div>
 
-  
-</div> 
-<div class="feature-item" style="display: flex; align-items: flex-start; gap: 20px;">
-  <div class="feature-icon" style="flex-shrink: 0;">
-   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-    <ellipse cx="12" cy="5" rx="8" ry="3"/>
-    <path d="M4 5v6c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/>
-    <path d="M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/>
-  </svg>
-  </div>
+            <div class="feature-item">
+              <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v6c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/><path d="M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg></div>
+              <div class="feature-caption"><h3 style="margin:0;">Patient Data Storage</h3><p style="margin-top:8px;line-height:1.5;">Easily digitalize the process of collecting, storing and accessing patient information.</p></div>
+            </div>
 
-  <div class="feature-caption" style="display: flex; flex-direction: column;">
-    <h3 style="margin: 0;">Patient Data Storage</h3>
-    <p style="margin-top: 8px; line-height: 1.5;">
-      Easily digitalize the process of collecting, storing <br>and accessing patient information.
-    </p>
-  </div>
+            <div class="feature-item">
+              <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="7" width="16" height="12" rx="2"/><path d="M9 7V4h6v3"/><circle cx="9" cy="13" r="1"/><circle cx="15" cy="13" r="1"/></svg></div>
+              <div class="feature-caption"><h3 style="margin:0;">Automated Insurance Claims</h3><p style="margin-top:8px;line-height:1.5;">Easily collect claims directly in real time and improve insurance claim processing speed.</p></div>
+            </div>
 
-  
-</div> 
+            <div class="feature-item">
+              <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19V5"/><path d="M10 19V9"/><path d="M16 19V13"/><path d="M22 19H2"/></svg></div>
+              <div class="feature-caption"><h3 style="margin:0;">Data Reports</h3><p style="margin-top:8px;line-height:1.5;">Provide timely reports and accurate data representation of clinic records.</p></div>
+            </div>
 
-<div class="feature-item" style="display: flex; align-items: flex-start; gap: 20px;">
-  <div class="feature-icon" style="flex-shrink: 0;">
-   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-    <rect x="4" y="7" width="16" height="12" rx="2"/>
-    <path d="M9 7V4h6v3"/>
-    <circle cx="9" cy="13" r="1"/>
-    <circle cx="15" cy="13" r="1"/>
-  </svg>
-  </div>
+            <div class="feature-item">
+              <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/><path d="M6 15h4"/></svg></div>
+              <div class="feature-caption"><h3 style="margin:0;">Billing</h3><p style="margin-top:8px;line-height:1.5;">Manage your clinic's stock and inventory, expenses and finances all in one place.</p></div>
+            </div>
 
-  <div class="feature-caption" style="display: flex; flex-direction: column;">
-    <h3 style="margin: 0;">Automated Insurance Claims</h3>
-    <p style="margin-top: 8px; line-height: 1.5;">
-      Easily collect claims directly in real time and improve<br> insurance claim processing speed.
-    </p>
-  </div>
+            <div class="feature-item">
+              <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4"/><path d="M3 10h18"/></svg></div>
+              <div class="feature-caption"><h3 style="margin:0;">Manage OPD</h3><p style="margin-top:8px;line-height:1.5;">Transform your OPD into a seamless digital journey eliminating paperwork for clinical data reporting</p></div>
+            </div>
 
-  
-</div> 
-
-<div class="feature-item" style="display: flex; align-items: flex-start; gap: 20px;">
-  <div class="feature-icon" style="flex-shrink: 0;">
-   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-    <path d="M4 19V5"/>
-    <path d="M10 19V9"/>
-    <path d="M16 19V13"/>
-    <path d="M22 19H2"/>
-  </svg>
-  </div>
-
-  <div class="feature-caption" style="display: flex; flex-direction: column;">
-    <h3 style="margin: 0;">Data Reports</h3>
-    <p style="margin-top: 8px; line-height: 1.5;">
-     Provide timely reports and accurate data <br>representation of clinic records.
-    </p>
-  </div>
-
-  
-</div> 
-
-<div class="feature-item" style="display: flex; align-items: flex-start; gap: 20px;">
-  <div class="feature-icon" style="flex-shrink: 0;">
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-    <rect x="2" y="5" width="20" height="14" rx="2"/>
-    <path d="M2 10h20"/>
-    <path d="M6 15h4"/>
-  </svg>
-  </div>
-
-  <div class="feature-caption" style="display: flex; flex-direction: column;">
-    <h3 style="margin: 0;">Billing</h3>
-    <p style="margin-top: 8px; line-height: 1.5;">
-     Manage your clinic's stock and inventory, <br>expenses and finances all in one place.
-    </p>
-  </div>
-
-  
-</div> 
-
-<div class="feature-item" style="
-    display: flex;
-    align-items: flex-start;
-    gap: 20px;
-">
-  <div class="feature-icon" style="flex-shrink: 0;">
-   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-    <rect x="3" y="4" width="18" height="18" rx="2"/>
-    <path d="M16 2v4M8 2v4"/>
-    <path d="M3 10h18"/>
-  </svg>
-  </div>
-
-  <!-- TEXT WRAPPER -->
-  <div class="feature-caption">
-    <h3 style="margin: 0;">Manage OPD</h3>
-    <p style="margin-top: 8px; line-height: 1.5;">
-      Transform your OPD into a seamless digital journey<br> eliminating paperwork for clinical data reporting
-    </p>
-  </div>
-</div>
-
-
-
-          
-         
-
-
-
-          
           </div>
-
-          <!-- RIGHT: Image grid -->
           <div class="feature-images">
-            <div>
-              <img
-                src="team-young-specialist-doctors-standing-corridor-hospital.jpg"
-                alt=""
-                style="height: 300px; top: 0; left: 0"
-              />
-            </div>
-            <div>
-              <img
-                src="female-doctors-bathrobes-african-girl-stethoscope-doctor-s-neck.jpg"
-                alt=""
-                style="height: 450px; top: 0; left: 260px"
-              />
-            </div>
-            <div>
-              <img
-                src="doctor-examines-ear-old-man-clinic.jpg"
-                alt=""
-                style="height: 350px; top: 310px; left: 0"
-              />
-            </div>
-            <div>
-              <img
-                src="portrait-woman-working-as-medic-office-healthcare-clinic.jpg"
-                alt=""
-                style="height: 200px; top: 460px; left: 260px"
-              />
-            </div>
+            <div><img src="team-young-specialist-doctors-standing-corridor-hospital.jpg" alt="" style="height:300px;top:0;left:0"/></div>
+            <div><img src="female-doctors-bathrobes-african-girl-stethoscope-doctor-s-neck.jpg" alt="" style="height:450px;top:0;left:260px"/></div>
+            <div><img src="doctor-examines-ear-old-man-clinic.jpg" alt="" style="height:350px;top:310px;left:0"/></div>
+            <div><img src="portrait-woman-working-as-medic-office-healthcare-clinic.jpg" alt="" style="height:200px;top:460px;left:260px"/></div>
           </div>
         </div>
       </div>
 
-      <!--------Form Section---------->
       <div class="contact-section">
-        <div class="details">
-          <img src="form-part.PNG" style="border-radius:14px;"/>
+        <div class="details"><img src="form-part.PNG" style="border-radius:14px;"/></div>
+      </div>
+
+      <div class="customer-section" style="margin-top:100px;">
+        <h1 style="text-align:center;">Read What Our Customers Are Saying</h1>
+        <div class="customer-wrapper" style="display:flex;align-items:center;margin-top:10px;gap:20px;width:calc(100% - 180px);margin-left:100px;height:800px;padding:20px;">
+          <div class="customers" style="flex-shrink:0;">
+            <img src="portrait-woman-working-as-medic-office-healthcare-clinic.jpg" style="width:400px;height:600px;display:block;border-radius:8px;"/>
+          </div>
+          <div class="customer-images" style="flex:1;height:600px;color:white;background:#4f8f75;padding:50px;border-radius:8px;position:relative;display:flex;flex-direction:column;justify-content:center;">
+            <div style="position:absolute;top:24px;right:36px;font-size:110px;font-weight:300;color:rgba(255,255,255,0.20);line-height:1;font-family:Georgia,serif;letter-spacing:6px;user-select:none;">&#8221;</div>
+            <p style="font-size:16px;line-height:1.75;margin:0 0 32px;">The system has proven to be very useful and has really improved the services in my clinic. I highly appreciate. I highly recommend it.</p>
+            <p style="font-size:17px;font-weight:700;margin:0 0 4px;">Dr Rajan Taneja</p>
+            <p style="font-size:15px;color:rgba(255,255,255,0.75);margin:0;">SVR Hospitals</p>
+            <button style="position:absolute;bottom:30px;right:30px;width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,0.92);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4f8f75" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </button>
+          </div>
         </div>
       </div>
 
-      <!------------Customer section--------->
-     <div class="customer-section" style="margin-top:100px;">
-    <h1 style="text-align:center;">Read What Our Customers Are Saying</h1>
+      <div class="other-section" style="width:100%;height:350px;background:black;color:white;text-align:center;">
+        <h1 style="padding-top:100px;">Experience the future of healthcare</h1>
+        <p style="padding-bottom:30px;"><br>Digitize your electronic medical records easily with XanaHealth</p>
+        <a href="signup.html"><button style="text-decoration:none;background:#4f8f75;width:200px;border-radius:12px;height:60px;color:white;font-weight:bold;">Get Started Now</button></a>
+      </div>
 
-    <div class="customer-wrapper" style="
-        display: flex; 
-        align-items: center; 
-        margin-top:10px;
-        gap: 20px;      /* small gap between divs */
-        width: calc(100% - 180px); /* adjust for margin-left */
-        margin-left: 100px;
-        height: 800px;
-        padding: 20px;
-    ">
-        <!-- LEFT: Image -->
-        <div class="customers" style="flex-shrink: 0;">
-            <img src="portrait-woman-working-as-medic-office-healthcare-clinic.jpg" style="width: 400px; height: 600px; display: block; border-radius: 8px;"/>
-        </div>
-
-        <!-- RIGHT: Text (longer width) -->
-    <div class="customer-images" style="flex: 1; height: 600px; color: white; background: #4f8f75; padding: 50px; border-radius: 8px; position: relative; display: flex; flex-direction: column; justify-content: center;">
-
-  <!-- Closing quote mark top-right -->
-  <div style="position: absolute; top: 24px; right: 36px; font-size: 110px; font-weight: 300; color: rgba(255,255,255,0.20); line-height: 1; font-family: Georgia, serif; letter-spacing: 6px; user-select: none;">&#8221;</div>
-
-  <!-- Testimonial text -->
-  <p style="font-size: 16px; line-height: 1.75; margin: 0 0 32px;">
-    The system has proven to be very useful and has really improved the services in my clinic. I highly appreciate. I highly recommend it.
-  </p>
-
-  <!-- Author -->
-  <p style="font-size: 17px; font-weight: 700; margin: 0 0 4px;">Dr Rajan Taneja</p>
-  <p style="font-size: 15px; color: rgba(255,255,255,0.75); margin: 0;">SVR Hospitals</p>
-
-  <!-- Arrow button -->
-  <button style="position: absolute; bottom: 30px; right: 30px; width: 44px; height: 44px; border-radius: 50%; background: rgba(255,255,255,0.92); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center;">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
-         stroke="#4f8f75" stroke-width="2.2"
-         stroke-linecap="round" stroke-linejoin="round">
-      <path d="M5 12h14M13 6l6 6-6 6"/>
-    </svg>
-  </button>
-
-</div>
-    </div>
-</div>
-
-<!------other section------>
-<div class="other-section" style="width:100%; height: 350px; background: black; color:white; text-align:center;">
-  <h1 style="padding-top:100px;">Experience the future of healthcare</h1>
-  <p style="padding-bottom:30px;"><br>Digitize your electronic medical records easily with XanaHealth</p>
-
-  <a href="signup.html">
-     <button style="text-decoration:none; background:#4f8f75; width: 200px; border-radius:12px; height: 60px; color: white; font-weight:bold;">Get Started Now</button>
-
-  </a>
-
-</div>
-
-    <footer class="footer">
+      <footer class="footer">
         <div class="footer-content">
-            <div class="footer-left">
-                <div class="footer-logo">
-                    <span class="xana">Xana</span><span class="health">Health</span>
-                </div>
-                <p class="footer-description">
-                    XanaHealth helps you organize your OPD into a paperless experience - from booking appointments, making payments, recording clinical data, getting prescription and lab reports.
-                </p>
-                <div class="social-icons">
-                    <a href="#" aria-label="Facebook">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-                        </svg>
-                    </a>
-                    <a href="#" aria-label="Instagram">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
-                        </svg>
-                    </a>
-                    <a href="#" aria-label="Twitter">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
-                        </svg>
-                    </a>
-                </div>
+          <div class="footer-left">
+            <div class="footer-logo"><span class="xana">Xana</span><span class="health">Health</span></div>
+            <p class="footer-description">XanaHealth helps you organize your OPD into a paperless experience - from booking appointments, making payments, recording clinical data, getting prescription and lab reports.</p>
+            <div class="social-icons">
+              <a href="#" aria-label="Facebook"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></a>
+              <a href="#" aria-label="Instagram"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg></a>
+              <a href="#" aria-label="Twitter"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/></svg></a>
             </div>
-
-            <div class="footer-right">
-                <div class="footer-column">
-                    <h3>Company</h3>
-                    <ul>
-                        <li><a href="#">Features</a></li>
-                        <li><a href="#">About us</a></li>
-                        <li><a href="#">Careers</a></li>
-                    </ul>
-                </div>
-
-                <div class="footer-column">
-                    <h3>Contact</h3>
-                    <ul>
-                        <li><a href="#">Request Demo</a></li>
-                        <li><a href="tel:+250788597772">Phone: +250 788 597 772</a></li>
-                        <li><a href="#">Address: KN 78 St, Kigali</a></li>
-                    </ul>
-                </div>
-            </div>
+          </div>
+          <div class="footer-right">
+            <div class="footer-column"><h3>Company</h3><ul><li><a href="#">Features</a></li><li><a href="#">About us</a></li><li><a href="#">Careers</a></li></ul></div>
+            <div class="footer-column"><h3>Contact</h3><ul><li><a href="#">Request Demo</a></li><li><a href="tel:+250788597772">Phone: +250 788 597 772</a></li><li><a href="#">Address: KN 78 St, Kigali</a></li></ul></div>
+          </div>
         </div>
+        <div class="footer-bottom"><p>Built by KorisimbiTech</p><p>We comply with international data norms</p></div>
+      </footer>
 
-        <div class="footer-bottom">
-            <p>Built by KorisimbiTech</p>
-            <p>We comply with international data norms</p>
-        </div>
-    </footer>
-
-      </div>
     </div>
-
-    <script>
-      // Sample patient data
-      const patients = [
-        {
-          fileNum: "01234",
-          firstName: "Rebecca William",
-          lastName: "Robertson Jack...",
-          gender: "Female",
-          dob: "23/04/1982",
-          phone: "+00000000000",
-          status: "NEW VISIT",
-        },
-        {
-          fileNum: "01234",
-          firstName: "Peter Richards",
-          lastName: "Fabian Richards",
-          gender: "Female",
-          dob: "23/04/1982",
-          phone: "+00000000000",
-          status: "NEW VISIT",
-        },
-        {
-          fileNum: "01234",
-          firstName: "Tabitha Adebayo",
-          lastName: "Sammy Adeb...",
-          gender: "Female",
-          dob: "12/04/1982",
-          phone: "+00000000000",
-          status: "NEW VISIT",
-        },
-        {
-          fileNum: "01234",
-          firstName: "Temini Akande",
-          lastName: "Sammy Haw...",
-          gender: "Male",
-          dob: "03/07/1982",
-          phone: "+00000000000",
-          status: "NEW VISIT",
-        },
-        {
-          fileNum: "01234",
-          firstName: "Robinson Aderin...",
-          lastName: "Robinson Ade...",
-          gender: "Female",
-          dob: "23/04/1968",
-          phone: "+00000000000",
-          status: "NEW VISIT",
-        },
-        {
-          fileNum: "01234",
-          firstName: "Linda Willis",
-          lastName: "Linda Willis",
-          gender: "Female",
-          dob: "23/04/1982",
-          phone: "+00000000000",
-          status: "NEW VISIT",
-        },
-        {
-          fileNum: "01234",
-          firstName: "Albert Chukwuma",
-          lastName: "Albert Okonk...",
-          gender: "Male",
-          dob: "03/12/1982",
-          phone: "+00000000000",
-          status: "NEW VISIT",
-        },
-        {
-          fileNum: "01234",
-          firstName: "Ugonna Kanu Ese...",
-          lastName: "Ugonna Esse Ez...",
-          gender: "Female",
-          dob: "03/07/1982",
-          phone: "+00000000000",
-          status: "NEW VISIT",
-        },
-        {
-          fileNum: "01234",
-          firstName: "Chioma Paul",
-          lastName: "Roland-Paul",
-          gender: "Male",
-          dob: "23/04/1982",
-          phone: "+00000000000",
-          status: "NEW VISIT",
-        },
-      ];
-
-      // Generate table rows
-      const tableBody = document.getElementById("patientTableBody");
-      patients.forEach((patient) => {
-        const row = document.createElement("tr");
-        row.innerHTML = `
-                <td><input type="checkbox"></td>
-                <td><div class="patient-avatar"></div></td>
-                <td>${patient.fileNum}</td>
-                <td>${patient.firstName}</td>
-                <td>${patient.lastName}</td>
-                <td>${patient.gender}</td>
-                <td>${patient.dob}</td>
-                <td>${patient.phone}</td>
-                <td><span class="status-badge status-new-visit">${patient.status}</span></td>
-                <td>
-                    <div class="action-icons">
-                        <span class="action-icon">✏️</span>
-                        <span class="action-icon">👁️</span>
-                    </div>
-                </td>
-            `;
-        tableBody.appendChild(row);
-      });
-
-      // Add some interactivity
-      document.querySelectorAll(".sidebar-item").forEach((item) => {
-        item.addEventListener("click", function () {
-          document
-            .querySelectorAll(".sidebar-item")
-            .forEach((i) => i.classList.remove("active"));
-          this.classList.add("active");
-        });
-      });
-
-      document.querySelectorAll(".tab").forEach((tab) => {
-        tab.addEventListener("click", function () {
-          document
-            .querySelectorAll(".tab")
-            .forEach((t) => t.classList.remove("active"));
-          this.classList.add("active");
-        });
-      });
-    </script>
   </body>
 </html>
