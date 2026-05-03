@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   const storedUser = localStorage.getItem("xanaUser");
 
-  // 🔐 Session check (like if_session in PHP)
+ 
   if (!storedUser) {
     window.location.href = "index.html";
     return;
