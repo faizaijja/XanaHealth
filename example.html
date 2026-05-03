@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>XanaHealth — Laboratory</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --g900:#0d2e1f; --g800:#1a5c3a; --g700:#1a7a5e; --g600:#2d9e7a;
+  --g500:#3db88e; --g200:#a8dfc8; --g100:#d0f0e4; --g50:#e8f5f1;
+  --red:#c0392b;  --redp:#fef2f2;
+  --yel:#d97706;  --yelp:#fffbeb;
+  --blu:#2563eb;  --blup:#eff6ff;
+  --bg:#f2f7f5; --sfc:#fff; --bdr:#ddeee9; --bdr2:#c4ddd5;
+  --tx:#1c2b27; --tx2:#4a6660; --tx3:#7a9490;
+  --sw:210px; --hh:56px;
+  --font:'DM Sans',sans-serif; --mono:'DM Mono',monospace;
+  --r:8px; --sh:0 1px 4px rgba(0,0,0,.06),0 4px 16px rgba(0,0,0,.04);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);background:var(--bg);color:var(--tx);font-size:13px;display:flex;height:100vh;overflow:hidden}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--bdr2);border-radius:4px}
+
+/* SIDEBAR */
+.sb{width:var(--sw);background:#fff;border-right:1px solid var(--bdr);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto;z-index:100}
+.sb-logo{padding:0 18px;height:var(--hh);border-bottom:1px solid var(--bdr);display:flex;align-items:center}
+.sb-name{font-size:15px;font-weight:700;letter-spacing:-.3px}
+.sb-sec{padding:16px 0 4px}
+.sb-lbl{color:var(--tx3);font-size:9px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;padding:0 16px 6px}
+.sb-item{display:flex;align-items:center;gap:9px;padding:9px 16px;cursor:pointer;color:var(--tx3);font-size:12px;font-weight:500;transition:all .15s;border-left:3px solid transparent}
+.sb-item:hover{background:var(--g50);color:var(--g700)}
+.sb-item.active{background:var(--g50);color:var(--g700);border-left-color:var(--g600);font-weight:600}
+.sb-item svg{flex-shrink:0;width:14px;height:14px}
+.sb-bdg{margin-left:auto;background:var(--g100);color:var(--g700);font-size:9px;font-weight:700;padding:2px 6px;border-radius:8px;font-family:var(--mono)}
+.sb-bdg.red{background:#fee2e2;color:var(--red)}
+.sb-foot{margin-top:auto;border-top:1px solid var(--bdr);padding:12px 16px;display:flex;align-items:center;gap:9px}
+.sb-av{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--g600),var(--g700));display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;font-weight:700;flex-shrink:0}
+.sb-un{color:var(--tx);font-size:11px;font-weight:600}
+.sb-ur{color:var(--tx3);font-size:9px}
+
+/* MAIN */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.topbar{height:var(--hh);background:#fff;border-bottom:1px solid var(--bdr);display:flex;align-items:center;gap:16px;padding:0 24px;flex-shrink:0;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.tb-title{font-size:15px;font-weight:700;color:var(--tx)}
+.tb-bell{width:34px;height:34px;display:flex;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;color:var(--tx3);transition:background .15s,color .15s}
+.tb-bell:hover{background:var(--g50);color:var(--g700)}
+.tb-company{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:500;color:var(--g600);cursor:pointer;padding:6px 10px;border-radius:8px;transition:background .15s}
+.tb-company:hover{background:var(--g50)}
+.srch{display:flex;align-items:center;gap:7px;background:#fff;border:1px solid var(--bdr);border-radius:var(--r);padding:7px 12px}
+.srch input{border:none;background:transparent;font-family:var(--font);font-size:12px;color:var(--tx);outline:none;width:100%}
+.srch input::placeholder{color:var(--tx3)}
+.srch svg{color:var(--tx3);flex-shrink:0}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:var(--r);font-size:12px;font-family:var(--font);cursor:pointer;border:none;font-weight:500;transition:all .15s;white-space:nowrap}
+.btn-p{background:var(--g700);color:#fff}.btn-p:hover{background:var(--g800)}
+.btn-g{background:var(--g600);color:#fff}.btn-g:hover{background:var(--g700)}
+.btn-o{background:#fff;border:1px solid var(--bdr);color:var(--tx2)}.btn-o:hover{background:var(--bg);border-color:var(--g500)}
+.btn-gh{background:transparent;color:var(--tx2);border:none}.btn-gh:hover{background:var(--bg)}
+.btn-d{background:var(--redp);color:var(--red);border:1px solid #fecaca}.btn-d:hover{background:#fee2e2}
+.btn-sm{padding:5px 10px;font-size:11px}
+.btn-xs{padding:3px 8px;font-size:10px;border-radius:5px}
+
+/* CONTENT */
+.content{flex:1;overflow-y:auto;padding:24px;display:none;animation:fadeIn .2s ease}
+.content.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* PAGE HEADER */
+.ph{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:22px}
+.ph-title{font-size:20px;font-weight:700;color:var(--g700)}
+.ph-sub{font-size:12px;color:var(--tx3);margin-top:3px}
+.ph-actions{display:flex;gap:8px;align-items:center}
+
+/* STAT CARDS */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px}
+.sc{background:#fff;border:1px solid var(--bdr);border-radius:10px;padding:16px 18px;box-shadow:var(--sh);transition:transform .15s}
+.sc:hover{transform:translateY(-1px)}
+.sc-lbl{font-size:10px;color:var(--tx3);font-weight:600;text-transform:uppercase;letter-spacing:.6px}
+.sc-val{font-size:26px;font-weight:700;font-family:var(--mono);margin:6px 0 2px}
+.sc-sub{font-size:11px;color:var(--tx3)}
+.sc.grn .sc-val{color:var(--g700)}.sc.yel .sc-val{color:var(--yel)}.sc.red .sc-val{color:var(--red)}.sc.blu .sc-val{color:var(--blu)}
+
+/* CARD */
+.card{background:#fff;border:1px solid var(--bdr);border-radius:10px;box-shadow:var(--sh);overflow:hidden}
+.card-h{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--bdr);background:#fafcfb}
+.card-t{font-size:13px;font-weight:700;color:var(--g700)}
+.card-s{font-size:11px;color:var(--tx3);margin-top:1px}
+.card-b{padding:18px}
+.card-f{padding:12px 18px;border-top:1px solid var(--bdr);background:#fafcfb;display:flex;gap:8px;justify-content:flex-end}
+
+/* TABLE */
+.dt{width:100%;border-collapse:collapse}
+.dt th{background:#f4faf8;padding:9px 12px;font-size:10px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--bdr);text-align:left;position:sticky;top:0;z-index:2}
+.dt td{padding:10px 12px;border-bottom:1px solid #eef5f2;font-size:12px;vertical-align:middle}
+.dt tbody tr{transition:background .1s}
+.dt tbody tr:hover{background:var(--g50);cursor:pointer}
+.dt tbody tr:last-child td{border-bottom:none}
+
+/* BADGES */
+.bdg{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:10px;font-size:10px;font-weight:600}
+.bdg::before{content:'';width:5px;height:5px;border-radius:50%;flex-shrink:0}
+.bdg-p{background:var(--yelp);color:var(--yel)}.bdg-p::before{background:var(--yel)}
+.bdg-d{background:var(--g100);color:var(--g700)}.bdg-d::before{background:var(--g500)}
+.bdg-r{background:var(--blup);color:var(--blu)}.bdg-r::before{background:var(--blu)}
+.bdg-u{background:var(--redp);color:var(--red)}.bdg-u::before{background:var(--red)}
+
+/* FILTER CHIPS */
+.fbar{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:16px}
+.chip{padding:5px 12px;border-radius:20px;font-size:11px;font-weight:500;cursor:pointer;border:1px solid var(--bdr);background:#fff;color:var(--tx2);transition:all .15s}
+.chip:hover{border-color:var(--g500);color:var(--g700)}
+.chip.active{background:var(--g700);color:#fff;border-color:var(--g700)}
+
+/* FORM */
+.fg2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.fg{display:flex;flex-direction:column;gap:5px}
+.fl{font-size:11px;font-weight:600;color:var(--tx2)}
+.fc{border:1px solid var(--bdr);border-radius:var(--r);padding:8px 11px;font-family:var(--font);font-size:12px;color:var(--tx);background:#fff;outline:none;transition:border-color .15s,box-shadow .15s;width:100%}
+.fc:focus{border-color:var(--g500);box-shadow:0 0 0 3px rgba(61,184,142,.12)}
+select.fc{cursor:pointer}
+textarea.fc{resize:vertical;min-height:80px}
+
+/* RESULT GRID */
+.rg-h,.rg-r{display:grid;grid-template-columns:2fr 100px 130px 80px 40px;align-items:center;gap:8px;padding:8px 12px}
+.rg-h{background:#f4faf8;border-bottom:1px solid var(--bdr);font-size:10px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.5px}
+.rg-r{border-bottom:1px solid #eef5f2;transition:background .1s}
+.rg-r:hover{background:var(--g50)}
+.rg-r.abn{background:#fff8f8}.rg-r.abn:hover{background:#fff0f0}
+.r-nm{font-size:12px;font-weight:500}
+.r-nm .rs{font-size:10px;color:var(--tx3);font-weight:400;margin-top:1px}
+.r-vl{font-family:var(--mono);font-size:13px;font-weight:600}
+.r-vl.h{color:var(--red)}.r-vl.l{color:var(--blu)}.r-vl.n{color:var(--g700)}
+.r-rf{font-family:var(--mono);font-size:10px;color:var(--tx3)}
+.r-un{font-size:10px;color:var(--tx3)}
+.flg{width:22px;height:22px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700}
+.flg-H{background:var(--redp);color:var(--red)}.flg-L{background:var(--blup);color:var(--blu)}.flg-N{background:var(--g100);color:var(--g700)}
+
+/* QC */
+.ci{display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid #eef5f2}
+.ci-ic{width:28px;height:28px;border-radius:8px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700}
+.ci-ic.pass{background:var(--g100);color:var(--g700)}.ci-ic.fail{background:var(--redp);color:var(--red)}.ci-ic.warn{background:var(--yelp);color:var(--yel)}
+.ci-lbl{font-size:12px;font-weight:600;color:var(--tx)}
+.ci-det{font-size:11px;color:var(--tx3);margin-top:2px}
+
+/* CERT */
+.cert{max-width:680px;margin:0 auto;background:#fff;border:1px solid var(--bdr);border-radius:10px;box-shadow:var(--sh);padding:32px 36px}
+.cert-top{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:18px;border-bottom:3px solid var(--g700);margin-bottom:20px}
+.cert-cn{font-size:18px;font-weight:800;color:var(--g700)}
+.cert-ca{font-size:11px;color:var(--tx3);margin-top:4px;line-height:1.6}
+.cert-lg{width:50px;height:50px;background:var(--g700);border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:15px}
+.cert-hd{text-align:center;font-size:14px;font-weight:800;color:var(--g700);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:18px;padding:8px;background:var(--g50);border-radius:var(--r);border:1px solid var(--g200)}
+.cert-pg{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;background:#f7fcfa;border:1px solid var(--g200);border-radius:var(--r);padding:14px 16px;margin-bottom:20px}
+.cf-l{font-size:9px;text-transform:uppercase;letter-spacing:.5px;color:var(--tx3);font-weight:600}
+.cf-v{font-size:12px;font-weight:600;color:var(--tx);margin-top:3px}
+.cert-tbl{width:100%;border-collapse:collapse;margin-bottom:16px}
+.cert-tbl th{background:var(--g700);color:#fff;padding:8px 10px;font-size:10px;text-align:left}
+.cert-tbl td{padding:7px 10px;font-size:11px;border-bottom:1px solid var(--bdr)}
+.cert-tbl tr:nth-child(even) td{background:#f7fcfa}
+.cert-int{background:var(--yelp);border:1px solid #fde68a;border-radius:var(--r);padding:12px 14px;margin-bottom:20px;font-size:11px;line-height:1.6;color:#92400e}
+.cert-sgs{display:flex;justify-content:space-between;align-items:flex-end;padding-top:16px;border-top:1px solid var(--bdr)}
+.cert-sg{text-align:center}
+.cert-sl{width:120px;border-top:1px solid var(--bdr2);margin:24px auto 5px}
+.cert-sn{font-size:11px;font-weight:700;color:var(--tx)}
+.cert-sr{font-size:10px;color:var(--tx3)}
+.cert-stmp{width:60px;height:60px;border-radius:50%;border:2px dashed var(--g700);display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:var(--g700);text-align:center;line-height:1.3;opacity:.55;letter-spacing:.3px}
+
+/* PATIENT BANNER */
+.pb{background:linear-gradient(135deg,var(--g700),var(--g600));border-radius:10px;padding:16px 20px;margin-bottom:20px;color:#fff;display:flex;align-items:center;gap:16px}
+.pb-av{width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;flex-shrink:0}
+.pb-name{font-size:16px;font-weight:700}
+.pb-meta{display:flex;gap:14px;font-size:11px;opacity:.75;margin-top:3px}
+.pb-id{font-family:var(--mono);font-size:10px;opacity:.5;margin-top:5px}
+.pb-bdg{margin-left:auto;background:rgba(255,255,255,.18);padding:4px 12px;border-radius:20px;font-size:11px}
+
+/* GRIDS */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+
+/* DELTA */
+.dr{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #eef5f2}
+.dc{font-family:var(--mono);font-size:12px;font-weight:700}
+.dc.up{color:var(--red)}.dc.down{color:var(--blu)}.dc.ok{color:var(--g600)}
+
+/* CHECKLIST */
+.cl{display:flex;flex-direction:column;gap:10px}
+.cli{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--bdr);border-radius:var(--r);cursor:pointer;transition:all .15s}
+.cli:hover{background:var(--g50);border-color:var(--g200)}
+.cli input[type=checkbox]{accent-color:var(--g600);width:15px;height:15px;cursor:pointer}
+.cli-lbl{font-size:12px;font-weight:500}
+.cli-sub{font-size:10px;color:var(--tx3)}
+
+/* BILLING */
+.br{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #eef5f2;font-size:12px}
+.bt{display:flex;justify-content:space-between;align-items:center;padding:12px 0 0;font-size:14px;font-weight:700}
+
+/* CRITICAL ALERT */
+.ca{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:var(--redp);border:1px solid #fecaca;border-radius:var(--r);margin-bottom:6px}
+.ca-n{font-size:11px;font-weight:600;color:var(--red)}
+.ca-v{font-family:var(--mono);font-size:11px;color:var(--red);font-weight:700}
+
+/* ENTRY GRID */
+.eg{width:100%;border-collapse:collapse}
+.eg th{background:#f4faf8;padding:8px 10px;font-size:10px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--bdr);text-align:left}
+.eg td{padding:6px 10px;border-bottom:1px solid #eef5f2;font-size:12px}
+.eg input.fc{padding:5px 8px;font-size:11px}
+
+@media print{
+  .sb,.topbar,.ph-actions,.btn,.fbar{display:none!important}
+  body{display:block}
+  .content{display:block!important;padding:0}
+  .cert{box-shadow:none;border:none}
+}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sb">
+  <div class="sb-logo">
+    <div class="sb-name"><span style="color:var(--tx)">Xana</span><span style="color:var(--g600)">Health</span></div>
+  </div>
+  <div class="sb-sec">
+    <div class="sb-lbl">LABORATORY</div>
+    <div class="sb-item" data-page="dashboard" onclick="nav(this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      Dashboard
+    </div>
+  </div>
+  
+    
+    <div class="sb-item active" data-page="requests" onclick="nav(this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2v-4M9 21H5a2 2 0 0 1-2-2v-4m0 0h18"/></svg>
+      Requests <span class="sb-bdg">24</span>
+    </div>
+    <div class="sb-item" data-page="entry" onclick="nav(this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 2v7.527a2 2 0 0 1-.211.896L4.72 18.523A1 1 0 0 0 5.596 20h12.808a1 1 0 0 0 .876-1.477l-5.069-8.1A2 2 0 0 1 14 9.527V2"/><line x1="8.5" y1="2" x2="15.5" y2="2"/></svg>
+      Test Entry
+    </div>
+    <div class="sb-item" data-page="results" onclick="nav(this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      Results <span class="sb-bdg red">3</span>
+    </div>
+    <div class="sb-item" data-page="verification" onclick="nav(this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+      Verification
+    </div>
+    <div class="sb-item" data-page="actions" onclick="nav(this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+      Lab Actions
+    </div>
+    <div class="sb-item" data-page="certificate" onclick="nav(this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      Certificate
+    </div>
+    <div class="sb-item" data-page="monthly" onclick="nav(this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+      Monthly Report
+    </div>
+  
+ 
+  <div class="sb-foot">
+    <div class="sb-av">SJ</div>
+    <div><div class="sb-un">Sct Jane Doe</div><div class="sb-ur">Lab Scientist · On duty</div></div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div class="tb-title" id="tb-title">Lab Requests</div>
+    <div style="flex:1"></div>
+    <div class="tb-bell" title="Notifications">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+    </div>
+    <div class="tb-company">
+      Company Logo
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div class="content" id="page-dashboard">
+    <div class="ph">
+      <div><div class="ph-title">Good morning, Lab Team 👋</div><div class="ph-sub">Wednesday, 18 March 2024 · All systems operational</div></div>
+      <div class="ph-actions">
+        <button class="btn btn-o btn-sm">↓ Export</button>
+        <button class="btn btn-p btn-sm" onclick="navTo('requests')">View All Requests</button>
+      </div>
+    </div>
+    <div class="stats">
+      <div class="sc blu"><div class="sc-lbl">Total Today</div><div class="sc-val">24</div><div class="sc-sub">All requests</div></div>
+      <div class="sc yel"><div class="sc-lbl">Pending</div><div class="sc-val">9</div><div class="sc-sub">Awaiting processing</div></div>
+      <div class="sc grn"><div class="sc-lbl">Completed</div><div class="sc-val">12</div><div class="sc-sub">Results released</div></div>
+      <div class="sc red"><div class="sc-lbl">STAT / Urgent</div><div class="sc-val">3</div><div class="sc-sub">Priority processing</div></div>
+    </div>
+    <div class="g2" style="margin-bottom:18px">
+      <div class="card">
+        <div class="card-h"><div><div class="card-t">Recent Activity</div><div class="card-s">Last 6 requests</div></div></div>
+        <table class="dt">
+          <thead><tr><th>Patient</th><th>Test</th><th>Time</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr onclick="navTo('requests')"><td><strong>John Kamau</strong><br><small style="color:var(--tx3)">PT-2024-0841</small></td><td>CBC</td><td style="font-family:var(--mono);color:var(--tx3)">08:30</td><td><span class="bdg bdg-d">Done</span></td></tr>
+            <tr onclick="navTo('requests')"><td><strong>Grace Atieno</strong><br><small style="color:var(--tx3)">PT-2024-0842</small></td><td>LFT</td><td style="font-family:var(--mono);color:var(--tx3)">08:45</td><td><span class="bdg bdg-d">Done</span></td></tr>
+            <tr onclick="navTo('requests')"><td><strong>Samuel Odhiambo</strong><br><small style="color:var(--tx3)">PT-2024-0843</small></td><td>RFT</td><td style="font-family:var(--mono);color:var(--tx3)">09:00</td><td><span class="bdg bdg-u">Urgent</span></td></tr>
+            <tr onclick="navTo('requests')"><td><strong>David Njoroge</strong><br><small style="color:var(--tx3)">PT-2024-0847</small></td><td>CBC</td><td style="font-family:var(--mono);color:var(--tx3)">09:50</td><td><span class="bdg bdg-u">Urgent</span></td></tr>
+            <tr onclick="navTo('requests')"><td><strong>Mary Wanjiku</strong><br><small style="color:var(--tx3)">PT-2024-0844</small></td><td>Lipid</td><td style="font-family:var(--mono);color:var(--tx3)">09:15</td><td><span class="bdg bdg-p">Pending</span></td></tr>
+            <tr onclick="navTo('requests')"><td><strong>Peter Maina</strong><br><small style="color:var(--tx3)">PT-2024-0845</small></td><td>TFT</td><td style="font-family:var(--mono);color:var(--tx3)">09:20</td><td><span class="bdg bdg-r">Review</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card">
+        <div class="card-h"><div><div class="card-t">Critical Value Alerts</div><div class="card-s">Immediate attention required</div></div></div>
+        <div class="card-b">
+          <div class="ca"><div><div class="ca-n">WBC Count — John Kamau</div><div style="font-size:10px;color:var(--tx3)">CBC · REQ-001</div></div><div class="ca-v">14.8 H</div></div>
+          <div class="ca"><div><div class="ca-n">Creatinine — Samuel Odhiambo</div><div style="font-size:10px;color:var(--tx3)">RFT · REQ-003</div></div><div class="ca-v">312.4 H</div></div>
+          <div class="ca"><div><div class="ca-n">Potassium — David Njoroge</div><div style="font-size:10px;color:var(--tx3)">BMP · REQ-007</div></div><div class="ca-v">6.8 H</div></div>
+          <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--bdr)">
+            <div style="font-size:11px;font-weight:600;color:var(--tx2);margin-bottom:8px">Quick Actions</div>
+            <div style="display:flex;gap:8px">
+              <button class="btn btn-o btn-sm" onclick="navTo('verification')">Go to Verification</button>
+              <button class="btn btn-p btn-sm" onclick="navTo('results')">View Results</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-h"><div><div class="card-t">Today's Workflow Pipeline</div><div class="card-s">Sample-to-report progress</div></div></div>
+      <div class="card-b">
+        <div style="display:flex;align-items:center">
+          <div style="flex:1;text-align:center;padding:12px;background:var(--blup);border-radius:8px;margin-right:6px"><div style="font-size:20px;font-weight:700;color:var(--blu);font-family:var(--mono)">24</div><div style="font-size:10px;color:var(--blu);font-weight:600;margin-top:2px">REQUESTS</div></div>
+          <div style="color:var(--tx3);font-size:18px;margin:0 2px">›</div>
+          <div style="flex:1;text-align:center;padding:12px;background:var(--yelp);border-radius:8px;margin:0 6px"><div style="font-size:20px;font-weight:700;color:var(--yel);font-family:var(--mono)">18</div><div style="font-size:10px;color:var(--yel);font-weight:600;margin-top:2px">ENTERED</div></div>
+          <div style="color:var(--tx3);font-size:18px;margin:0 2px">›</div>
+          <div style="flex:1;text-align:center;padding:12px;background:var(--blup);border-radius:8px;margin:0 6px"><div style="font-size:20px;font-weight:700;color:var(--blu);font-family:var(--mono)">14</div><div style="font-size:10px;color:var(--blu);font-weight:600;margin-top:2px">REVIEWED</div></div>
+          <div style="color:var(--tx3);font-size:18px;margin:0 2px">›</div>
+          <div style="flex:1;text-align:center;padding:12px;background:var(--g100);border-radius:8px;margin:0 6px"><div style="font-size:20px;font-weight:700;color:var(--g700);font-family:var(--mono)">12</div><div style="font-size:10px;color:var(--g700);font-weight:600;margin-top:2px">VERIFIED</div></div>
+          <div style="color:var(--tx3);font-size:18px;margin:0 2px">›</div>
+          <div style="flex:1;text-align:center;padding:12px;background:var(--g50);border-radius:8px;margin-left:6px;border:1px solid var(--g200)"><div style="font-size:20px;font-weight:700;color:var(--g600);font-family:var(--mono)">12</div><div style="font-size:10px;color:var(--g600);font-weight:600;margin-top:2px">RELEASED</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LAB REQUESTS -->
+  <div class="content active" id="page-requests">
+    <div class="ph">
+      <div>
+        <div class="ph-title">Lab Requests</div>
+        <div class="ph-sub">Wednesday 18 March 2024 · 24 samples received</div>
+        <div class="srch" style="margin-top:12px;max-width:340px">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input placeholder="Search name or ID…" oninput="filterReqSearch(this.value)">
+        </div>
+      </div>
+      <div class="ph-actions">
+        <button class="btn btn-o btn-sm">↓ Export</button>
+        <button class="btn btn-p btn-sm" onclick="navTo('entry')">+ New Request</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-h">
+        <div><div class="card-t">All Requests</div><div class="card-s">Click a row or Open to enter results</div></div>
+      </div>
+      <div style="padding:12px 18px;border-bottom:1px solid var(--bdr);background:#fafcfb">
+        <div class="fbar" style="margin-bottom:0">
+          <span class="chip active" onclick="filterReqs(this,'all')">All (24)</span>
+          <span class="chip" onclick="filterReqs(this,'pending')">Pending (9)</span>
+          <span class="chip" onclick="filterReqs(this,'done')">Done (12)</span>
+          <span class="chip" onclick="filterReqs(this,'review')">In Review (1)</span>
+          <span class="chip" onclick="filterReqs(this,'urgent')">Urgent / STAT (3)</span>
+        </div>
+      </div>
+      <table class="dt">
+        <thead><tr><th>Request ID</th><th>Patient Name</th><th>Age/Sex</th><th>Test</th><th>Insurance</th><th>Priority</th><th>Time</th><th>Physician</th><th>Status</th><th></th></tr></thead>
+        <tbody id="reqBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- TEST ENTRY -->
+  <div class="content" id="page-entry">
+    <div class="ph">
+      <div><div class="ph-title">Lab Test Entry</div><div class="ph-sub">Enter patient sample and request details</div></div>
+      <div class="ph-actions">
+        <button class="btn btn-o btn-sm">Clear Form</button>
+        <button class="btn btn-p btn-sm" onclick="navTo('results')">Save & View Results →</button>
+      </div>
+    </div>
+    <div class="g2" style="margin-bottom:18px;align-items:start">
+      <div>
+        <div class="card" style="margin-bottom:18px">
+          <div class="card-h"><div class="card-t">Patient Information</div></div>
+          <div class="card-b">
+            <div class="fg2" style="margin-bottom:14px">
+              <div class="fg"><label class="fl">Patient ID</label><input class="fc" value="PT-2024-0841"></div>
+              <div class="fg"><label class="fl">Age / Sex</label><input class="fc" value="34 yrs / Male"></div>
+            </div>
+            <div class="fg" style="margin-bottom:14px"><label class="fl">Full Name</label><input class="fc" value="John Kamau Mwangi"></div>
+            <div class="fg2">
+              <div class="fg"><label class="fl">Date of Birth</label><input class="fc" type="date" value="1990-03-12"></div>
+              <div class="fg"><label class="fl">Phone</label><input class="fc" value="+254 712 345 678"></div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-h"><div class="card-t">Request Details</div></div>
+          <div class="card-b">
+            <div class="fg2" style="margin-bottom:14px">
+              <div class="fg"><label class="fl">Requesting Physician</label><input class="fc" value="Dr. A. Ochieng"></div>
+              <div class="fg"><label class="fl">Ward / Department</label><select class="fc"><option>OPD</option><option>Inpatient</option><option>ICU</option><option>Emergency</option></select></div>
+            </div>
+            <div class="fg2">
+              <div class="fg"><label class="fl">Test Profile</label><select class="fc"><option>Complete Blood Count (CBC)</option><option>Liver Function Tests</option><option>Kidney Function Tests</option><option>Lipid Profile</option><option>Thyroid Function</option><option>Urinalysis</option></select></div>
+              <div class="fg"><label class="fl">Priority</label><select class="fc"><option>Routine</option><option>Urgent</option><option>STAT</option></select></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="card" style="margin-bottom:18px">
+          <div class="card-h"><div class="card-t">Sample Details</div></div>
+          <div class="card-b">
+            <div class="fg2" style="margin-bottom:14px">
+              <div class="fg"><label class="fl">Sample ID</label><input class="fc" value="SMP-20240318-0041"></div>
+              <div class="fg"><label class="fl">Sample Type</label><select class="fc"><option>Whole Blood (EDTA)</option><option>Serum</option><option>Urine</option><option>Plasma</option><option>CSF</option></select></div>
+            </div>
+            <div class="fg2" style="margin-bottom:14px">
+              <div class="fg"><label class="fl">Date/Time Collected</label><input class="fc" type="datetime-local" value="2024-03-18T08:30"></div>
+              <div class="fg"><label class="fl">Date/Time Received</label><input class="fc" type="datetime-local" value="2024-03-18T09:05"></div>
+            </div>
+            <div class="fg2">
+              <div class="fg"><label class="fl">Specimen Quality</label><select class="fc"><option>Acceptable</option><option>Haemolysed</option><option>Lipaemic</option><option>Insufficient</option></select></div>
+              <div class="fg"><label class="fl">Tube Type</label><select class="fc"><option>EDTA (Purple)</option><option>SST (Gold)</option><option>Heparin (Green)</option><option>Plain (Red)</option></select></div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-h"><div class="card-t">Clinical Notes</div></div>
+          <div class="card-b">
+            <div class="fg" style="margin-bottom:14px"><label class="fl">Clinical History / Notes</label><textarea class="fc" rows="3" placeholder="Fever for 3 days, suspected infection…"></textarea></div>
+            <div class="fg2">
+              <div class="fg"><label class="fl">Analyst Assigned</label><input class="fc" value="R. Njoroge"></div>
+              <div class="fg"><label class="fl">Expected TAT</label><input class="fc" value="2 hours"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-h"><div><div class="card-t">CBC Panel — Result Entry</div><div class="card-s">Enter analyzer values below</div></div><button class="btn btn-o btn-sm">Import from Analyzer</button></div>
+      <table class="eg"><thead><tr><th>Parameter</th><th>Result</th><th>Unit</th><th>Reference Range</th><th>Flag</th></tr></thead><tbody id="entryBody"></tbody></table>
+      <div class="card-f">
+        <button class="btn btn-gh btn-sm">Reset</button>
+        <button class="btn btn-o btn-sm">Save Draft</button>
+        <button class="btn btn-p btn-sm" onclick="navTo('results')">Save & Proceed to Results →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESULTS -->
+  <div class="content" id="page-results">
+    <div class="ph">
+      <div><div class="ph-title">Edit Lab Results</div><div class="ph-sub">CBC · John Kamau Mwangi · SMP-20240318-0041</div></div>
+      <div class="ph-actions">
+        <button class="btn btn-o btn-sm" onclick="navTo('entry')">← Back to Entry</button>
+        <button class="btn btn-o btn-sm">Print Draft</button>
+        <button class="btn btn-p btn-sm" onclick="navTo('verification')">Verify & Approve →</button>
+      </div>
+    </div>
+    <div class="pb">
+      <div class="pb-av">JK</div>
+      <div>
+        <div class="pb-name">John Kamau Mwangi</div>
+        <div class="pb-meta"><span>34 yrs / Male</span><span>Dr. A. Ochieng</span><span>OPD</span></div>
+        <div class="pb-id">PT-2024-0841 · SMP-20240318-0041 · CBC · 18 Mar 2024 08:30</div>
+      </div>
+      <span class="pb-bdg">Pending Verification</span>
+    </div>
+    <div class="card">
+      <div class="card-h">
+        <div><div class="card-t">Complete Blood Count Results</div><div class="card-s">12 parameters · 3 abnormal values flagged</div></div>
+        <div style="display:flex;gap:8px"><span class="bdg bdg-u" style="padding:5px 10px">3 Abnormal</span><button class="btn btn-o btn-sm">Edit Values</button></div>
+      </div>
+      <div class="rg-h"><span>Parameter</span><span>Result</span><span>Reference Range</span><span>Unit</span><span>Flag</span></div>
+      <div id="resultsBody"></div>
+      <div class="card-f">
+        <button class="btn btn-o btn-sm" onclick="navTo('entry')">← Edit Entry</button>
+        <button class="btn btn-p btn-sm" onclick="navTo('verification')">Send for Verification →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- VERIFICATION -->
+  <div class="content" id="page-verification">
+    <div class="ph">
+      <div><div class="ph-title">Verification Panel</div><div class="ph-sub">Quality control checks and result authorisation</div></div>
+      <div class="ph-actions">
+        <button class="btn btn-d btn-sm">Reject Results</button>
+        <button class="btn btn-p btn-sm" onclick="navTo('actions')">Approve & Release →</button>
+      </div>
+    </div>
+    <div class="pb">
+      <div class="pb-av">JK</div>
+      <div>
+        <div class="pb-name">John Kamau Mwangi</div>
+        <div class="pb-meta"><span>34 yrs / Male</span><span>Dr. A. Ochieng</span><span>CBC</span></div>
+        <div class="pb-id">PT-2024-0841 · SMP-20240318-0041</div>
+      </div>
+      <span class="pb-bdg" style="background:rgba(251,191,36,.25);color:#fbbf24">Awaiting Verification</span>
+    </div>
+    <div class="g2">
+      <div>
+        <div class="card" style="margin-bottom:18px">
+          <div class="card-h"><div class="card-t">Automated QC Checks</div></div>
+          <div style="padding:0 18px" id="qcList"></div>
+        </div>
+        <div class="card">
+          <div class="card-h"><div class="card-t">Authorisation</div></div>
+          <div class="card-b">
+            <div class="fg2" style="margin-bottom:14px">
+              <div class="fg"><label class="fl">Verified By</label><input class="fc" value="Dr. M. Wambua"></div>
+              <div class="fg"><label class="fl">Date / Time</label><input class="fc" id="verDT" type="datetime-local"></div>
+            </div>
+            <div class="fg" style="margin-bottom:14px"><label class="fl">Verification Notes</label><textarea class="fc" rows="3">Results reviewed. Elevated WBC consistent with clinical presentation. Physician notified of critical values.</textarea></div>
+            <div style="display:flex;gap:8px;justify-content:flex-end">
+              <button class="btn btn-d btn-sm">Reject</button>
+              <button class="btn btn-p btn-sm" onclick="navTo('actions')">Approve & Release →</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="card" style="margin-bottom:18px">
+          <div class="card-h"><div class="card-t">Delta Check</div><div style="font-size:10px;color:var(--tx3)">vs. 7-day prior</div></div>
+          <div class="card-b" id="deltaList"></div>
+        </div>
+        <div class="card">
+          <div class="card-h"><div class="card-t">Critical Value Summary</div></div>
+          <div class="card-b" id="verCrit"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LAB ACTIONS -->
+  <div class="content" id="page-actions">
+    <div class="ph">
+      <div><div class="ph-title">Lab Actions</div><div class="ph-sub">Post-verification dispatch and reporting</div></div>
+      <div class="ph-actions">
+        <span class="bdg bdg-d" style="padding:6px 12px;font-size:11px">✓ Approved</span>
+        <button class="btn btn-p btn-sm" onclick="navTo('certificate')">Generate Certificate →</button>
+      </div>
+    </div>
+    <div class="pb">
+      <div class="pb-av">JK</div>
+      <div>
+        <div class="pb-name">John Kamau Mwangi</div>
+        <div class="pb-meta"><span>34 yrs / Male</span><span>Dr. A. Ochieng</span><span>CBC</span></div>
+        <div class="pb-id">PT-2024-0841 · Verified by Dr. M. Wambua · 18 Mar 2024 11:42</div>
+      </div>
+      <span class="pb-bdg" style="background:rgba(61,184,142,.25);color:#3db88e">Results Approved</span>
+    </div>
+    <div class="g2" style="margin-bottom:18px">
+      <div class="card">
+        <div class="card-h"><div><div class="card-t">Dispatch Options</div><div class="card-s">Select delivery methods</div></div></div>
+        <div class="card-b">
+          <div class="cl">
+            <label class="cli"><input type="checkbox" checked><div><div class="cli-lbl">Print Result Report</div><div class="cli-sub">Generate printable PDF certificate</div></div></label>
+            <label class="cli"><input type="checkbox" checked><div><div class="cli-lbl">Send to Patient Portal</div><div class="cli-sub">Available in patient's online account</div></div></label>
+            <label class="cli"><input type="checkbox"><div><div class="cli-lbl">Email to Physician</div><div class="cli-sub">Dr. A. Ochieng · <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="0763752968646f6e62696047746f626a66646b6e696e64297570">[email&#160;protected]</a></div></div></label>
+            <label class="cli"><input type="checkbox"><div><div class="cli-lbl">SMS Patient</div><div class="cli-sub">+254 712 345 678 · John Kamau</div></div></label>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="card" style="margin-bottom:18px">
+          <div class="card-h"><div class="card-t">Critical Value Notifications</div></div>
+          <div class="card-b">
+            <div class="ca"><div><div class="ca-n">WBC Count — Critical High</div><div style="font-size:10px;color:var(--tx3)">14.8 ×10⁹/L · Ref: 4.0–11.0</div></div><div class="ca-v">H ▲</div></div>
+            <div class="ca" style="margin-top:6px;background:var(--blup);border-color:#bfdbfe"><div><div class="ca-n" style="color:var(--blu)">Haemoglobin — Low</div><div style="font-size:10px;color:var(--tx3)">11.2 g/dL · Ref: 13.5–17.5</div></div><div class="ca-v" style="color:var(--blu)">L ▼</div></div>
+            <div style="margin-top:12px"><label style="display:flex;align-items:center;gap:8px;font-size:12px;cursor:pointer"><input type="checkbox" checked style="accent-color:var(--red)"> Notify physician immediately</label></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-h"><div class="card-t">Billing Summary</div></div>
+          <div class="card-b">
+            <div class="br"><span>CBC Panel</span><span style="font-family:var(--mono);font-weight:600">KES 850</span></div>
+            <div class="br"><span>Urgent Processing</span><span style="font-family:var(--mono);font-weight:600">KES 0</span></div>
+            <div class="br"><span>Report Fee</span><span style="font-family:var(--mono);font-weight:600">KES 50</span></div>
+            <div class="bt"><span>Total</span><span style="font-family:var(--mono);color:var(--g700);font-size:16px">KES 900</span></div>
+            <div style="margin-top:12px"><select class="fc" style="font-size:11px;padding:6px 10px"><option>Cash</option><option>NHIF</option><option>Insurance</option><option>Corporate</option></select></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-b" style="display:flex;gap:10px;justify-content:flex-end">
+        <button class="btn btn-gh btn-sm" onclick="navTo('verification')">← Back</button>
+        <button class="btn btn-o btn-sm">Save Actions</button>
+        <button class="btn btn-g btn-sm" onclick="navTo('certificate')">Generate Certificate →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CERTIFICATE -->
+  <div class="content" id="page-certificate">
+    <div class="ph">
+      <div><div class="ph-title">Lab Result Certificate</div><div class="ph-sub">Official laboratory report — John Kamau Mwangi</div></div>
+      <div class="ph-actions">
+        <button class="btn btn-o btn-sm" onclick="window.print()">🖨 Print</button>
+        <button class="btn btn-p btn-sm">↓ Download PDF</button>
+      </div>
+    </div>
+    <div class="cert">
+      <div class="cert-top">
+        <div><div class="cert-cn">XanaHealth — Shema Clinic</div><div class="cert-ca">P.O. Box 1234, Kigali, Rwanda · Tel: +250 700 123 456<br><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3d54535b527d455c535c55585c514955134f4a">[email&#160;protected]</a> · www.xanahealth.rw</div></div>
+        <div class="cert-lg">Xn</div>
+      </div>
+      <div class="cert-hd">Laboratory Result Report</div>
+      <div class="cert-pg">
+        <div><div class="cf-l">Patient Name</div><div class="cf-v">John Kamau Mwangi</div></div>
+        <div><div class="cf-l">Patient ID</div><div class="cf-v">PT-2024-0841</div></div>
+        <div><div class="cf-l">Age / Sex</div><div class="cf-v">34 yrs / Male</div></div>
+        <div><div class="cf-l">Sample ID</div><div class="cf-v">SMP-20240318-0041</div></div>
+        <div><div class="cf-l">Sample Type</div><div class="cf-v">Whole Blood (EDTA)</div></div>
+        <div><div class="cf-l">Collected</div><div class="cf-v">18 Mar 2024 · 08:30</div></div>
+        <div><div class="cf-l">Ref. Physician</div><div class="cf-v">Dr. A. Ochieng</div></div>
+        <div><div class="cf-l">Ward</div><div class="cf-v">OPD</div></div>
+        <div><div class="cf-l">Report Date</div><div class="cf-v">18 Mar 2024 · 11:45</div></div>
+      </div>
+      <div style="font-size:11px;font-weight:700;color:var(--g700);margin-bottom:8px;text-transform:uppercase;letter-spacing:.6px">Complete Blood Count (CBC)</div>
+      <table class="cert-tbl" id="certTable"></table>
+      <div class="cert-int"><strong>Clinical Interpretation:</strong> The CBC reveals elevated WBC (14.8 ×10⁹/L) with neutrophilia (78.4%), consistent with acute bacterial infection or significant inflammatory process. Mild normocytic anaemia is noted (Hb 11.2 g/dL). Platelet count is within normal limits. Clinical correlation and repeat testing in 48–72 hours is recommended.</div>
+      <div class="cert-sgs">
+        <div class="cert-sg"><div class="cert-sl"></div><div class="cert-sn">Dr. M. Wambua</div><div class="cert-sr">BScMLT · Authorised Signatory</div></div>
+        <div class="cert-stmp">VERIFIED<br>OFFICIAL<br>REPORT</div>
+        <div class="cert-sg"><div class="cert-sl"></div><div class="cert-sn">Sct. Jane Doe</div><div class="cert-sr">Chief Technologist · Lab Manager</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MONTHLY REPORT -->
+  <div class="content" id="page-monthly">
+    <div class="ph">
+      <div><div class="ph-title">Monthly Lab Report</div><div class="ph-sub">September 2023 · Click eye icon to open and edit results</div></div>
+      <div class="ph-actions">
+        <button class="btn btn-o btn-sm">🖨 Print</button>
+        <button class="btn btn-p btn-sm">↓ Export to Excel</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-h">
+        <div><div class="card-t">All Reports</div></div>
+        <input class="fc" style="width:200px;padding:5px 10px;font-size:11px" placeholder="Search…" oninput="filterMonthlySearch(this.value)">
+      </div>
+      <div style="padding:10px 18px;border-bottom:1px solid var(--bdr);background:#fafcfb">
+        <div class="fbar" style="margin-bottom:0">
+          <span class="chip active" onclick="filterMonthly(this,'all')">All</span>
+          <span class="chip" onclick="filterMonthly(this,'Pending')">Pending</span>
+          <span class="chip" onclick="filterMonthly(this,'Completed')">Completed</span>
+          <span class="chip" onclick="filterMonthly(this,'Cancelled')">Cancelled</span>
+        </div>
+      </div>
+      <table class="dt">
+        <thead><tr><th>ID</th><th>Date – Time</th><th>Full Name</th><th>Gender</th><th>Insurance</th><th>Test</th><th>Performed By</th><th>Diagnosis</th><th></th></tr></thead>
+        <tbody id="monthlyBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- LAB RESULTS FORM (from Requests & Monthly) -->
+  <div class="content" id="page-labform">
+    <div class="ph">
+      <div><div class="ph-title">Lab Results Form</div><div class="ph-sub" id="lf-sub">Enter results for this patient</div></div>
+      <div class="ph-actions">
+        <button class="btn btn-o btn-sm" onclick="navTo(lfReturn)">← Back</button>
+        <button class="btn btn-o btn-sm">🖨 Print</button>
+        <button class="btn btn-p btn-sm" onclick="submitLabForm()">Submit Results</button>
+      </div>
+    </div>
+    <div class="card" style="margin-bottom:18px">
+      <div class="card-h"><div class="card-t">Patient Details</div></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px 0;padding:18px 20px">
+        <div style="font-size:12px"><span style="color:var(--tx3);margin-right:6px">Health Facility:</span><strong>Shema Clinic</strong></div>
+        <div style="font-size:12px"><span style="color:var(--tx3);margin-right:6px">Name:</span><strong id="lf-name">—</strong></div>
+        <div style="font-size:12px"><span style="color:var(--tx3);margin-right:6px">Insurance:</span><strong id="lf-ins">—</strong></div>
+        <div style="font-size:12px"><span style="color:var(--tx3);margin-right:6px">Phone:</span><strong>+2500000000000</strong></div>
+        <div style="font-size:12px"><span style="color:var(--tx3);margin-right:6px">Gender:</span><strong id="lf-gender">—</strong></div>
+        <div style="font-size:12px"><span style="color:var(--tx3);margin-right:6px">File Number:</span><strong>001/17</strong></div>
+        <div style="font-size:12px"><span style="color:var(--tx3);margin-right:6px">Date:</span><strong>17/04/2023, 4:06pm</strong></div>
+        <div style="font-size:12px"><span style="color:var(--tx3);margin-right:6px">Age:</span><strong id="lf-age">—</strong></div>
+        <div style="font-size:12px"><span style="color:var(--tx3);margin-right:6px">Doctor seen:</span><strong>Dr. Jane Doe</strong></div>
+        <div></div><div></div>
+        <div style="font-size:12px"><span style="color:var(--tx3);margin-right:6px">Diagnosis:</span><strong>Pending</strong></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-h"><div class="card-t">Add Report</div></div>
+      <div id="lfRows"></div>
+      <div class="card-f">
+        <button class="btn btn-gh btn-sm" onclick="navTo(lfReturn)">← Back</button>
+        <button class="btn btn-p btn-sm" onclick="submitLabForm()">Submit</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PATIENTS -->
+  <div class="content" id="page-patients">
+    <div class="ph">
+      <div><div class="ph-title">Patients</div><div class="ph-sub">Registered patients in the system</div></div>
+      <div class="ph-actions"><button class="btn btn-p btn-sm">+ Add Patient</button></div>
+    </div>
+    <div class="card">
+      <div class="card-h"><div class="card-t">Patient Registry</div></div>
+      <table class="dt">
+        <thead><tr><th>Patient ID</th><th>Name</th><th>Age/Sex</th><th>Phone</th><th>Last Visit</th><th>Tests</th></tr></thead>
+        <tbody>
+          <tr><td style="font-family:var(--mono);font-size:11px">PT-2024-0841</td><td><strong>John Kamau Mwangi</strong></td><td>34 / M</td><td>+254 712 345 678</td><td>18 Mar 2024</td><td>CBC</td></tr>
+          <tr><td style="font-family:var(--mono);font-size:11px">PT-2024-0842</td><td><strong>Grace Atieno Oloo</strong></td><td>28 / F</td><td>+254 723 456 789</td><td>18 Mar 2024</td><td>LFT</td></tr>
+          <tr><td style="font-family:var(--mono);font-size:11px">PT-2024-0843</td><td><strong>Samuel Odhiambo</strong></td><td>52 / M</td><td>+254 734 567 890</td><td>18 Mar 2024</td><td>RFT</td></tr>
+          <tr><td style="font-family:var(--mono);font-size:11px">PT-2024-0844</td><td><strong>Mary Wanjiku Mwangi</strong></td><td>45 / F</td><td>+254 745 678 901</td><td>18 Mar 2024</td><td>Lipid</td></tr>
+          <tr><td style="font-family:var(--mono);font-size:11px">PT-2024-0845</td><td><strong>Peter Maina Kamau</strong></td><td>61 / M</td><td>+254 756 789 012</td><td>18 Mar 2024</td><td>TFT</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- TEST CATALOG -->
+  <div class="content" id="page-catalog">
+    <div class="ph">
+      <div><div class="ph-title">Test Catalog</div><div class="ph-sub">Available laboratory tests and reference ranges</div></div>
+      <div class="ph-actions"><button class="btn btn-p btn-sm">+ Add Test</button></div>
+    </div>
+    <div class="card">
+      <div class="card-h"><div class="card-t">All Tests</div></div>
+      <table class="dt">
+        <thead><tr><th>Code</th><th>Test Name</th><th>Profile</th><th>Sample</th><th>TAT</th><th>Price (KES)</th></tr></thead>
+        <tbody>
+          <tr><td style="font-family:var(--mono)">CBC</td><td><strong>Complete Blood Count</strong></td><td>Haematology</td><td>EDTA Blood</td><td>1 hr</td><td style="font-family:var(--mono)">850</td></tr>
+          <tr><td style="font-family:var(--mono)">LFT</td><td><strong>Liver Function Tests</strong></td><td>Chemistry</td><td>Serum</td><td>2 hrs</td><td style="font-family:var(--mono)">1,200</td></tr>
+          <tr><td style="font-family:var(--mono)">RFT</td><td><strong>Renal Function Tests</strong></td><td>Chemistry</td><td>Serum</td><td>2 hrs</td><td style="font-family:var(--mono)">1,000</td></tr>
+          <tr><td style="font-family:var(--mono)">LIPID</td><td><strong>Lipid Profile</strong></td><td>Chemistry</td><td>Serum</td><td>2 hrs</td><td style="font-family:var(--mono)">1,100</td></tr>
+          <tr><td style="font-family:var(--mono)">TFT</td><td><strong>Thyroid Function</strong></td><td>Endocrinology</td><td>Serum</td><td>4 hrs</td><td style="font-family:var(--mono)">1,800</td></tr>
+          <tr><td style="font-family:var(--mono)">UA</td><td><strong>Urinalysis</strong></td><td>Urinalysis</td><td>Urine</td><td>30 min</td><td style="font-family:var(--mono)">400</td></tr>
+          <tr><td style="font-family:var(--mono)">HBA1C</td><td><strong>Glycated Haemoglobin</strong></td><td>Haematology</td><td>EDTA Blood</td><td>1 hr</td><td style="font-family:var(--mono)">1,500</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+const LABELS = {
+  dashboard:'Dashboard', requests:'Lab Requests', entry:'Test Entry',
+  results:'Results', verification:'Verification', actions:'Lab Actions',
+  certificate:'Certificate', monthly:'Monthly Report', labform:'Lab Results Form',
+  patients:'Patients', catalog:'Test Catalog'
+};
+
+const REQS = [
+  {id:'REQ-001',pid:'PT-2024-0841',name:'John Kamau',      age:'34/M',test:'CBC',   insurance:'Private', pri:'Routine',time:'08:30',doc:'Dr. A. Ochieng',st:'done'},
+  {id:'REQ-002',pid:'PT-2024-0842',name:'Grace Atieno',    age:'28/F',test:'LFT',   insurance:'RSSB',    pri:'Routine',time:'08:45',doc:'Dr. A. Ochieng',st:'done'},
+  {id:'REQ-003',pid:'PT-2024-0843',name:'Samuel Odhiambo', age:'52/M',test:'RFT',   insurance:'Saniam',  pri:'Urgent', time:'09:00',doc:'Dr. B. Kamau',  st:'urgent'},
+  {id:'REQ-004',pid:'PT-2024-0844',name:'Mary Wanjiku',    age:'45/F',test:'Lipid', insurance:'RSSB',    pri:'Routine',time:'09:15',doc:'Dr. C. Mwangi', st:'pending'},
+  {id:'REQ-005',pid:'PT-2024-0845',name:'Peter Maina',     age:'61/M',test:'TFT',   insurance:'Saniam',  pri:'Routine',time:'09:20',doc:'Dr. D. Omondi', st:'review'},
+  {id:'REQ-006',pid:'PT-2024-0846',name:'Aisha Mohamed',   age:'23/F',test:'UA',    insurance:'Private', pri:'Routine',time:'09:35',doc:'Dr. A. Ochieng',st:'pending'},
+  {id:'REQ-007',pid:'PT-2024-0847',name:'David Njoroge',   age:'8/M', test:'CBC',   insurance:'Saniam',  pri:'STAT',   time:'09:50',doc:'Dr. E. Hassan', st:'urgent'},
+  {id:'REQ-008',pid:'PT-2024-0848',name:'Fatuma Hassan',   age:'38/F',test:'LFT',   insurance:'RSSB',    pri:'Routine',time:'10:05',doc:'Dr. A. Ochieng',st:'done'},
+  {id:'REQ-009',pid:'PT-2024-0849',name:'James Omondi',    age:'67/M',test:'BMP',   insurance:'Saniam',  pri:'Urgent', time:'10:20',doc:'Dr. B. Kamau',  st:'pending'},
+  {id:'REQ-010',pid:'PT-2024-0850',name:'Lucia Aoko',      age:'31/F',test:'CBC',   insurance:'Private', pri:'Routine',time:'10:30',doc:'Dr. C. Mwangi', st:'pending'},
+  {id:'REQ-011',pid:'PT-2024-0851',name:'Hassan Yusuf',    age:'55/M',test:'HbA1c', insurance:'RSSB',    pri:'Routine',time:'10:45',doc:'Dr. D. Omondi', st:'done'},
+  {id:'REQ-012',pid:'PT-2024-0852',name:'Jane Wairimu',    age:'42/F',test:'RFT',   insurance:'Saniam',  pri:'Routine',time:'11:00',doc:'Dr. A. Ochieng',st:'pending'},
+];
+
+const MONTHLY = [
+  {id:1, date:'4/07/2023 - 4:30pm',name:'Raekwon Gbeho',gender:'Female',insurance:'Saniam', test:'NFS/FBC',      by:'Sct. Jane Doe',status:'Pending'},
+  {id:2, date:'4/07/2023 - 4:30pm',name:'Raekwon Gbeho',gender:'Female',insurance:'RSSB',   test:'ECBU',         by:'Sct. Jane Doe',status:'Pending'},
+  {id:3, date:'4/07/2023 - 4:30pm',name:'Raekwon Gbeho',gender:'Male',  insurance:'Private',test:'G.E(Malaria)', by:'Sct. Jane Doe',status:'Pending'},
+  {id:4, date:'4/07/2023 - 4:30pm',name:'Raekwon Gbeho',gender:'Female',insurance:'RSSB',   test:'NFS/FBC',      by:'Sct. Jane Doe',status:'Pending'},
+  {id:5, date:'4/07/2023 - 4:30pm',name:'Raekwon Gbeho',gender:'Male',  insurance:'RSSB',   test:'NFS/FBC',      by:'Sct. Jane Doe',status:'Pending'},
+  {id:6, date:'4/07/2023 - 4:30pm',name:'Raekwon Gbeho',gender:'Male',  insurance:'RSSB',   test:'NFS/FBC',      by:'Sct. Jane Doe',status:'Pending'},
+  {id:7, date:'4/07/2023 - 4:30pm',name:'Raekwon Gbeho',gender:'Male',  insurance:'Saniam', test:'NFS/FBC',      by:'Sct. Jane Doe',status:'Pending'},
+  {id:8, date:'4/07/2023 - 4:30pm',name:'Raekwon Gbeho',gender:'Male',  insurance:'Saniam', test:'NFS/FBC',      by:'Sct. Jane Doe',status:'Pending'},
+  {id:9, date:'4/07/2023 - 4:30pm',name:'Raekwon Gbeho',gender:'Female',insurance:'Private',test:'NFS/FBC',      by:'Sct. Jane Doe',status:'Pending'},
+  {id:10,date:'4/07/2023 - 4:30pm',name:'Raekwon Gbeho',gender:'Male',  insurance:'Saniam', test:'NFS/FBC',      by:'Sct. Jane Doe',status:'Pending'},
+  {id:11,date:'4/07/2023 - 4:30pm',name:'Raekwon Gbeho',gender:'Female',insurance:'RSSB',   test:'NFS/FBC',      by:'Sct. Jane Doe',status:'Completed'},
+  {id:12,date:'4/07/2023 - 4:30pm',name:'Raekwon Gbeho',gender:'Female',insurance:'Private',test:'NFS/FBC',      by:'Sct. Jane Doe',status:'Completed'},
+  {id:13,date:'4/07/2023 - 4:30pm',name:'Raekwon Gbeho',gender:'Female',insurance:'Saniam', test:'NFS/FBC',      by:'Sct. Jane Doe',status:'Cancelled'},
+  {id:14,date:'4/07/2023 - 4:30pm',name:'Raekwon Gbeho',gender:'Male',  insurance:'Private',test:'NFS/FBC',      by:'Sct. Jane Doe',status:'Completed'},
+  {id:15,date:'4/07/2023 - 4:30pm',name:'Raekwon Gbeho',gender:'Female',insurance:'RSSB',   test:'NFS/FBC',      by:'Sct. Jane Doe',status:'Pending'},
+];
+
+const CBC = [
+  {name:'Haemoglobin', sub:'Hb',  val:'11.2',unit:'g/dL',    ref:'13.5–17.5',flag:'L'},
+  {name:'RBC Count',   sub:'',    val:'4.2', unit:'×10¹²/L', ref:'4.5–5.5',  flag:'L'},
+  {name:'Haematocrit', sub:'HCT', val:'34.0',unit:'%',        ref:'40–52',    flag:'L'},
+  {name:'MCV',         sub:'',    val:'81.0',unit:'fL',        ref:'80–100',   flag:'N'},
+  {name:'MCH',         sub:'',    val:'26.7',unit:'pg',        ref:'26–34',    flag:'N'},
+  {name:'MCHC',        sub:'',    val:'33.1',unit:'g/dL',      ref:'31.5–36',  flag:'N'},
+  {name:'WBC Count',   sub:'',    val:'14.8',unit:'×10⁹/L',   ref:'4.0–11.0', flag:'H'},
+  {name:'Neutrophils', sub:'NEU', val:'78.4',unit:'%',         ref:'50–70',    flag:'H'},
+  {name:'Lymphocytes', sub:'LYM', val:'15.2',unit:'%',         ref:'20–40',    flag:'L'},
+  {name:'Monocytes',   sub:'MONO',val:'5.1', unit:'%',         ref:'2–8',      flag:'N'},
+  {name:'Eosinophils', sub:'EOS', val:'1.3', unit:'%',         ref:'1–4',      flag:'N'},
+  {name:'Platelets',   sub:'PLT', val:'320', unit:'×10⁹/L',   ref:'150–400',  flag:'N'},
+];
+
+const QC_DATA = [
+  {st:'pass',lbl:'Sample volume adequate',       det:'2.5 mL EDTA — sufficient for all tests'},
+  {st:'pass',lbl:'Sample ID verified',           det:'Barcode matches request form REQ-001'},
+  {st:'pass',lbl:'No haemolysis detected',       det:'Visual & spectrophotometric check passed'},
+  {st:'fail',lbl:'WBC critically elevated',      det:'14.8 ×10⁹/L — exceeds critical limit (>12.0)'},
+  {st:'warn',lbl:'Haemoglobin below reference',  det:'11.2 g/dL — mild anaemia, notify clinician'},
+  {st:'pass',lbl:'Platelet count normal',        det:'320 ×10⁹/L — within acceptable range'},
+  {st:'pass',lbl:'Analyzer QC run passed',       det:'Last QC: 07:15 · Level 1 & 2 PASS'},
+  {st:'pass',lbl:'Specimen integrity confirmed', det:'No lipemia or icterus detected'},
+];
+
+const DELTA = [
+  {param:'Haemoglobin',prev:'12.1',curr:'11.2',delta:'-7.4%', dir:'down'},
+  {param:'WBC Count',  prev:'9.2', curr:'14.8',delta:'+60.9%',dir:'up'},
+  {param:'Platelets',  prev:'305', curr:'320', delta:'+4.9%', dir:'ok'},
+];
+
+let lfReturn = 'requests';
+
+/* NAVIGATION */
+function nav(el) {
+  const page = el.dataset.page;
+  document.querySelectorAll('.sb-item').forEach(i => i.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  document.getElementById('tb-title').textContent = LABELS[page];
+}
+function navTo(page) {
+  const el = document.querySelector('[data-page=' + page + ']');
+  if (el) { nav(el); return; }
+  // labform has no sidebar item
+  document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  document.getElementById('tb-title').textContent = LABELS[page] || page;
+}
+
+/* REQUESTS */
+let reqFilter = 'all', reqSearch = '';
+function renderReqs() {
+  const bmap = {done:'bdg-d',pending:'bdg-p',review:'bdg-r',urgent:'bdg-u'};
+  document.getElementById('reqBody').innerHTML = REQS.filter(r => {
+    const mF = reqFilter==='all'||r.st===reqFilter||(reqFilter==='urgent'&&r.pri==='STAT');
+    const mS = !reqSearch||r.name.toLowerCase().includes(reqSearch)||r.id.toLowerCase().includes(reqSearch);
+    return mF && mS;
+  }).map(r => {
+    const gender = r.age.split('/')[1]==='F' ? 'Female' : 'Male';
+    const age = r.age.split('/')[0];
+    return `<tr onclick="openLF('${r.name}','${gender}','${r.insurance}','${age}','requests')">
+      <td style="font-family:var(--mono);font-size:11px">${r.id}</td>
+      <td><strong>${r.name}</strong><br><small style="color:var(--tx3)">${r.pid}</small></td>
+      <td>${r.age}</td><td><strong>${r.test}</strong></td>
+      <td>${r.insurance}</td>
+      <td style="font-size:11px;font-weight:600;color:${r.pri==='STAT'?'var(--red)':r.pri==='Urgent'?'var(--yel)':'var(--tx3)'}">${r.pri}</td>
+      <td style="font-family:var(--mono);color:var(--tx3)">${r.time}</td>
+      <td>${r.doc}</td>
+      <td><span class="bdg ${bmap[r.st]}">${r.st.charAt(0).toUpperCase()+r.st.slice(1)}</span></td>
+      <td><button class="btn btn-o btn-xs" onclick="event.stopPropagation();openLF('${r.name}','${gender}','${r.insurance}','${age}','requests')">
+        <svg width="11" height="11" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 10s3.5-7 9-7 9 7 9 7-3.5 7-9 7-9-7-9-7z"/><circle cx="10" cy="10" r="2.8"/></svg> Open
+      </button></td>
+    </tr>`;
+  }).join('');
+}
+function filterReqs(el, f) {
+  document.querySelectorAll('#page-requests .chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active'); reqFilter=f; renderReqs();
+}
+function filterReqSearch(v) { reqSearch=v.toLowerCase(); renderReqs(); }
+
+/* MONTHLY */
+let mFilter='all', mSearch='';
+function renderMonthly() {
+  const bmap = {Pending:'bdg-p',Completed:'bdg-d',Cancelled:'bdg-u'};
+  document.getElementById('monthlyBody').innerHTML = MONTHLY.filter(r=>{
+    const mF = mFilter==='all'||r.status===mFilter;
+    const mS = !mSearch||r.name.toLowerCase().includes(mSearch)||r.test.toLowerCase().includes(mSearch);
+    return mF&&mS;
+  }).map(r=>`
+    <tr>
+      <td style="font-family:var(--mono);font-size:11px">${r.id}</td>
+      <td style="color:var(--tx3)">${r.date}</td>
+      <td><strong>${r.name}</strong></td>
+      <td>${r.gender}</td>
+      <td>${r.insurance}</td>
+      <td><strong>${r.test}</strong></td>
+      <td>${r.by}</td>
+      <td><span class="bdg ${bmap[r.status]||'bdg-p'}">${r.status}</span></td>
+      <td><button class="btn btn-o btn-xs" onclick="openLF('${r.name}','${r.gender}','${r.insurance}','39','monthly')" title="Open">
+        <svg width="11" height="11" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 10s3.5-7 9-7 9 7 9 7-3.5 7-9 7-9-7-9-7z"/><circle cx="10" cy="10" r="2.8"/></svg> Open
+      </button></td>
+    </tr>
+  `).join('');
+}
+function filterMonthly(el, f) {
+  document.querySelectorAll('#page-monthly .chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active'); mFilter=f; renderMonthly();
+}
+function filterMonthlySearch(v) { mSearch=v.toLowerCase(); renderMonthly(); }
+
+/* LAB FORM */
+function getTests(ins) {
+  if (ins==='Private') return [
+    {name:'ECBU',        error:'Test must be added to invoice (Rwf 2,332)'},
+    {name:'G.E (Malaria)',error:null},
+    {name:'NFS/FBC',     error:'Test must be added to invoice (Rwf 6,278)'},
+  ];
+  return [
+    {name:'G.E (Malaria)',error:null},
+    {name:'ALBUMINURIE', error:null},
+    {name:'ALBUMIN',     error:null},
+    {name:'NFS/FBC',     error:null, expand:true},
+  ];
+}
+function openLF(name, gender, ins, age, returnPage) {
+  lfReturn = returnPage;
+  document.getElementById('lf-name').textContent   = name;
+  document.getElementById('lf-gender').textContent = gender;
+  document.getElementById('lf-ins').textContent    = ins;
+  document.getElementById('lf-age').textContent    = age;
+  document.getElementById('lf-sub').textContent    = name + ' · ' + ins;
+  document.getElementById('lfRows').innerHTML = getTests(ins).map((t,i)=>`
+    <div style="display:grid;grid-template-columns:30px 1fr 1fr;align-items:start;gap:14px;padding:14px 18px;border-bottom:1px solid #eef5f2">
+      <span style="font-size:12px;color:var(--tx3);padding-top:8px">${i+1}</span>
+      <div>
+        <div style="font-size:13px;font-weight:600">${t.name}</div>
+        ${t.expand?`<div style="font-size:11px;color:var(--g600);cursor:pointer;text-decoration:underline;margin-top:3px">Expand</div>`:''}
+      </div>
+      <div>
+        ${t.error
+          ?`<div style="font-size:12px;color:var(--red);font-weight:500">${t.error}</div>`
+          :`<input class="fc lf-inp" type="text" placeholder="Enter report" style="margin-bottom:4px">
+            <div style="font-size:10px;color:var(--tx3)">0.0–0.0 Sample Unit</div>`
+        }
+      </div>
+    </div>
+  `).join('');
+  navTo('labform');
+}
+function submitLabForm() {
+  let ok=true;
+  document.querySelectorAll('.lf-inp').forEach(inp=>{
+    if(!inp.value.trim()){inp.style.borderColor='var(--red)';ok=false;}
+    else inp.style.borderColor='';
+  });
+  if(ok){alert('Results submitted successfully!');navTo(lfReturn);}
+}
+
+/* ENTRY */
+function renderEntry() {
+  document.getElementById('entryBody').innerHTML = CBC.map(r=>`
+    <tr>
+      <td>${r.name}</td>
+      <td><input class="fc" value="${r.val}" style="width:80px"></td>
+      <td style="color:var(--tx3)">${r.unit}</td>
+      <td style="font-family:var(--mono);font-size:11px;color:var(--tx3)">${r.ref}</td>
+      <td><span class="flg flg-${r.flag}">${r.flag}</span></td>
+    </tr>
+  `).join('');
+}
+
+/* RESULTS */
+function renderResults() {
+  document.getElementById('resultsBody').innerHTML = CBC.map(r=>`
+    <div class="rg-r${r.flag!=='N'?' abn':''}">
+      <div class="r-nm">${r.name}<div class="rs">${r.sub||'—'}</div></div>
+      <div class="r-vl ${r.flag==='H'?'h':r.flag==='L'?'l':'n'}">${r.val}</div>
+      <div class="r-rf">${r.ref}</div>
+      <div class="r-un">${r.unit}</div>
+      <div class="flg flg-${r.flag}">${r.flag}</div>
+    </div>
+  `).join('');
+}
+
+/* QC */
+function renderQC() {
+  const icons={pass:'✓',fail:'✕',warn:'!'};
+  document.getElementById('qcList').innerHTML = QC_DATA.map(q=>`
+    <div class="ci">
+      <div class="ci-ic ${q.st}">${icons[q.st]}</div>
+      <div><div class="ci-lbl">${q.lbl}</div><div class="ci-det">${q.det}</div></div>
+    </div>
+  `).join('');
+  document.getElementById('deltaList').innerHTML = DELTA.map(d=>`
+    <div class="dr">
+      <div><div style="font-size:12px;font-weight:600">${d.param}</div><div style="font-size:10px;color:var(--tx3);font-family:var(--mono)">${d.prev} → ${d.curr}</div></div>
+      <span class="dc ${d.dir}">${d.delta}</span>
+    </div>
+  `).join('');
+  document.getElementById('verCrit').innerHTML = CBC.filter(r=>r.flag!=='N').map(r=>`
+    <div class="ca" style="${r.flag==='L'?'background:var(--blup);border-color:#bfdbfe':''}">
+      <div>
+        <div class="ca-n" style="${r.flag==='L'?'color:var(--blu)':''}">${r.name}</div>
+        <div style="font-size:10px;color:var(--tx3)">${r.ref} ${r.unit}</div>
+      </div>
+      <div class="ca-v" style="${r.flag==='L'?'color:var(--blu)':''}">${r.val} ${r.flag}</div>
+    </div>
+  `).join('');
+}
+
+/* CERT */
+function renderCert() {
+  document.getElementById('certTable').innerHTML = `
+    <thead><tr><th>Parameter</th><th>Result</th><th>Reference Range</th><th>Unit</th><th>Flag</th></tr></thead>
+    <tbody>${CBC.map(r=>`
+      <tr>
+        <td>${r.name}</td>
+        <td style="font-family:var(--mono);font-weight:700;color:${r.flag==='H'?'var(--red)':r.flag==='L'?'var(--blu)':'var(--g700)'}">${r.val}</td>
+        <td style="font-family:var(--mono)">${r.ref}</td>
+        <td>${r.unit}</td>
+        <td style="font-weight:700;color:${r.flag==='H'?'var(--red)':r.flag==='L'?'var(--blu)':'var(--g700)'}">${r.flag}</td>
+      </tr>
+    `).join('')}</tbody>`;
+}
+
+document.getElementById('verDT').value = new Date().toISOString().slice(0,16);
+renderReqs(); renderMonthly(); renderEntry(); renderResults(); renderQC(); renderCert();
+</script>
+</body>
+</html>
