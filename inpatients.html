@@ -1,0 +1,1149 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>XanaHealth - In-Patients</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+    :root {
+      --green: #4a8f75;
+      --green-dark: #3d7360;
+      --green-light: #e8f5f1;
+    }
+
+    body { font-family:'Outfit',sans-serif; background:#f5f5f5; color:#333; }
+    .container { display:flex; min-height:100vh; }
+
+    /* ── Sidebar ── */
+    .sidebar { width:240px; background:#fff; border-right:1px solid #e5e5e5; display:flex; flex-direction:column; flex-shrink:0; height:100vh; position:sticky; top:0; overflow-y:auto; }
+    .logo { padding:20px 24px; font-size:20px; font-weight:600; flex-shrink:0; }
+    .logo span:first-child { color:#333; }
+    .logo span:last-child  { color:var(--green); }
+    .nav-section { padding:12px 0; flex-shrink:0; }
+    .nav-label { padding:8px 24px; font-size:11px; font-weight:600; color:#9ca3af; text-transform:uppercase; letter-spacing:.5px; }
+    .nav-item { display:flex; align-items:center; padding:10px 24px; color:#6b7280; text-decoration:none; font-size:14px; cursor:pointer; transition:background-color .2s; }
+    .nav-item:hover { background:#f9fafb; }
+    .nav-item.active { color:var(--green); border-right:3px solid var(--green); background:var(--green-light); }
+    .nav-item svg { width:18px; height:18px; margin-right:12px; opacity:.6; flex-shrink:0; }
+    .nav-item.active svg { opacity:1; }
+    .sidebar-spacer { flex:1; }
+    .user-section { padding:16px 24px; flex-shrink:0; border-top:1px solid #f3f4f6; }
+    .user-profile { display:flex; align-items:center; gap:12px; margin-bottom:12px; }
+    .user-avatar { width:36px; height:36px; border-radius:50%; background:var(--green); color:#fff; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; flex-shrink:0; }
+    .user-info h4 { font-size:14px; font-weight:600; color:#333; }
+    .user-info p  { font-size:12px; color:#9ca3af; }
+    .user-actions { display:flex; flex-direction:column; gap:2px; }
+    .user-action { display:flex; align-items:center; padding:7px 0; color:#6b7280; text-decoration:none; font-size:13px; cursor:pointer; }
+    .user-action svg { width:16px; height:16px; margin-right:10px; opacity:.6; flex-shrink:0; }
+
+    /* ── Main ── */
+    .main-content { flex:1; display:flex; flex-direction:column; overflow:hidden; }
+    .header { background:#fff; padding:0 32px; height:64px; border-bottom:1px solid #e5e5e5; display:flex; justify-content:space-between; align-items:center; flex-shrink:0; }
+    .header h1 { font-size:22px; font-weight:600; color:#111827; }
+    .header-right { display:flex; align-items:center; gap:20px; }
+    .notification-icon { width:20px; height:20px; cursor:pointer; color:#6b7280; }
+    .company-dropdown { display:flex; align-items:center; gap:8px; padding:8px 16px; background:#fff; border:1px solid #e5e5e5; border-radius:6px; cursor:pointer; color:#9ca3af; font-size:14px; }
+
+    /* ── Content ── */
+    .content-area { padding:24px 32px; flex:1; background:#F4F6F5; overflow-y:auto; }
+
+    /* ── Table ── */
+    .table-container { background:#fff; border-radius:8px; overflow:hidden; box-shadow:0 1px 3px rgba(0,0,0,.1); }
+    table { width:100%; border-collapse:collapse; }
+    thead { background:#dfe5e5; border-bottom:1px solid #e5e5e5; }
+    th { padding:12px 16px; text-align:left; font-size:11px; font-weight:600; color:#6b7280; text-transform:uppercase; letter-spacing:.5px; white-space:nowrap; }
+    td { padding:13px 16px; border-bottom:1px solid #f3f4f6; font-size:14px; color:#374151; }
+    tbody tr:hover { background:#f9fafb; }
+    .mono { font-family:'Courier New',monospace; font-size:12px; color:#6b7280; }
+
+    /* ── Badges ── */
+    .badge-admitted  { background:#d1fae5; color:#065f46; padding:3px 10px; border-radius:12px; font-size:11px; font-weight:600; }
+    .badge-obs       { background:#fef3c7; color:#92400e; padding:3px 10px; border-radius:12px; font-size:11px; font-weight:600; }
+    .badge-discharge { background:#fee2e2; color:#991b1b; padding:3px 10px; border-radius:12px; font-size:11px; font-weight:600; }
+
+    /* ── Action icons ── */
+    .action-icons { display:flex; align-items:center; gap:10px; }
+    .action-icon { width:18px; height:18px; opacity:.45; cursor:pointer; transition:opacity .15s; flex-shrink:0; }
+    .action-icon:hover { opacity:1; }
+    .action-icon-delete:hover { stroke:#ef4444; }
+
+    /* ── Empty state ── */
+    .empty-cell { padding:56px 24px; text-align:center; }
+    .empty-cell svg { width:52px; height:52px; color:#d1d5db; margin:0 auto 14px; display:block; }
+    .empty-cell p { font-size:14px; color:#9ca3af; }
+
+    /* ── Pagination ── */
+    .pagination { display:flex; justify-content:flex-end; align-items:center; padding:16px 24px; gap:8px; }
+    .page-btn { padding:8px 12px; border:1px solid #d1d5db; background:#fff; border-radius:4px; cursor:pointer; font-size:14px; color:#374151; font-family:inherit; }
+    .page-btn.active { background:var(--green); color:#fff; border-color:var(--green); }
+    .page-btn:disabled { opacity:.4; cursor:not-allowed; }
+    .page-info { font-size:13px; color:#9ca3af; margin-left:8px; }
+
+    /* ── Controls ── */
+    .controls { display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; gap:16px; }
+    .controls-left { display:flex; gap:12px; flex:1; align-items:center; }
+    .search-box { display:flex; align-items:center; gap:8px; padding:10px 16px; background:#fff; border:1px solid #d1d5db; border-radius:6px; flex:1; max-width:300px; }
+    .search-box svg { flex-shrink:0; color:#9ca3af; }
+    .search-box input { border:none; outline:none; flex:1; font-size:14px; color:#6b7280; font-family:inherit; background:transparent; }
+
+    /* ── Overlays ── */
+    .overlay { display:none; position:fixed; inset:0; z-index:2000; flex-direction:row; overflow:hidden; background:#f5f5f5; }
+
+    /* ── Form cards ── */
+    .form-card { background:#fff; border-radius:10px; box-shadow:0 1px 4px rgba(0,0,0,.08); overflow:hidden; margin-bottom:18px; }
+    .form-card-header { background:#e8eded; padding:13px 20px; font-size:14px; font-weight:600; color:#333; display:flex; justify-content:space-between; align-items:center; }
+    .form-card-body { padding:20px; }
+    .field-grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+    .field-grid-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px; }
+    .field label { display:block; font-size:12px; color:#374151; font-weight:500; margin-bottom:5px; }
+    .field input, .field select, .field textarea {
+      width:100%; padding:9px 12px; border:1px solid #d1d5db; border-radius:6px;
+      font-family:inherit; font-size:13px; color:#374151; background:#fff; outline:none;
+    }
+    .field textarea { resize:vertical; min-height:90px; }
+    .field input:focus, .field select:focus, .field textarea:focus { border-color:var(--green); }
+
+    /* ── Back button ── */
+    .back-btn { display:inline-flex; align-items:center; gap:6px; padding:8px 16px; background:#fff; border:1px solid #d1d5db; border-radius:8px; font-family:inherit; font-size:13px; color:var(--green); cursor:pointer; font-weight:500; margin-bottom:20px; }
+
+    /* ── Summary fields ── */
+    .sum-label { font-size:11px; color:#9ca3af; font-weight:600; text-transform:uppercase; letter-spacing:.4px; margin-bottom:3px; }
+    .sum-value { font-size:14px; font-weight:600; color:#111; }
+    .sum-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:18px; margin-bottom:18px; }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════════════
+     MAIN IN-PATIENTS PAGE
+══════════════════════════════════════════════════════════════ -->
+<div class="container" id="mainPage">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="logo"><span>Xana</span><span>Health</span></div>
+    <nav class="nav-section">
+          <div class="nav-label">CONSULTATION</div>
+          <a href="#" class="nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+            Dashboard
+          </a>
+          <a href="patient_list.html" class="nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          Patients List
+          </a>
+          <a href="patient_visits.html" class="nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            Patient Visits
+          </a>
+          <a href="inpatients.html" class="nav-item active">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            In-Patients
+          </a>
+          <a href="hmis_report.html" class="nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+            HMIS Report
+          </a>
+          <a href="appointments.html" class="nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/><line x1="12" y1="15" x2="12" y2="17"/></svg>
+            Appointments
+          </a>
+        </nav>
+    <div class="sidebar-spacer"></div>
+    <div class="user-section">
+      <div class="user-profile"><div class="user-avatar">JD</div><div class="user-info"><h4>Jane Doe</h4><p>Receptionist</p></div></div>
+      <div class="user-actions">
+        <a href="#" class="user-action"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Help</a>
+        <a href="#" class="user-action"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Logout</a>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <header class="header">
+      <h1>In-Patients</h1>
+      <div class="header-right">
+        <svg class="notification-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <div class="company-dropdown"><span>Company Logo</span><svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M6 9L1 4h10z"/></svg></div>
+      </div>
+    </header>
+
+    <div class="content-area">
+      <div class="controls">
+        <div class="controls-left">
+          <div class="search-box">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input type="text" id="searchInput" placeholder="Search patients…" oninput="filterTable()"/>
+          </div>
+        </div>
+        <span class="page-info" id="pageInfo">—</span>
+      </div>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Admission No.</th>
+              <th>Patient</th>
+              <th>Ward / Unit</th>
+              <th>Bed</th>
+              <th>Doctor</th>
+              <th>Admission Date</th>
+              <th>Expected Stay</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="ipt-tbody"></tbody>
+        </table>
+        <div class="pagination">
+          <button class="page-btn" disabled>Previous</button>
+          <button class="page-btn active">1</button>
+          <button class="page-btn" disabled>Next</button>
+          <span class="page-info" id="pageInfo2"></span>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════════
+     ADMISSION FORM OVERLAY
+══════════════════════════════════════════════════════════════ -->
+<div id="admissionFormOverlay" class="overlay">
+  <aside class="sidebar">
+    <div class="logo"><span>Xana</span><span>Health</span></div>
+    <nav class="nav-section">
+      <div class="nav-label">RECEPTION/CASHIER</div>
+      <a href="#" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard</a>
+      <a href="#" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>New Patient File</a>
+      <a href="#" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>Patients List</a>
+      <a href="consultation.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Patient Visits</a>
+      <a href="#" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/></svg>Appointments</a>
+      <a href="#" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>Billing</a>
+      <a href="inpatients.html" class="nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/><line x1="12" y1="15" x2="12" y2="17"/></svg>In-Patients</a>
+    </nav>
+    <div class="sidebar-spacer"></div>
+    <div class="user-section">
+      <div class="user-profile"><div class="user-avatar">JD</div><div class="user-info"><h4>Jane Doe</h4><p>Receptionist</p></div></div>
+      <div class="user-actions">
+        <a href="#" class="user-action"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>Help</a>
+        <a href="#" class="user-action"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Logout</a>
+      </div>
+    </div>
+  </aside>
+  <div class="main-content" style="height:100vh;">
+    <header class="header">
+      <h1>Hospital Admission</h1>
+      <div class="header-right">
+        <svg class="notification-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <div class="company-dropdown"><span>Company Logo</span><svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M6 9L1 4h10z"/></svg></div>
+      </div>
+    </header>
+    <div class="content-area">
+
+      <button class="back-btn" onclick="closeAdmissionForm()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>Back
+      </button>
+
+      <!-- Patient info -->
+      <div class="form-card">
+        <div class="form-card-header">Admit into Hospital</div>
+        <div class="form-card-body">
+          <div style="display:flex;gap:18px;align-items:flex-start;padding-bottom:20px;border-bottom:1px solid #f3f4f6;margin-bottom:20px;">
+            <div style="width:80px;height:80px;border-radius:8px;background:#e8f5f1;flex-shrink:0;display:flex;align-items:center;justify-content:center;">
+              <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#4a8f75" stroke-width="1.3"><circle cx="12" cy="7" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px 40px;font-size:13px;" id="adm-patient-info">
+              <!-- populated by JS -->
+            </div>
+          </div>
+          <div class="field-grid-2">
+            <div class="field">
+              <label>Ward / Unit</label>
+              <select id="adm-ward">
+                <option value="">Select ward</option>
+                <option>General Ward</option><option>ICU</option><option>Pediatric Ward</option>
+                <option>Maternity Ward</option><option>Surgical Ward</option><option>Private Room</option>
+              </select>
+            </div>
+            <div class="field"><label>Bed Number</label><input id="adm-bed" type="text" placeholder="e.g. B-12"/></div>
+            <div class="field"><label>Admission Date &amp; Time</label><input id="adm-date" type="datetime-local"/></div>
+            <div class="field"><label>Expected Duration of Stay</label><input id="adm-duration" type="text" placeholder="e.g. 3 days"/></div>
+            <div class="field">
+              <label>Status</label>
+              <select id="adm-status">
+                <option value="Admitted">Admitted</option>
+                <option value="Observation">Under Observation</option>
+                <option value="Discharge Pending">Discharge Pending</option>
+              </select>
+            </div>
+            <div class="field"><label>Admitting Diagnosis</label><input id="adm-diagnosis" type="text" placeholder="Primary diagnosis"/></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Reason & Notes -->
+      <div class="form-card">
+        <div class="form-card-header">Reason &amp; Notes</div>
+        <div class="form-card-body field-grid-2">
+          <div class="field"><label>Reason for Admission</label><textarea id="adm-reason" placeholder="Type here…"></textarea></div>
+          <div class="field"><label>Special Instructions / Nursing Notes</label><textarea id="adm-notes" placeholder="Type here…"></textarea></div>
+        </div>
+      </div>
+
+      <!-- Next of Kin -->
+      <div class="form-card">
+        <div class="form-card-header">Next of Kin / Emergency Contact</div>
+        <div class="form-card-body field-grid-3">
+          <div class="field"><label>Full Name</label><input id="adm-kin-name" type="text" placeholder="Name"/></div>
+          <div class="field"><label>Relationship</label><input id="adm-kin-rel" type="text" placeholder="e.g. Spouse"/></div>
+          <div class="field"><label>Phone</label><input id="adm-kin-phone" type="text" placeholder="+250 …"/></div>
+        </div>
+      </div>
+
+      <div style="display:flex;justify-content:flex-end;margin-bottom:32px;">
+        <button onclick="submitAdmission()" style="padding:11px 36px;background:#3d7360;color:#fff;border:none;border-radius:8px;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;">Submit</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════════
+     ADMISSION SUMMARY OVERLAY
+══════════════════════════════════════════════════════════════ -->
+<div id="admissionSummaryOverlay" class="overlay">
+  <aside class="sidebar">
+    <div class="logo"><span>Xana</span><span>Health</span></div>
+   <nav class="nav-section">
+          <div class="nav-label">CONSULTATION</div>
+          <a href="#" class="nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+            Dashboard
+          </a>
+          <a href="patient_list.html" class="nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          Patients List
+          </a>
+          <a href="patient_visits.html" class="nav-item active">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            Patient Visits
+          </a>
+          <a href="inpatients.html" class="nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            In-Patients
+          </a>
+          <a href="hmis_report.html" class="nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+            HMIS Report
+          </a>
+          <a href="appointments.html" class="nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/><line x1="12" y1="15" x2="12" y2="17"/></svg>
+            Appointments
+          </a>
+        </nav>
+    <div class="sidebar-spacer"></div>
+    <div class="user-section">
+      <div class="user-profile"><div class="user-avatar">JD</div><div class="user-info"><h4>Jane Doe</h4><p>Receptionist</p></div></div>
+      <div class="user-actions">
+        <a href="#" class="user-action"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>Help</a>
+        <a href="#" class="user-action"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Logout</a>
+      </div>
+    </div>
+  </aside>
+  <div class="main-content" style="height:100vh;">
+    <header class="header">
+      <h1>Admission Summary</h1>
+      <div class="header-right">
+        <svg class="notification-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <div class="company-dropdown"><span>Company Logo</span><svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M6 9L1 4h10z"/></svg></div>
+      </div>
+    </header>
+    <div class="content-area">
+
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+        <button class="back-btn" style="margin-bottom:0;" onclick="editAdmission()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>Edit
+        </button>
+        <div style="display:flex;gap:10px;">
+          <button onclick="goToTable()" style="padding:9px 20px;background:#3d7360;color:#fff;border:none;border-radius:8px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;">View In-Patients</button>
+          <button style="padding:9px 20px;background:#fff;border:1px solid #d1d5db;border-radius:8px;font-family:inherit;font-size:13px;color:#374151;cursor:pointer;">Print Slip</button>
+        </div>
+      </div>
+
+      <div class="form-card">
+        <div class="form-card-header">
+          <span>Admission Record</span>
+          <span id="sum-adm-no" style="font-family:monospace;font-size:13px;color:#3d7360;font-weight:700;"></span>
+        </div>
+        <div class="form-card-body">
+
+          <!-- Patient row -->
+          <div style="display:flex;gap:18px;align-items:flex-start;padding-bottom:20px;border-bottom:1px solid #f3f4f6;margin-bottom:20px;">
+            <div style="width:72px;height:72px;border-radius:8px;background:#e8f5f1;flex-shrink:0;display:flex;align-items:center;justify-content:center;">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#4a8f75" stroke-width="1.3"><circle cx="12" cy="7" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px 40px;font-size:13px;" id="sum-patient-info"></div>
+          </div>
+
+          <!-- Status badge -->
+          <div style="margin-bottom:20px;"><span id="sum-status-badge"></span></div>
+
+          <!-- Details -->
+          <div class="sum-grid">
+            <div><div class="sum-label">Ward / Unit</div><div class="sum-value" id="sum-ward"></div></div>
+            <div><div class="sum-label">Bed Number</div><div class="sum-value" id="sum-bed"></div></div>
+            <div><div class="sum-label">Admission Date</div><div class="sum-value" id="sum-date"></div></div>
+            <div><div class="sum-label">Expected Stay</div><div class="sum-value" id="sum-duration"></div></div>
+            <div><div class="sum-label">Diagnosis</div><div class="sum-value" id="sum-diagnosis"></div></div>
+          </div>
+
+          <div style="border-top:1px solid #f3f4f6;padding-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+            <div><div class="sum-label" style="margin-bottom:5px;">Reason for Admission</div><div style="font-size:13px;color:#374151;line-height:1.5;" id="sum-reason"></div></div>
+            <div><div class="sum-label" style="margin-bottom:5px;">Nursing Notes</div><div style="font-size:13px;color:#374151;line-height:1.5;" id="sum-notes"></div></div>
+          </div>
+
+          <div style="border-top:1px solid #f3f4f6;padding-top:16px;">
+            <div class="sum-label" style="margin-bottom:8px;">Next of Kin</div>
+            <div style="font-size:13px;color:#374151;display:flex;gap:32px;">
+              <strong id="sum-kin-name"></strong>
+              <span id="sum-kin-rel" style="color:#9ca3af;"></span>
+              <span id="sum-kin-phone"></span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+  const ADM_KEY = 'xana_inpatients';
+  let allAdmissions = [];
+  let currentIdx = -1;
+  let editMode = false;
+
+  /* ── Helpers ── */
+  function load() { allAdmissions = JSON.parse(localStorage.getItem(ADM_KEY) || '[]'); }
+  function save() { localStorage.setItem(ADM_KEY, JSON.stringify(allAdmissions)); }
+
+  function genAdmNo() {
+    return 'ADM-' + new Date().getFullYear() + '-' + String(allAdmissions.length + 1).padStart(5,'0');
+  }
+
+  function statusBadgeHtml(s) {
+    const cls = s==='Admitted' ? 'badge-admitted' : s==='Observation' ? 'badge-obs' : 'badge-discharge';
+    return `<span class="${cls}">${s||'—'}</span>`;
+  }
+
+  /* ── Table ── */
+  function renderTable(list) {
+    const tbody = document.getElementById('ipt-tbody');
+    document.getElementById('pageInfo').textContent = list.length + ' patient' + (list.length!==1?'s':'');
+    document.getElementById('pageInfo2').textContent = list.length + ' patient' + (list.length!==1?'s':'');
+
+    if (!list.length) {
+      tbody.innerHTML = `<tr><td colspan="9"><div class="empty-cell">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        <p>No patients admitted yet.<br>Admit a patient from the Patient Consultation page.</p>
+      </div></td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = list.map((r,i) => `
+      <tr>
+        <td class="mono">${r.admNo}</td>
+        <td style="font-weight:500;">${r.patient}</td>
+        <td>${r.ward||'—'}</td>
+        <td>${r.bed||'—'}</td>
+        <td>${r.doctor}</td>
+        <td>${r.date ? r.date.replace('T',' ') : '—'}</td>
+        <td>${r.duration||'—'}</td>
+        <td>${statusBadgeHtml(r.status)}</td>
+        <td>
+          <div class="action-icons">
+            <svg class="action-icon" title="View" onclick="viewRecord(${i})" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+            </svg>
+            <svg class="action-icon" title="Edit" onclick="editRecord(${i})" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+            </svg>
+            <svg class="action-icon action-icon-delete" title="Delete" onclick="deleteRecord(${i})" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="3 6 5 6 21 6"/>
+              <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+              <path d="M10 11v6"/><path d="M14 11v6"/>
+              <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+            </svg>
+          </div>
+        </td>
+      </tr>`).join('');
+  }
+
+  function filterTable() {
+    load();
+    const q = document.getElementById('searchInput').value.toLowerCase();
+    const filtered = q ? allAdmissions.filter(r =>
+      [r.admNo,r.patient,r.ward,r.bed,r.doctor,r.status].some(v => v && v.toLowerCase().includes(q))
+    ) : allAdmissions;
+    renderTable(filtered);
+  }
+
+  /* ── Form open/close ── */
+  function openAdmissionForm(r) {
+    const now = new Date();
+    const local = new Date(now.getTime() - now.getTimezoneOffset()*60000).toISOString().slice(0,16);
+
+    // Patient info panel
+    document.getElementById('adm-patient-info').innerHTML = `
+      <div><span style="color:#9ca3af;">Patient: </span><strong>${r ? r.patient : 'Imani Adentuola'}</strong></div>
+      <div><span style="color:#9ca3af;">File No: </span><strong>0611</strong></div>
+      <div><span style="color:#9ca3af;">Age: </span><strong>31</strong><span style="color:#9ca3af;"> (23/05/1993)</span></div>
+      <div><span style="color:#9ca3af;">Department: </span><strong>General Consultation</strong></div>
+      <div><span style="color:#9ca3af;">Gender: </span><strong>Female</strong></div>
+      <div><span style="color:#9ca3af;">Doctor: </span><strong>${r ? r.doctor : 'Dr. Jacob Ryan'}</strong></div>`;
+
+    document.getElementById('adm-ward').value     = r ? r.ward      : '';
+    document.getElementById('adm-bed').value      = r ? r.bed       : '';
+    document.getElementById('adm-date').value     = r ? r.date      : local;
+    document.getElementById('adm-duration').value = r ? r.duration  : '';
+    document.getElementById('adm-status').value   = r ? r.status    : 'Admitted';
+    document.getElementById('adm-diagnosis').value= r ? r.diagnosis : '';
+    document.getElementById('adm-reason').value   = r ? r.reason    : '';
+    document.getElementById('adm-notes').value    = r ? r.notes     : '';
+    document.getElementById('adm-kin-name').value = r ? r.kinName   : '';
+    document.getElementById('adm-kin-rel').value  = r ? r.kinRel    : '';
+    document.getElementById('adm-kin-phone').value= r ? r.kinPhone  : '';
+
+    document.getElementById('admissionFormOverlay').style.display = 'flex';
+    document.getElementById('admissionSummaryOverlay').style.display = 'none';
+  }
+
+  function closeAdmissionForm() {
+    editMode = false;
+    document.getElementById('admissionFormOverlay').style.display = 'none';
+  }
+
+  /* ── Submit ── */
+  function submitAdmission() {
+    load();
+    const record = {
+      admNo:     editMode ? allAdmissions[currentIdx].admNo : genAdmNo(),
+      patient:   'Imani Adentuola',
+      doctor:    'Dr. Jacob Ryan',
+      ward:      document.getElementById('adm-ward').value,
+      bed:       document.getElementById('adm-bed').value.trim(),
+      date:      document.getElementById('adm-date').value,
+      duration:  document.getElementById('adm-duration').value.trim(),
+      status:    document.getElementById('adm-status').value,
+      diagnosis: document.getElementById('adm-diagnosis').value.trim(),
+      reason:    document.getElementById('adm-reason').value.trim(),
+      notes:     document.getElementById('adm-notes').value.trim(),
+      kinName:   document.getElementById('adm-kin-name').value.trim(),
+      kinRel:    document.getElementById('adm-kin-rel').value.trim(),
+      kinPhone:  document.getElementById('adm-kin-phone').value.trim(),
+    };
+
+    if (editMode && currentIdx >= 0) {
+      allAdmissions[currentIdx] = record;
+    } else {
+      allAdmissions.push(record);
+      currentIdx = allAdmissions.length - 1;
+    }
+
+    save();
+    editMode = false;
+    populateSummary(record);
+    document.getElementById('admissionFormOverlay').style.display = 'none';
+    document.getElementById('admissionSummaryOverlay').style.display = 'flex';
+  }
+
+  /* ── Summary ── */
+  function populateSummary(r) {
+    document.getElementById('sum-adm-no').textContent    = r.admNo;
+    document.getElementById('sum-ward').textContent      = r.ward      || '—';
+    document.getElementById('sum-bed').textContent       = r.bed       || '—';
+    document.getElementById('sum-date').textContent      = r.date      ? r.date.replace('T',' ') : '—';
+    document.getElementById('sum-duration').textContent  = r.duration  || '—';
+    document.getElementById('sum-diagnosis').textContent = r.diagnosis || '—';
+    document.getElementById('sum-reason').textContent    = r.reason    || '—';
+    document.getElementById('sum-notes').textContent     = r.notes     || '—';
+    document.getElementById('sum-kin-name').textContent  = r.kinName   || '—';
+    document.getElementById('sum-kin-rel').textContent   = r.kinRel    || '';
+    document.getElementById('sum-kin-phone').textContent = r.kinPhone  || '';
+
+    const cls = r.status==='Admitted' ? 'badge-admitted' : r.status==='Observation' ? 'badge-obs' : 'badge-discharge';
+    const badge = document.getElementById('sum-status-badge');
+    badge.className = cls; badge.textContent = r.status;
+
+    document.getElementById('sum-patient-info').innerHTML = `
+      <div><span style="color:#9ca3af;">Patient: </span><strong>${r.patient}</strong></div>
+      <div><span style="color:#9ca3af;">File No: </span><strong>0611</strong></div>
+      <div><span style="color:#9ca3af;">Age: </span><strong>31</strong><span style="color:#9ca3af;"> (23/05/1993)</span></div>
+      <div><span style="color:#9ca3af;">Doctor: </span><strong>${r.doctor}</strong></div>
+      <div><span style="color:#9ca3af;">Gender: </span><strong>Female</strong></div>`;
+  }
+
+  function editAdmission() {
+    const r = allAdmissions[currentIdx];
+    editMode = true;
+    document.getElementById('admissionSummaryOverlay').style.display = 'none';
+    openAdmissionForm(r);
+  }
+
+  function goToTable() {
+    document.getElementById('admissionSummaryOverlay').style.display = 'none';
+    load(); renderTable(allAdmissions);
+  }
+
+  /* ── Table actions ── */
+  function viewRecord(i) {
+    currentIdx = i;
+    openInPatientFile(i);
+  }
+
+  function editRecord(i) {
+    currentIdx = i;
+    openFollowUpForm(i);
+  }
+
+  function deleteRecord(i) {
+    if (!confirm('Delete this admission record? This cannot be undone.')) return;
+    load();
+    allAdmissions.splice(i, 1);
+    save();
+    renderTable(allAdmissions);
+  }
+
+  /* ── Init ── */
+  load();
+  renderTable(allAdmissions);
+
+  // If arriving from consultation.html with ?admit=1, open form immediately
+  if (new URLSearchParams(location.search).get('admit') === '1') {
+    openAdmissionForm(null);
+  }
+</script>
+
+
+<!-- ══════════════════════════════════════════════════════════════
+     FOLLOW-UP FORM OVERLAY
+══════════════════════════════════════════════════════════════ -->
+<div id="followUpFormOverlay" class="overlay">
+  <aside class="sidebar">
+    <div class="logo"><span>Xana</span><span>Health</span></div>
+    <nav class="nav-section">
+      <div class="nav-label">CONSULTATION</div>
+      <a href="#" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard</a>
+      <a href="patient_list.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Patients List</a>
+      <a href="patient_visits.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Patient Visits</a>
+      <a href="inpatients.html" class="nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>In-Patients</a>
+      <a href="hmis_report.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>HMIS Report</a>
+      <a href="appointments.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/><line x1="12" y1="15" x2="12" y2="17"/></svg>Appointments</a>
+    </nav>
+    <div class="sidebar-spacer"></div>
+    <div class="user-section">
+      <div class="user-profile"><div class="user-avatar">JD</div><div class="user-info"><h4>Rn Jane Doe</h4><p>Nurse</p></div></div>
+      <div class="user-actions">
+        <a href="#" class="user-action"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Help</a>
+        <a href="#" class="user-action"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Logout</a>
+      </div>
+    </div>
+  </aside>
+  <div class="main-content" style="height:100vh;">
+    <header class="header">
+      <h1>Follow-up Form</h1>
+      <div class="header-right">
+        <svg class="notification-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <div class="company-dropdown"><span>Company Logo</span><svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M6 9L1 4h10z"/></svg></div>
+      </div>
+    </header>
+    <div class="content-area" style="overflow-y:auto;">
+
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+        <button class="back-btn" style="margin-bottom:0;" onclick="closeFollowUpForm()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>Back
+        </button>
+        <button onclick="saveFollowUp()" style="padding:9px 28px;background:#3d7360;color:#fff;border:none;border-radius:8px;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;">Save</button>
+      </div>
+
+      <!-- Patient info card -->
+      <div class="form-card">
+        <div class="form-card-header">New In Patient Nurse Follow-up Form</div>
+        <div class="form-card-body">
+          <div style="display:flex;gap:18px;align-items:flex-start;">
+            <div style="width:90px;height:90px;border-radius:8px;background:#e8f5f1;flex-shrink:0;display:flex;align-items:center;justify-content:center;">
+              <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="#4a8f75" stroke-width="1.3"><circle cx="12" cy="7" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px 48px;font-size:13px;flex:1;" id="fu-patient-info"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Role selector -->
+      <div class="form-card">
+        <div class="form-card-header">Follow-up Type</div>
+        <div class="form-card-body" style="display:flex;gap:12px;">
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:14px;font-weight:500;">
+            <input type="radio" name="fu-role" value="Nurse" id="fu-role-nurse" checked style="accent-color:#3d7360;width:16px;height:16px;"> Nurse Follow-up
+          </label>
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:14px;font-weight:500;">
+            <input type="radio" name="fu-role" value="Doctor" id="fu-role-doctor" style="accent-color:#3d7360;width:16px;height:16px;"> Doctor Follow-up
+          </label>
+        </div>
+      </div>
+
+      <!-- Vital Signs -->
+      <div class="form-card">
+        <div class="form-card-header">
+          Vital Signs
+          <button onclick="saveFuVitals()" style="padding:6px 18px;background:#fff;border:1px solid #d1d5db;border-radius:6px;font-family:inherit;font-size:12px;color:#374151;cursor:pointer;">Save</button>
+        </div>
+        <div class="form-card-body">
+          <div class="field-grid-3" style="margin-bottom:14px;">
+            <div class="field"><label>Height (cm)</label><input id="fu-height" type="number" placeholder="cm" oninput="calcFuBMI()"/></div>
+            <div class="field"><label>Weight (kg)</label><input id="fu-weight" type="number" placeholder="kg" oninput="calcFuBMI()"/></div>
+            <div class="field"><label>Temperature (°C)</label><input id="fu-temp" type="number" placeholder="°C"/></div>
+            <div class="field"><label>Heart Rate</label><input id="fu-hr" type="number" placeholder="bpm"/></div>
+            <div class="field"><label>Systolic</label><input id="fu-sys" type="number" placeholder="mmHg" oninput="calcFuBP()"/></div>
+            <div class="field"><label>Diastolic</label><input id="fu-dia" type="number" placeholder="mmHg" oninput="calcFuBP()"/></div>
+            <div class="field"><label>Respiratory Rate</label><input id="fu-rr" type="number" placeholder="/min"/></div>
+            <div class="field"><label>O₂ Saturation</label><input id="fu-o2" type="number" placeholder="%"/></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Physical Exam -->
+      <div class="form-card">
+        <div class="form-card-header">
+          Physical Exam
+          <button onclick="saveFuSection('fu-physical')" style="padding:6px 18px;background:#fff;border:1px solid #d1d5db;border-radius:6px;font-family:inherit;font-size:12px;color:#374151;cursor:pointer;">Save</button>
+        </div>
+        <div class="form-card-body">
+          <textarea id="fu-physical" class="field" style="width:100%;padding:10px;border:1px solid #d1d5db;border-radius:6px;font-family:inherit;font-size:13px;min-height:90px;resize:vertical;outline:none;" placeholder="Type here"></textarea>
+        </div>
+      </div>
+
+      <!-- Doctor-only fields (shown when Doctor is selected) -->
+      <div id="fu-doctor-section" style="display:none;">
+        <div class="form-card">
+          <div class="form-card-header">
+            Recommendation and Treatment
+            <button onclick="saveFuSection('fu-recommendation')" style="padding:6px 18px;background:#fff;border:1px solid #d1d5db;border-radius:6px;font-family:inherit;font-size:12px;color:#374151;cursor:pointer;">Save</button>
+          </div>
+          <div class="form-card-body">
+            <textarea id="fu-recommendation" class="field" style="width:100%;padding:10px;border:1px solid #d1d5db;border-radius:6px;font-family:inherit;font-size:13px;min-height:90px;resize:vertical;outline:none;" placeholder="Type here"></textarea>
+          </div>
+        </div>
+        <div class="form-card">
+          <div class="form-card-header">
+            Patient Status
+            <button onclick="saveFuSection('fu-patient-status')" style="padding:6px 18px;background:#fff;border:1px solid #d1d5db;border-radius:6px;font-family:inherit;font-size:12px;color:#374151;cursor:pointer;">Save</button>
+          </div>
+          <div class="form-card-body">
+            <textarea id="fu-patient-status" class="field" style="width:100%;padding:10px;border:1px solid #d1d5db;border-radius:6px;font-family:inherit;font-size:13px;min-height:70px;resize:vertical;outline:none;" placeholder="Type here"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Nurse-only fields -->
+      <div id="fu-nurse-section">
+        <div class="form-card">
+          <div class="form-card-header">
+            Nursing Notes
+            <button onclick="saveFuSection('fu-nursing-notes')" style="padding:6px 18px;background:#fff;border:1px solid #d1d5db;border-radius:6px;font-family:inherit;font-size:12px;color:#374151;cursor:pointer;">Save</button>
+          </div>
+          <div class="form-card-body">
+            <textarea id="fu-nursing-notes" class="field" style="width:100%;padding:10px;border:1px solid #d1d5db;border-radius:6px;font-family:inherit;font-size:13px;min-height:90px;resize:vertical;outline:none;" placeholder="Type here"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;justify-content:flex-end;margin-bottom:32px;">
+        <button onclick="saveFollowUp()" style="padding:11px 36px;background:#3d7360;color:#fff;border:none;border-radius:8px;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;">Save Follow-up</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════════
+     IN-PATIENT FILE OVERLAY  (Eye icon view)
+══════════════════════════════════════════════════════════════ -->
+<style>
+  .ipf-section-title { font-size:13px; font-weight:700; color:#374151; text-transform:uppercase; letter-spacing:.4px; margin-bottom:10px; }
+  .ipf-info-row { display:flex; gap:6px; font-size:13px; margin-bottom:5px; }
+  .ipf-info-row .lbl { color:#9ca3af; min-width:130px; font-weight:500; }
+  .ipf-info-row .val { color:#1f2937; font-weight:600; }
+  .ipf-follow-card { background:#f9fafb; border:1px solid #e5e5e5; border-radius:8px; padding:14px 16px; margin-bottom:12px; }
+  .ipf-follow-meta { font-size:12px; color:#6b7280; margin-bottom:8px; display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+  .ipf-role-badge { padding:2px 9px; border-radius:10px; font-size:11px; font-weight:700; }
+  .ipf-role-nurse  { background:#e0f2fe; color:#0369a1; }
+  .ipf-role-doctor { background:#d1fae5; color:#065f46; }
+  .ipf-follow-field { margin-bottom:8px; }
+  .ipf-follow-field .lbl { font-size:11px; font-weight:700; color:#9ca3af; text-transform:uppercase; letter-spacing:.4px; margin-bottom:3px; }
+  .ipf-follow-field .val { font-size:13px; color:#374151; line-height:1.55; }
+  .ipf-vital-chips { display:flex; flex-wrap:wrap; gap:8px; margin-top:6px; }
+  .ipf-vital-chip { background:#fff; border:1px solid #e5e5e5; border-radius:6px; padding:5px 10px; font-size:12px; }
+  .ipf-vital-chip .chip-lbl { color:#9ca3af; font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:.3px; display:block; }
+  .ipf-vital-chip .chip-val { color:#1f2937; font-weight:700; font-size:13px; }
+</style>
+
+<div id="inPatientFileOverlay" class="overlay">
+  <aside class="sidebar">
+    <div class="logo"><span>Xana</span><span>Health</span></div>
+    <nav class="nav-section">
+      <div class="nav-label">CONSULTATION</div>
+      <a href="#" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard</a>
+      <a href="patient_list.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Patients List</a>
+      <a href="patient_visits.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Patient Visits</a>
+      <a href="inpatients.html" class="nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>In-Patients</a>
+      <a href="hmis_report.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>HMIS Report</a>
+      <a href="appointments.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/><line x1="12" y1="15" x2="12" y2="17"/></svg>Appointments</a>
+    </nav>
+    <div class="sidebar-spacer"></div>
+    <div class="user-section">
+      <div class="user-profile"><div class="user-avatar">JD</div><div class="user-info"><h4>Rn Jane Doe</h4><p>Nurse</p></div></div>
+      <div class="user-actions">
+        <a href="#" class="user-action"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>Help</a>
+        <a href="#" class="user-action"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Logout</a>
+      </div>
+    </div>
+  </aside>
+  <div class="main-content" style="height:100vh;">
+    <header class="header">
+      <h1>In Patient File</h1>
+      <div class="header-right">
+        <svg class="notification-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <div class="company-dropdown"><span>Company Logo</span><svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M6 9L1 4h10z"/></svg></div>
+      </div>
+    </header>
+    <div class="content-area" style="overflow-y:auto;">
+
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+        <button class="back-btn" style="margin-bottom:0;" onclick="closeInPatientFile()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>Back
+        </button>
+        <div style="display:flex;gap:10px;">
+          <button onclick="openFollowUpFormFromFile()" style="padding:9px 20px;background:#3d7360;color:#fff;border:none;border-radius:8px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;">+ Add Follow-up</button>
+          <button style="padding:9px 20px;background:#fff;border:1px solid #d1d5db;border-radius:8px;font-family:inherit;font-size:13px;color:#374151;cursor:pointer;" onclick="window.print()">Print</button>
+        </div>
+      </div>
+
+      <!-- Hospital Admission card -->
+      <div class="form-card">
+        <div class="form-card-header">Hospital Admission</div>
+        <div class="form-card-body">
+          <div style="display:flex;gap:20px;align-items:flex-start;">
+            <div style="width:90px;height:110px;border-radius:8px;background:#e8f5f1;flex-shrink:0;display:flex;align-items:center;justify-content:center;">
+              <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="#4a8f75" stroke-width="1.3"><circle cx="12" cy="7" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px 40px;flex:1;" id="ipf-patient-info"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Admission Information card -->
+      <div class="form-card">
+        <div class="form-card-header">
+          Admission Information
+          <button onclick="editAdmissionFromFile()" style="padding:5px 16px;background:#fff;border:1px solid var(--green);border-radius:6px;font-family:inherit;font-size:12px;color:var(--green);cursor:pointer;font-weight:600;">Edit</button>
+        </div>
+        <div class="form-card-body">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 32px;">
+            <div>
+              <div id="ipf-admitted-by" style="font-size:13px;color:#374151;margin-bottom:10px;"></div>
+              <div class="ipf-info-row"><span class="lbl">Motivation for admission:</span><span class="val" id="ipf-motivation">—</span></div>
+              <div class="ipf-info-row"><span class="lbl">Differential diagnosis:</span><span class="val" id="ipf-diagnosis">—</span></div>
+              <div class="ipf-info-row"><span class="lbl">Recommendation for treatment:</span><span class="val" id="ipf-treatment">—</span></div>
+              <div class="ipf-info-row"><span class="lbl">Admission Comment:</span><span class="val" id="ipf-comment">—</span></div>
+            </div>
+            <div id="ipf-labs-col">
+              <!-- lab results table rendered by JS -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Follow-ups split: Doctor | Nurse -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+
+        <!-- Doctor Follow-ups -->
+        <div class="form-card" style="margin-bottom:0;">
+          <div class="form-card-header" style="display:flex;justify-content:space-between;align-items:center;">
+            <span>Doctor Follow-ups (<span id="ipf-doctor-count">0</span>)</span>
+            <button onclick="openFollowUpFormFromFileAs('Doctor')" style="padding:5px 14px;background:#3d7360;color:#fff;border:none;border-radius:6px;font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;">Create New</button>
+          </div>
+          <div class="form-card-body" id="ipf-doctor-followups" style="max-height:420px;overflow-y:auto;"></div>
+        </div>
+
+        <!-- Nurse Follow-ups -->
+        <div class="form-card" style="margin-bottom:0;">
+          <div class="form-card-header" style="display:flex;justify-content:space-between;align-items:center;">
+            <span>Nurse Follow-ups (<span id="ipf-nurse-count">0</span>)</span>
+            <button onclick="openFollowUpFormFromFileAs('Nurse')" style="padding:5px 14px;background:#3d7360;color:#fff;border:none;border-radius:6px;font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;">Create New</button>
+          </div>
+          <div class="form-card-body" id="ipf-nurse-followups" style="max-height:420px;overflow-y:auto;"></div>
+        </div>
+
+      </div>
+
+      <div style="margin-top:20px;margin-bottom:32px;">
+        <button onclick="closeInPatientFile()" style="padding:10px 24px;background:#fff;border:1px solid #d1d5db;border-radius:8px;font-family:inherit;font-size:13px;color:#374151;cursor:pointer;">View In-Patients List</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+<script>
+  /* ═══════════════════════════════════════════
+     FOLLOW-UP FORM FUNCTIONS
+  ═══════════════════════════════════════════ */
+  function openFollowUpForm(idx) {
+    currentIdx = idx;
+    const r = allAdmissions[idx];
+
+    // Populate patient info
+    document.getElementById('fu-patient-info').innerHTML = `
+      <div><span style="color:#9ca3af;">Patient: </span><strong>${r.patient||'—'}</strong></div>
+      <div><span style="color:#9ca3af;">Visit Date: </span><strong style="color:#3d7360;">${r.date ? r.date.replace('T',' ') : '—'}</strong></div>
+      <div><span style="color:#9ca3af;">Age: </span><strong>${calcAge(r.dob)}</strong>${r.dob ? `<span style="color:#9ca3af;"> (${r.dob})</span>` : ''}</div>
+      <div><span style="color:#9ca3af;">Invoice Number: </span><strong style="color:#3d7360;">${r.admNo||'—'}</strong></div>
+      <div><span style="color:#9ca3af;">Gender: </span><strong>${r.gender||'—'}</strong></div>
+      <div><span style="color:#9ca3af;">Card Number: </span><strong>${r.insurance||'—'}</strong></div>
+      <div><span style="color:#9ca3af;">Insurance: </span><strong>${r.insurance||'—'}</strong></div>
+      <div><span style="color:#9ca3af;">Admitted by: </span><strong>${r.doctor||'—'}</strong><span style="color:#9ca3af;margin-left:6px;">MD415</span></div>`;
+
+    // Clear form
+    ['fu-height','fu-weight','fu-temp','fu-hr','fu-sys','fu-dia','fu-rr','fu-o2',
+     'fu-physical','fu-recommendation','fu-patient-status','fu-nursing-notes'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.value = '';
+    });
+    document.getElementById('fu-role-nurse').checked = true;
+    toggleFollowUpRole('Nurse');
+
+    document.getElementById('followUpFormOverlay').style.display = 'flex';
+    document.getElementById('inPatientFileOverlay').style.display = 'none';
+  }
+
+  function openFollowUpFormFromFile() {
+    openFollowUpFormFromFileAs('Nurse');
+  }
+
+  function openFollowUpFormFromFileAs(role) {
+    openFollowUpForm(currentIdx);
+    if (role === 'Doctor') {
+      document.getElementById('fu-role-doctor').checked = true;
+      toggleFollowUpRole('Doctor');
+    }
+  }
+
+  function closeFollowUpForm() {
+    document.getElementById('followUpFormOverlay').style.display = 'none';
+    openInPatientFile(currentIdx);
+  }
+
+  function toggleFollowUpRole(role) {
+    document.getElementById('fu-doctor-section').style.display = role === 'Doctor' ? '' : 'none';
+    document.getElementById('fu-nurse-section').style.display  = role === 'Nurse'  ? '' : 'none';
+  }
+
+  document.querySelectorAll('input[name="fu-role"]').forEach(radio => {
+    radio.addEventListener('change', () => toggleFollowUpRole(radio.value));
+  });
+
+  function calcFuBMI() {
+    const h = parseFloat(document.getElementById('fu-height').value);
+    const w = parseFloat(document.getElementById('fu-weight').value);
+    // BMI display only, no separate field needed here
+  }
+  function calcFuBP() { /* just tracking */ }
+
+  function saveFuVitals() { showFuToast('Vitals saved.'); }
+  function saveFuSection(id) { showFuToast('Section saved.'); }
+
+  function showFuToast(msg) {
+    const t = document.createElement('div');
+    t.style.cssText = 'position:fixed;bottom:24px;right:24px;z-index:9999;background:#3d7360;color:#fff;padding:11px 20px;border-radius:8px;font-family:Outfit,sans-serif;font-size:13px;font-weight:600;box-shadow:0 6px 20px rgba(0,0,0,.18);';
+    t.textContent = msg;
+    document.body.appendChild(t);
+    setTimeout(() => t.remove(), 2000);
+  }
+
+  function saveFollowUp() {
+    load();
+    const role = document.querySelector('input[name="fu-role"]:checked').value;
+    const now  = new Date();
+    const ts   = now.toLocaleDateString('en-GB') + ' - ' + now.toTimeString().slice(0,5);
+
+    const fu = {
+      role,
+      ts,
+      by:    role === 'Doctor' ? (allAdmissions[currentIdx].doctor || 'Dr.') : 'Rn Jane Doe',
+      vitals: {
+        height: document.getElementById('fu-height').value,
+        weight: document.getElementById('fu-weight').value,
+        temp:   document.getElementById('fu-temp').value,
+        hr:     document.getElementById('fu-hr').value,
+        sys:    document.getElementById('fu-sys').value,
+        dia:    document.getElementById('fu-dia').value,
+        rr:     document.getElementById('fu-rr').value,
+        o2:     document.getElementById('fu-o2').value,
+      },
+      physical:       document.getElementById('fu-physical').value.trim(),
+      recommendation: role === 'Doctor' ? document.getElementById('fu-recommendation').value.trim() : '',
+      patientStatus:  role === 'Doctor' ? document.getElementById('fu-patient-status').value.trim() : '',
+      nursingNotes:   role === 'Nurse'  ? document.getElementById('fu-nursing-notes').value.trim() : '',
+    };
+
+    if (!allAdmissions[currentIdx].followUps) allAdmissions[currentIdx].followUps = [];
+    allAdmissions[currentIdx].followUps.push(fu);
+    save();
+    showFuToast('Follow-up saved!');
+    setTimeout(() => {
+      document.getElementById('followUpFormOverlay').style.display = 'none';
+      openInPatientFile(currentIdx);
+    }, 900);
+  }
+
+
+  /* ═══════════════════════════════════════════
+     IN-PATIENT FILE (EYE VIEW) FUNCTIONS
+  ═══════════════════════════════════════════ */
+  function calcAge(dob) {
+    if (!dob) return '—';
+    const parts = dob.split('/');
+    if (parts.length !== 3) return '—';
+    const birth = new Date(+parts[2], +parts[1]-1, +parts[0]);
+    const now = new Date();
+    let age = now.getFullYear() - birth.getFullYear();
+    if (now < new Date(now.getFullYear(), birth.getMonth(), birth.getDate())) age--;
+    return isNaN(age) ? '—' : age;
+  }
+
+  function openInPatientFile(idx) {
+    currentIdx = idx;
+    load();
+    const r = allAdmissions[idx];
+    if (!r) return;
+
+    // Patient info header
+    document.getElementById('ipf-patient-info').innerHTML = `
+      <div><span style="color:#9ca3af;font-size:12px;">Patient: </span><strong style="font-size:13px;">${r.patient||'—'}</strong></div>
+      <div><span style="color:#9ca3af;font-size:12px;">Visit Date: </span><strong style="color:#3d7360;font-size:13px;">${r.date ? r.date.replace('T',' ') : '—'}</strong></div>
+      <div><span style="color:#9ca3af;font-size:12px;">Age: </span><strong style="font-size:13px;">${calcAge(r.dob)}</strong>${r.dob ? `<span style="color:#9ca3af;font-size:12px;"> (${r.dob})</span>` : ''}</div>
+      <div><span style="color:#9ca3af;font-size:12px;">Invoice Number: </span><strong style="color:#3d7360;font-size:13px;">${r.admNo||'—'}</strong></div>
+      <div><span style="color:#9ca3af;font-size:12px;">Gender: </span><strong style="font-size:13px;">${r.gender||'—'}</strong></div>
+      <div><span style="color:#9ca3af;font-size:12px;">Card Number: </span><strong style="font-size:13px;">${r.insurance||'—'}</strong></div>
+      <div><span style="color:#9ca3af;font-size:12px;">Phone: </span><strong style="font-size:13px;">—</strong></div>
+      <div><span style="color:#9ca3af;font-size:12px;">File Number: </span><strong style="font-size:13px;">${r.fileNo||'—'}</strong></div>`;
+
+    // Admitted-by line
+    const admDate = r.date ? r.date.replace('T', ' ') : '—';
+    document.getElementById('ipf-admitted-by').innerHTML =
+      `<strong>Admitted on</strong> ${admDate}, <strong>by</strong> ${r.doctor||'—'}`;
+
+    // Admission fields
+    document.getElementById('ipf-motivation').textContent = r.reason    || '—';
+    document.getElementById('ipf-diagnosis').textContent  = r.diagnosis || '—';
+    document.getElementById('ipf-treatment').textContent  = r.treatment || '—';
+    document.getElementById('ipf-comment').textContent    = r.notes     || '—';
+
+    // Labs table
+    const labsCol = document.getElementById('ipf-labs-col');
+    if (r.labs && r.labs.length) {
+      labsCol.innerHTML = `
+        <table style="width:100%;border-collapse:collapse;font-size:12px;">
+          <thead><tr style="background:#f9fafb;">
+            <th style="padding:7px 10px;text-align:left;color:#6b7280;font-size:11px;border-bottom:1px solid #e5e5e5;">ID</th>
+            <th style="padding:7px 10px;text-align:left;color:#6b7280;font-size:11px;border-bottom:1px solid #e5e5e5;">Ordered At</th>
+            <th style="padding:7px 10px;text-align:left;color:#6b7280;font-size:11px;border-bottom:1px solid #e5e5e5;">Exam</th>
+            <th style="padding:7px 10px;text-align:left;color:#6b7280;font-size:11px;border-bottom:1px solid #e5e5e5;">Diagnosis</th>
+          </tr></thead>
+          <tbody>
+            ${r.labs.map((l, li) => `<tr>
+              <td style="padding:8px 10px;border-bottom:1px solid #f3f4f6;color:#9ca3af;">${li+1}</td>
+              <td style="padding:8px 10px;border-bottom:1px solid #f3f4f6;">${admDate}</td>
+              <td style="padding:8px 10px;border-bottom:1px solid #f3f4f6;font-weight:500;">${l.test||'—'}</td>
+              <td style="padding:8px 10px;border-bottom:1px solid #f3f4f6;color:#6b7280;">${l.result||'Pending'}</td>
+            </tr>`).join('')}
+          </tbody>
+        </table>`;
+    } else {
+      labsCol.innerHTML = '<div style="font-size:13px;color:#9ca3af;font-style:italic;">No lab tests recorded.</div>';
+    }
+
+    // Follow-ups
+    const followUps = r.followUps || [];
+    const doctorFUs = followUps.filter(f => f.role === 'Doctor');
+    const nurseFUs  = followUps.filter(f => f.role === 'Nurse');
+
+    document.getElementById('ipf-doctor-count').textContent = doctorFUs.length;
+    document.getElementById('ipf-nurse-count').textContent  = nurseFUs.length;
+
+    document.getElementById('ipf-doctor-followups').innerHTML = doctorFUs.length
+      ? doctorFUs.map(fu => renderFollowUpCard(fu)).join('')
+      : '<div style="font-size:13px;color:#9ca3af;text-align:center;padding:20px 0;">No doctor follow-ups yet.</div>';
+
+    document.getElementById('ipf-nurse-followups').innerHTML = nurseFUs.length
+      ? nurseFUs.map(fu => renderFollowUpCard(fu)).join('')
+      : '<div style="font-size:13px;color:#9ca3af;text-align:center;padding:20px 0;">No nurse follow-ups yet.</div>';
+
+    document.getElementById('inPatientFileOverlay').style.display = 'flex';
+    document.getElementById('followUpFormOverlay').style.display = 'none';
+    document.getElementById('admissionSummaryOverlay').style.display = 'none';
+  }
+
+  function renderFollowUpCard(fu) {
+    const hasVitals = Object.values(fu.vitals || {}).some(v => v);
+    const vitalsHtml = hasVitals ? `
+      <div class="ipf-vital-chips">
+        ${fu.vitals.height ? `<div class="ipf-vital-chip"><span class="chip-lbl">Height</span><span class="chip-val">${fu.vitals.height} cm</span></div>` : ''}
+        ${fu.vitals.weight ? `<div class="ipf-vital-chip"><span class="chip-lbl">Weight</span><span class="chip-val">${fu.vitals.weight} kg</span></div>` : ''}
+        ${fu.vitals.temp   ? `<div class="ipf-vital-chip"><span class="chip-lbl">Temp</span><span class="chip-val">${fu.vitals.temp}°C</span></div>` : ''}
+        ${fu.vitals.hr     ? `<div class="ipf-vital-chip"><span class="chip-lbl">HR</span><span class="chip-val">${fu.vitals.hr} bpm</span></div>` : ''}
+        ${(fu.vitals.sys && fu.vitals.dia) ? `<div class="ipf-vital-chip"><span class="chip-lbl">BP</span><span class="chip-val">${fu.vitals.sys}/${fu.vitals.dia}</span></div>` : ''}
+        ${fu.vitals.o2     ? `<div class="ipf-vital-chip"><span class="chip-lbl">O₂ Sat</span><span class="chip-val">${fu.vitals.o2}%</span></div>` : ''}
+      </div>` : '';
+
+    return `<div class="ipf-follow-card">
+      <div class="ipf-follow-meta">
+        <span>${fu.ts||'—'}</span>
+        <span style="color:#9ca3af;">by</span>
+        <strong>${fu.by||'—'}</strong>
+        <span class="ipf-role-badge ${fu.role==='Doctor'?'ipf-role-doctor':'ipf-role-nurse'}">${fu.role}</span>
+      </div>
+      ${vitalsHtml}
+      ${fu.physical ? `<div class="ipf-follow-field"><div class="lbl">Physical Exams:</div><div class="val">${fu.physical}</div></div>` : ''}
+      ${fu.recommendation ? `<div class="ipf-follow-field"><div class="lbl">Recommendation and Treatment:</div><div class="val">${fu.recommendation}</div></div>` : ''}
+      ${fu.patientStatus  ? `<div class="ipf-follow-field"><div class="lbl">Patient Status:</div><div class="val">${fu.patientStatus}</div></div>` : ''}
+      ${fu.nursingNotes   ? `<div class="ipf-follow-field"><div class="lbl">Nursing Notes:</div><div class="val">${fu.nursingNotes}</div></div>` : ''}
+    </div>`;
+  }
+
+  function closeInPatientFile() {
+    document.getElementById('inPatientFileOverlay').style.display = 'none';
+    load(); renderTable(allAdmissions);
+  }
+
+  function editAdmissionFromFile() {
+    document.getElementById('inPatientFileOverlay').style.display = 'none';
+    editMode = true;
+    openAdmissionForm(allAdmissions[currentIdx]);
+  }
+</script>
+
+</body>

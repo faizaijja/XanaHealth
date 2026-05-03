@@ -1,0 +1,737 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>XanaHealth-Onboarding</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+    <!-- intl-tel-input -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
+
+    <style>
+      :root {
+        --xana-green: #488063;
+        --xana-green-light: #6fae95;
+        --xana-green-pale: #a8c2bb;
+        --xana-bg: #f4f6f5;
+      }
+
+      body {
+        font-family: "Poppins", sans-serif;
+        background-color: var(--xana-bg);
+        color: #333;
+      }
+
+      /* ── Logo ── */
+      .logo .xana  { color: var(--xana-green-light); font-weight: 700; }
+      .logo .health { color: #333; font-weight: 700; }
+
+      /* ── Step circles ── */
+      .step-circle {
+        width: 40px; height: 40px;
+        border-radius: 50%;
+        background-color: var(--xana-green-pale);
+        display: flex; align-items: center; justify-content: center;
+        font-weight: 600; color: #fff;
+        transition: all .3s ease;
+        font-size: .9rem;
+        position: relative; z-index: 2;
+      }
+      .step.active   .step-circle { background-color: var(--xana-green); }
+      .step.completed .step-circle {
+        background-color: var(--xana-green-light);
+        font-size: 0;
+      }
+      .step.completed .step-circle::before { content: "✓"; font-size: 1.2rem; }
+
+      .progress-line {
+        position: absolute; top: 20px; left: 0; right: 0;
+        height: 2px; background-color: #e5e7eb; z-index: 1;
+      }
+      .progress-line-fill {
+        height: 100%; background-color: var(--xana-green-light);
+        transition: width .3s ease; width: 0%;
+      }
+
+      /* ── Form steps ── */
+      .form-step { display: none; }
+      .form-step.active {
+        display: block;
+        animation: fadeIn .3s ease;
+      }
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to   { opacity: 1; transform: translateY(0); }
+      }
+
+      /* ── Bootstrap overrides to keep XanaHealth palette ── */
+      .btn-xana {
+        background-color: var(--xana-green);
+        color: #fff;
+        border: none;
+        font-weight: 600;
+        padding: .75rem 2rem;
+        border-radius: 8px;
+        transition: all .2s ease;
+      }
+      .btn-xana:hover {
+        background-color: var(--xana-green-light);
+        color: #fff;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 10px rgba(72,128,99,.25);
+      }
+      .btn-outline-xana {
+        background-color: #fff;
+        color: var(--xana-green);
+        border: 2.5px solid var(--xana-green);
+        font-weight: 600;
+        padding: .75rem 2rem;
+        border-radius: 8px;
+        transition: all .2s ease;
+      }
+      .btn-outline-xana:hover:not(:disabled) {
+        background-color: #f0faf5;
+        color: var(--xana-green);
+      }
+      .btn-outline-xana:disabled { opacity: .5; cursor: not-allowed; }
+
+      .form-control:focus, .form-select:focus {
+        border-color: var(--xana-green-light);
+        box-shadow: 0 0 0 3px rgba(111,174,149,.2);
+      }
+
+      /* ── Upload box ── */
+      .upload-box {
+        display: flex; flex-direction: column;
+        align-items: center; justify-content: center;
+        width: 100%; height: 200px;
+        border: 2px dashed #cbd5e1;
+        border-radius: 12px;
+        background-color: #f8fafc;
+        cursor: pointer;
+        transition: all .3s ease;
+        text-align: center;
+      }
+      .upload-box:hover {
+        border-color: var(--xana-green-light);
+        background-color: #f0faf5;
+      }
+
+      /* ── Summary table ── */
+      .summary-table td:first-child {
+        font-weight: 600; color: #374151;
+        background-color: #f9fafb; width: 40%;
+      }
+      .summary-empty { color: #9ca3af; font-style: italic; }
+      .summary-logo-preview {
+        max-width: 120px; max-height: 80px;
+        border-radius: 4px; border: 1px solid #e5e7eb; margin-top: .25rem;
+      }
+
+      /* ── Modal ── */
+      .xana-modal-icon {
+        width: 120px; height: 120px;
+        background: var(--xana-green-pale);
+        border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        margin: 0 auto 1.5rem;
+        animation: scaleIn .5s ease;
+      }
+      .xana-modal-icon svg { width: 55px; height: 55px; stroke: #fff; stroke-width: 5; fill: none; }
+      @keyframes scaleIn { from { transform: scale(0); } to { transform: scale(1); } }
+
+      .continue-btn {
+        background: #1f2937; color: #fff;
+        border: none; padding: 16px 64px;
+        border-radius: 12px; font-size: 1rem;
+        font-weight: 600; cursor: pointer;
+        transition: all .2s;
+      }
+      .continue-btn:hover { background: #111827; transform: translateY(-2px); }
+      .see-btn {
+        color: #1f2937; background: none; border: none;
+        text-decoration: underline; font-weight: 600;
+        font-size: 1rem; cursor: pointer; padding: 16px 40px;
+      }
+
+      /* ── intl-tel-input fix inside Bootstrap ── */
+      .iti { width: 100%; }
+      .iti__flag-container { z-index: 10; }
+
+      /* ── Custom overlay (bypasses Bootstrap modal JS) ── */
+      .xana-overlay {
+        position: fixed; top: 0; left: 0;
+        width: 100%; height: 100%;
+        background: rgba(0,0,0,.5);
+        display: flex; align-items: center; justify-content: center;
+        z-index: 1050;
+      }
+      .xana-modal-box {
+        background: #fff;
+        border-radius: 24px;
+        padding: 3rem 2.5rem;
+        max-width: 500px; width: 90%;
+        box-shadow: 0 20px 60px rgba(0,0,0,.3);
+        animation: modalSlideIn .3s ease-out;
+      }
+      @keyframes modalSlideIn {
+        from { opacity: 0; transform: translateY(-20px); }
+        to   { opacity: 1; transform: translateY(0); }
+      }
+    </style>
+  </head>
+  <body>
+
+    <div class="container-fluid px-3 px-md-5" style="max-width:1200px; margin:0 auto;">
+
+      <!-- Header -->
+      <div class="d-flex justify-content-between align-items-center py-4 mb-3">
+        <div class="logo fs-4">
+          <span class="xana">Xana</span><span class="health">Health</span>
+        </div>
+      </div>
+
+      <!-- Card wrapper -->
+      <div class="card shadow-sm border-0 rounded-4 p-3 p-md-4">
+
+        <!-- Step Progress -->
+        <div class="bg-white rounded-3 p-4 mb-4">
+          <div class="position-relative d-flex justify-content-between align-items-center mx-auto" style="max-width:400px;">
+            <div class="progress-line">
+              <div class="progress-line-fill" id="progressLineFill"></div>
+            </div>
+            <div class="step active" data-step="1"><div class="step-circle">1</div></div>
+            <div class="step"        data-step="2"><div class="step-circle">2</div></div>
+            <div class="step"        data-step="3"><div class="step-circle">3</div></div>
+          </div>
+        </div>
+
+        <!-- ═══════════════ STEP 1 ═══════════════ -->
+        <div class="form-step active" data-step="1">
+          <h2 class="text-center fw-bold mb-1">Health Facility Details</h2>
+          <p class="text-center text-muted mb-4">Please provide accurate details for your health facility</p>
+
+          <div class="row justify-content-center">
+            <div class="col-12 col-md-9">
+
+              <div class="mb-3">
+                <label class="form-label fw-500">Health Facility Name <span class="text-danger small">*Required</span></label>
+                <input type="text" id="facilityName" class="form-control" placeholder="Enter your facility's name here" required />
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">Health Facility Type <span class="text-danger small">*Required</span></label>
+                <select id="facilityType" class="form-select" required>
+                  <option value="">Select health facility type</option>
+                  <option value="general-clinic">General Clinic</option>
+                  <option value="polyclinic">Polyclinic</option>
+                  <option value="hospital">Hospital</option>
+                  <option value="health-center">Health Center</option>
+                </select>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">Email <span class="text-danger small">*Required</span></label>
+                <input type="email" id="facilityEmail" class="form-control" placeholder="Enter your facility's email here" required />
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">Phone Number <span class="text-danger small">*Required</span></label>
+                <input id="phone" type="tel" class="form-control" name="phone" />
+                <input type="hidden" name="full_phone" id="full-phone" />
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">Tax Identification Number <span class="text-danger small">*Required</span></label>
+                <input type="text" id="facilityTIN" class="form-control" placeholder="Enter your facility's TIN here" required />
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">Business Registration Number <span class="text-muted small">Optional</span></label>
+                <input type="text" id="facilityRegistration" class="form-control" placeholder="Enter business registration number" />
+              </div>
+
+              <div class="row mb-3">
+                <div class="col-12 col-sm-6 mb-3 mb-sm-0">
+                  <label class="form-label">Country <span class="text-danger small">*Required</span></label>
+                  <input type="text" id="facilityCountry" class="form-control" placeholder="Rwanda" required />
+                </div>
+                <div class="col-12 col-sm-6">
+                  <label class="form-label">Province/State <span class="text-danger small">*Required</span></label>
+                  <input type="text" id="facilityProvince" class="form-control" placeholder="Enter your province/state" required />
+                </div>
+              </div>
+
+              <div class="row mb-3">
+                <div class="col-12 col-sm-6 mb-3 mb-sm-0">
+                  <label class="form-label">District/Local Government <span class="text-danger small">*Required</span></label>
+                  <input type="text" id="facilityDistrict" class="form-control" placeholder="Enter district/local government" required />
+                </div>
+                <div class="col-12 col-sm-6">
+                  <label class="form-label">Sector/City <span class="text-danger small">*Required</span></label>
+                  <input type="text" id="facilitySector" class="form-control" placeholder="Enter sector/city" required />
+                </div>
+              </div>
+
+              <div class="d-flex justify-content-between mt-4">
+                <button class="btn btn-outline-xana" onclick="previousStep()" disabled>Back</button>
+                <button class="btn btn-xana" onclick="nextStep()">Next</button>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══════════════ STEP 2 ═══════════════ -->
+        <div class="form-step" data-step="2">
+          <h2 class="text-center fw-bold mb-1">Upload Documentation</h2>
+          <p class="text-center text-muted mb-4">Please upload the appropriate documents for your health facility</p>
+
+          <div class="row justify-content-center">
+            <div class="col-12 col-md-9">
+
+              <div class="mb-4">
+                <label class="form-label">Operational License Document <span class="text-muted small">Optional</span></label>
+                <label class="upload-box d-flex flex-column align-items-center justify-content-center">
+                  <input type="file" id="licenseDocument" accept=".png,.jpg,.jpeg" hidden />
+                  <i class="bi bi-cloud-upload fs-1 text-secondary mb-2"></i>
+                  <p class="fw-600 mb-1">Upload your file here</p>
+                  <p class="text-muted small mb-0">Supported formats: png, jpeg &nbsp;·&nbsp; Max 5MB</p>
+                </label>
+                <div id="licensePreview" class="mt-3"></div>
+              </div>
+
+              <div class="mb-4">
+                <label class="form-label">Health Facility Logo <span class="text-muted small">Optional</span></label>
+                <label class="upload-box d-flex flex-column align-items-center justify-content-center">
+                  <input type="file" id="facilityLogo" accept=".png,.jpg,.jpeg" hidden />
+                  <i class="bi bi-image fs-1 text-secondary mb-2"></i>
+                  <p class="fw-600 mb-1">Upload your file here</p>
+                  <p class="text-muted small mb-0">Supported formats: png, jpeg &nbsp;·&nbsp; Max 5MB</p>
+                </label>
+                <div id="logoPreview" class="mt-3"></div>
+              </div>
+
+              <div class="d-flex justify-content-between mt-4">
+                <button class="btn btn-outline-xana" onclick="previousStep()">Back</button>
+                <button class="btn btn-xana" onclick="nextStep()">Next</button>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══════════════ STEP 3 ═══════════════ -->
+        <div class="form-step" data-step="3">
+          <h2 class="text-center fw-bold mb-1">Summary and Confirmation</h2>
+          <p class="text-center text-muted mb-4">Please confirm all information before submitting</p>
+
+          <div class="row justify-content-center">
+            <div class="col-12 col-md-9">
+
+              <div class="card border rounded-3 mb-4">
+                <div class="card-header fw-bold bg-light border-bottom">Health Facility Details Summary</div>
+                <div class="card-body p-0">
+                  <div class="table-responsive">
+                    <table class="table table-bordered summary-table mb-0" id="facilitySummaryTable">
+                      <tbody></tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+              <div class="d-flex justify-content-between mt-4">
+                <button class="btn btn-outline-xana" onclick="previousStep()">Back</button>
+                <button class="btn btn-xana" onclick="submitForm()">Submit</button>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+   
+    <div id="overlay" class="xana-overlay">
+      <div class="xana-modal-box text-center position-relative">
+        <button type="button" class="btn-close position-absolute top-0 end-0 m-3" id="closeBtn"></button>
+        <div class="xana-modal-icon mx-auto mb-4">
+          <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <h2 class="fw-bold mb-2">Success!</h2>
+        <p class="text-muted">Your email address has been successfully verified. Please click the button below to continue.</p>
+        <button class="continue-btn" onclick="closeOverlayAndScroll()">Continue</button>
+      </div>
+    </div>
+
+    <!-- ═══ OVERLAY: Form Submitted ═══ -->
+    <div id="successMessage" class="xana-overlay" style="display:none;">
+      <div class="xana-modal-box text-center position-relative">
+        <button type="button" class="btn-close position-absolute top-0 end-0 m-3" id="closeSubmissionBtn"></button>
+        <div class="xana-modal-icon mx-auto mb-4">
+          <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <h2 class="fw-bold mb-2">Success!</h2>
+        <p class="text-muted">You have successfully created your Health Facility Account. Click the button below to continue.</p>
+        <div class="d-flex flex-column align-items-center gap-2">
+          <a href="dashboard.html"><button class="continue-btn">Continue</button></a>
+          <a href="landing.html"><button class="see-btn">See how XanaHealth Works</button></a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+      let currentStep = 1;
+
+      document.addEventListener("DOMContentLoaded", function () {
+        // intl-tel-input
+        const phoneInputField = document.querySelector("#phone");
+        window.phoneInput = window.intlTelInput(phoneInputField, {
+          preferredCountries: ["rw", "us", "gb"],
+          separateDialCode: true,
+          utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
+        });
+
+        loadFormData();
+        loadFileFromStorage();   // restore file previews after page reload
+        updateStepProgress();
+        updateNavButtons();
+
+        document.querySelectorAll("input, select, textarea").forEach(el => {
+          el.addEventListener("input",  saveFormData);
+          el.addEventListener("change", saveFormData);
+        });
+
+        // File upload handlers — both documents
+        document.getElementById("facilityLogo")?.addEventListener("change", handleFileSelect);
+        document.getElementById("licenseDocument")?.addEventListener("change", handleFileSelect);
+
+        // Overlay close buttons
+        document.getElementById("closeBtn")?.addEventListener("click", () => {
+          document.getElementById("overlay").style.display = "none";
+        });
+        document.getElementById("closeSubmissionBtn")?.addEventListener("click", () => {
+          document.getElementById("successMessage").style.display = "none";
+        });
+      });
+
+      function closeOverlayAndScroll() {
+        document.getElementById("overlay").style.display = "none";
+        document.querySelector(".card").scrollIntoView({ behavior: "smooth" });
+      }
+
+      // Generic file handler — works for both licenseDocument and facilityLogo
+      function handleFileSelect(event) {
+        const file = event.target.files[0];
+        const isLogo = event.target.id === "facilityLogo";
+        const previewId = isLogo ? "logoPreview" : "licensePreview";
+        const storageKey = isLogo ? "logo" : "license";
+        const preview = document.getElementById(previewId);
+
+        if (!file) { preview.innerHTML = ""; return; }
+
+        const validTypes = ["image/png","image/jpeg","image/jpg"];
+        if (!validTypes.includes(file.type)) {
+          alert("Please upload a PNG or JPEG image file.");
+          event.target.value = "";
+          return;
+        }
+        if (file.size > 5*1024*1024) {
+          alert("File size must be less than 5MB.");
+          event.target.value = "";
+          return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = e => {
+          const size = file.size > 1024*1024
+            ? `${(file.size/(1024*1024)).toFixed(2)} MB`
+            : `${(file.size/1024).toFixed(2)} KB`;
+
+          preview.innerHTML = `
+            <div class="d-flex align-items-center justify-content-between p-3 border rounded-3 bg-light mt-2">
+              <div class="d-flex align-items-center gap-3">
+                <img src="${e.target.result}" style="width:48px;height:48px;object-fit:cover;border-radius:6px;border:1px solid #e5e7eb;">
+                <div>
+                  <div class="small fw-semibold">${file.name}</div>
+                  <div class="text-muted" style="font-size:.8rem">${size}</div>
+                </div>
+              </div>
+              <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeFile('${event.target.id}','${previewId}','${storageKey}')">
+                <i class="bi bi-x-lg"></i>
+              </button>
+            </div>`;
+          saveFileToStorage(storageKey, e.target.result, file.name, file.size);
+        };
+        reader.readAsDataURL(file);
+      }
+
+      function removeFile(inputId, previewId, storageKey) {
+        document.getElementById(inputId).value = "";
+        document.getElementById(previewId).innerHTML = "";
+        const saved = localStorage.getItem("healthFacilityForm");
+        if (saved) {
+          const d = JSON.parse(saved);
+          delete d[storageKey + "Data"];
+          delete d[storageKey + "Name"];
+          delete d[storageKey + "Size"];
+          localStorage.setItem("healthFacilityForm", JSON.stringify(d));
+        }
+      }
+
+      function saveFileToStorage(key, dataUrl, name, size) {
+        const saved = localStorage.getItem("healthFacilityForm");
+        const d = saved ? JSON.parse(saved) : {};
+        d[key + "Data"] = dataUrl;
+        d[key + "Name"] = name;
+        d[key + "Size"] = size;
+        localStorage.setItem("healthFacilityForm", JSON.stringify(d));
+      }
+
+      // Restore file previews from localStorage on page reload
+      function loadFileFromStorage() {
+        const saved = localStorage.getItem("healthFacilityForm");
+        if (!saved) return;
+        try {
+          const d = JSON.parse(saved);
+          const restore = (key, previewId, inputId) => {
+            if (!d[key+"Data"] || !d[key+"Name"]) return;
+            const size = d[key+"Size"] > 1024*1024
+              ? `${(d[key+"Size"]/(1024*1024)).toFixed(2)} MB`
+              : `${(d[key+"Size"]/1024).toFixed(2)} KB`;
+            const preview = document.getElementById(previewId);
+            if (!preview) return;
+            preview.innerHTML = `
+              <div class="d-flex align-items-center justify-content-between p-3 border rounded-3 bg-light mt-2">
+                <div class="d-flex align-items-center gap-3">
+                  <img src="${d[key+"Data"]}" style="width:48px;height:48px;object-fit:cover;border-radius:6px;border:1px solid #e5e7eb;">
+                  <div>
+                    <div class="small fw-semibold">${d[key+"Name"]}</div>
+                    <div class="text-muted" style="font-size:.8rem">${size}</div>
+                  </div>
+                </div>
+                <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeFile('${inputId}','${previewId}','${key}')">
+                  <i class="bi bi-x-lg"></i>
+                </button>
+              </div>`;
+          };
+          restore("logo",    "logoPreview",    "facilityLogo");
+          restore("license", "licensePreview", "licenseDocument");
+        } catch(e) { console.error("loadFileFromStorage:", e); }
+      }
+
+      function saveFormData() {
+        const d = {
+          facilityName:         document.getElementById("facilityName")?.value||"",
+          facilityType:         document.getElementById("facilityType")?.value||"",
+          facilityEmail:        document.getElementById("facilityEmail")?.value||"",
+          phoneNumber:          document.getElementById("phone")?.value||"",
+          facilityTIN:          document.getElementById("facilityTIN")?.value||"",
+          facilityRegistration: document.getElementById("facilityRegistration")?.value||"",
+          facilityCountry:      document.getElementById("facilityCountry")?.value||"",
+          facilityProvince:     document.getElementById("facilityProvince")?.value||"",
+          facilityDistrict:     document.getElementById("facilityDistrict")?.value||"",
+          facilitySector:       document.getElementById("facilitySector")?.value||"",
+          currentStep,
+        };
+        localStorage.setItem("healthFacilityForm", JSON.stringify(d));
+      }
+
+      function loadFormData() {
+        const saved = localStorage.getItem("healthFacilityForm");
+        if (!saved) return;
+        try {
+          const d = JSON.parse(saved);
+          const set = (id, val) => { const el = document.getElementById(id); if (el && val) el.value = val; };
+          set("facilityName", d.facilityName);
+          set("facilityType", d.facilityType);
+          set("facilityEmail", d.facilityEmail);
+          set("facilityTIN", d.facilityTIN);
+          set("facilityRegistration", d.facilityRegistration);
+          set("facilityCountry", d.facilityCountry);
+          set("facilityProvince", d.facilityProvince);
+          set("facilityDistrict", d.facilityDistrict);
+          set("facilitySector", d.facilitySector);
+          if (d.currentStep) { currentStep = d.currentStep; showStep(currentStep); }
+        } catch(e) { console.error(e); }
+      }
+
+      function validateStep(step) {
+        const el = document.querySelector(`.form-step[data-step="${step}"]`);
+        let valid = true;
+        el.querySelectorAll("[required]").forEach(f => {
+          if (!f.value.trim()) { valid = false; f.classList.add("is-invalid"); }
+          else f.classList.remove("is-invalid");
+        });
+        el.querySelectorAll('input[type="email"]').forEach(f => {
+          if (f.required && f.value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.value)) {
+            valid = false; f.classList.add("is-invalid");
+          }
+        });
+        return valid;
+      }
+
+      function showStep(n) {
+        document.querySelectorAll(".form-step").forEach(s => s.classList.remove("active"));
+        document.querySelector(`.form-step[data-step="${n}"]`)?.classList.add("active");
+        if (n === 3) populateFacilitySummary();
+        updateStepProgress();
+        updateNavButtons();
+      }
+
+      function populateFacilitySummary() {
+        const table = document.getElementById("facilitySummaryTable");
+        if (!table) return;
+
+        const g = id => document.getElementById(id)?.value || "";
+        const typeLabels = {
+          "general-clinic": "General Clinic",
+          "polyclinic": "Polyclinic",
+          "hospital": "Hospital",
+          "health-center": "Health Center"
+        };
+
+        const saved = localStorage.getItem("healthFacilityForm");
+        let logoData="", logoName="", licenseData="", licenseName="";
+        if (saved) {
+          const d = JSON.parse(saved);
+          logoData    = d.logoData    || "";
+          logoName    = d.logoName    || "";
+          licenseData = d.licenseData || "";
+          licenseName = d.licenseName || "";
+        }
+
+        // Get full phone with dial code
+        let phone = "";
+        try { phone = window.phoneInput ? window.phoneInput.getNumber() : g("phone"); }
+        catch(e) { phone = g("phone"); }
+
+        const rows = [
+          ["Facility Name",               g("facilityName")],
+          ["Facility Type",               typeLabels[g("facilityType")] || g("facilityType")],
+          ["Email",                       g("facilityEmail")],
+          ["Phone Number",                phone],
+          ["Tax Identification Number",   g("facilityTIN")],
+          ["Business Registration Number",g("facilityRegistration")],
+          ["Country",                     g("facilityCountry")],
+          ["Province/State",              g("facilityProvince")],
+          ["District/Local Government",   g("facilityDistrict")],
+          ["Sector/City",                 g("facilitySector")],
+        ];
+
+        if (licenseData && licenseName) {
+          rows.push(["Operational License", `<img src="${licenseData}" alt="${licenseName}" class="summary-logo-preview">`]);
+        }
+        if (logoData && logoName) {
+          rows.push(["Facility Logo", `<img src="${logoData}" alt="${logoName}" class="summary-logo-preview">`]);
+        }
+
+        table.querySelector("tbody").innerHTML = rows.map(([label, value]) => `
+          <tr>
+            <td>${label}</td>
+            <td>${value || '<span class="summary-empty">Not provided</span>'}</td>
+          </tr>`).join("");
+      }
+
+      function updateStepProgress() {
+        const steps = document.querySelectorAll(".step");
+        const fill  = document.getElementById("progressLineFill");
+        steps.forEach((s, i) => {
+          const n = i + 1;
+          s.classList.toggle("completed", n < currentStep);
+          s.classList.toggle("active",    n === currentStep);
+          if (n >= currentStep) s.classList.remove("completed");
+        });
+        if (fill) fill.style.width = `${((currentStep-1)/(steps.length-1))*100}%`;
+      }
+
+      function updateNavButtons() {
+        // Only disable the Back button in the currently active step
+        const activeStep = document.querySelector(`.form-step[data-step="${currentStep}"]`);
+        if (!activeStep) return;
+        const backBtn = activeStep.querySelector(".btn-outline-xana");
+        if (backBtn) backBtn.disabled = currentStep === 1;
+      }
+
+      function nextStep() {
+        if (!validateStep(currentStep)) {
+          alert("Please fill in all required fields correctly before proceeding.");
+          return;
+        }
+        if (currentStep < 3) {
+          currentStep++;
+          showStep(currentStep);
+          saveFormData();
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+      }
+
+      function previousStep() {
+        if (currentStep > 1) {
+          currentStep--;
+          showStep(currentStep);
+          saveFormData();
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+      }
+
+      function submitForm() {
+        if (!validateStep(currentStep)) {
+          alert("Please fill in all required fields correctly before submitting.");
+          return;
+        }
+        const data = JSON.parse(localStorage.getItem("healthFacilityForm") || "{}");
+        console.log("Form submitted:", data);
+
+        // Hide all form steps, show success overlay
+        document.querySelectorAll(".form-step").forEach(s => s.classList.remove("active"));
+        const success = document.getElementById("successMessage");
+        if (success) success.style.display = "flex";
+
+        // Clear localStorage after successful submission
+        localStorage.removeItem("healthFacilityForm");
+
+        // Offer to reset after delay
+        setTimeout(() => {
+          if (confirm("Would you like to submit another registration?")) {
+            resetForm();
+          }
+        }, 3000);
+      }
+
+      function resetForm() {
+        document.querySelectorAll("input, select, textarea").forEach(input => {
+          if (input.type === "checkbox" || input.type === "radio") {
+            input.checked = false;
+          } else {
+            input.value = "";
+          }
+        });
+
+        // Clear file previews
+        document.getElementById("logoPreview").innerHTML = "";
+        document.getElementById("licensePreview").innerHTML = "";
+
+        // Reset to step 1
+        currentStep = 1;
+        showStep(1);
+
+        // Hide success message
+        const success = document.getElementById("successMessage");
+        if (success) success.style.display = "none";
+
+        localStorage.removeItem("healthFacilityForm");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+    </script>
+  </body>
+</html>

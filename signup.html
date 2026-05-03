@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sign Up - XanaHealth</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <!-- NOTE: css/forms.css and forms.js are kept; add Bootstrap on top -->
+    <link rel="stylesheet" href="css/forms.css" />
+    <script src="forms.js"></script>
+    <style>
+      :root {
+        --xana-green: #488063;
+        --xana-green-light: #6fae95;
+        --xana-bg: #f4f6f5;
+      }
+
+      body { background-color: var(--xana-bg); }
+
+      /* ── Header / Logo ── */
+      .xana-header { padding: 20px 40px; background: #fff; margin-bottom: 0; }
+      .logo .xana   { color: var(--xana-green-light); font-weight: 700; font-size: 1.5rem; }
+      .logo .health { color: #333;                   font-weight: 700; font-size: 1.5rem; }
+
+      /* ── Form card ── */
+      .form-card {
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(0,0,0,.1);
+        padding: 2rem 2.5rem;
+        max-width: 560px;
+        margin: 2rem auto;
+      }
+
+      /* Bootstrap input focus → xana green */
+      .form-control:focus {
+        border-color: var(--xana-green-light);
+        box-shadow: 0 0 0 3px rgba(111,174,149,.2);
+      }
+
+      /* Submit button */
+      .btn-xana {
+        background-color: var(--xana-green);
+        color: #fff;
+        border: none;
+        font-weight: 600;
+        padding: .875rem 2rem;
+        border-radius: 8px;
+        width: 100%;
+        transition: background .2s ease;
+      }
+      .btn-xana:hover { background-color: var(--xana-green-light); color: #fff; }
+
+      /* ── Custom overlay (not Bootstrap modal — avoids JS hijacking display:flex) ── */
+      .xana-overlay {
+        position: fixed; top: 0; left: 0;
+        width: 100%; height: 100%;
+        background: rgba(0,0,0,.5);
+        display: none;               /* JS sets to "flex" */
+        justify-content: center;
+        align-items: center;
+        z-index: 1050;
+      }
+      .xana-modal {
+        background: #fff;
+        border-radius: 24px;
+        padding: 60px 40px;
+        max-width: 500px; width: 90%;
+        position: relative;
+        text-align: center;
+        box-shadow: 0 20px 60px rgba(0,0,0,.3);
+        animation: modalSlideIn .3s ease-out;
+      }
+      @keyframes modalSlideIn {
+        from { opacity: 0; transform: translateY(-20px); }
+        to   { opacity: 1; transform: translateY(0); }
+      }
+      @keyframes fadeOut {
+        from { opacity: 1; } to { opacity: 0; }
+      }
+
+      .icon-container { position: relative; display: inline-block; margin-bottom: 30px; width: 100px; height: 100px; }
+      .icon-container img { width: 100%; height: 100%; object-fit: contain; }
+
+      /* Checkmark circle (animated) */
+      .checkmark-circle {
+        width: 140px; height: 140px;
+        background: #94c5b8; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        animation: scaleIn .5s ease-out .2s both;
+      }
+      @keyframes scaleIn { from { transform: scale(0); } to { transform: scale(1); } }
+      .checkmark {
+        width: 60px; height: 60px;
+        stroke: white; stroke-width: 6;
+        stroke-linecap: round; stroke-linejoin: round; fill: none;
+        animation: checkmarkDraw .5s ease-out .5s both;
+      }
+      @keyframes checkmarkDraw {
+        from { stroke-dasharray: 100; stroke-dashoffset: 100; }
+        to   { stroke-dasharray: 100; stroke-dashoffset: 0; }
+      }
+
+      /* Sparkles */
+      .sparkle { position: absolute; animation: sparkle 1s ease-in-out infinite; }
+      .sparkle-1 { top: 10%; left: 15%; animation-delay: 0s; }
+      .sparkle-2 { top: 15%; right: 20%; animation-delay: .3s; }
+      @keyframes sparkle {
+        0%, 100% { opacity: 0; transform: scale(0); }
+        50%       { opacity: 1; transform: scale(1); }
+      }
+      .sparkle svg { width: 24px; height: 24px; }
+      .sparkle-plus   { stroke: #94c5b8; stroke-width: 2; fill: none; }
+      .sparkle-circle { fill: #94c5b8; }
+
+      /* Modal buttons */
+      .continue-btn {
+        background: #1f2937; color: white; border: none;
+        padding: 16px 0; border-radius: 12px;
+        font-size: 16px; font-weight: 600; cursor: pointer;
+        transition: all .2s; box-shadow: 0 4px 12px rgba(0,0,0,.15);
+        display: block; width: 100%; max-width: 350px; margin: 10px auto;
+      }
+      .continue-btn:hover { background: #111827; transform: translateY(-2px); }
+      .continue-btn:active { transform: translateY(0); }
+      .secondary-btn { background: white; color: #1f2937; border: 2px solid #1f2937; }
+      .secondary-btn:hover { background: #f9fafb; }
+
+      @media (max-width: 600px) {
+        .xana-modal { padding: 40px 30px; }
+        .checkmark-circle { width: 120px; height: 120px; }
+        .checkmark { width: 50px; height: 50px; }
+      }
+    </style>
+  </head>
+  <body>
+
+    <!-- Header -->
+    <div class="xana-header">
+      <div class="logo">
+        <span class="xana">Xana</span><span class="health">Health</span>
+      </div>
+    </div>
+
+    <!-- Form card -->
+    <div class="form-card">
+      <h2 class="text-center fw-bold mb-1">Create Your Account</h2>
+      <p class="text-center text-muted mb-4">Please provide your account information</p>
+
+      <div class="mb-3">
+        <label class="form-label">First Name</label>
+        <input type="text" id="firstName" class="form-control" placeholder="Enter your first name here" required />
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Last Name</label>
+        <input type="text" id="lastName" class="form-control" placeholder="Enter your last name here" required />
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Email</label>
+        <input type="email" id="email" class="form-control" placeholder="Enter your email here" required />
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Password</label>
+        <input type="password" id="password" class="form-control" placeholder="Enter your password here" required />
+      </div>
+
+      <div class="mb-4">
+        <label class="form-label">Confirm Password</label>
+        <input type="password" id="confirmPassword" class="form-control" placeholder="Confirm your password here" required />
+      </div>
+
+      <button class="btn-xana" onclick="submitForm()">Create Account</button>
+    </div>
+
+    <!-- ── Success / Verify email overlay ── -->
+    <div class="xana-overlay" id="overlay">
+      <div class="xana-modal">
+        <button class="btn-close position-absolute top-0 end-0 m-3" id="closeBtn" aria-label="Close"></button>
+
+        <div class="icon-container">
+          <img src="Group 427318810.png" alt="Success" />
+        </div>
+
+        <h1 class="fw-bold mb-2" style="font-size:2rem;color:#111827;">Verify your email address</h1>
+        <p class="text-muted">We've sent a verification link to your email to verify your email address.</p>
+
+        <a href="onboarding.html" style="text-decoration:none; display:block;">
+          <button class="continue-btn secondary-btn">Continue</button>
+        </a>
+        <button class="continue-btn" id="resendBtn">Resend verification link</button>
+      </div>
+    </div>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+      // ── All original JS preserved exactly ──
+
+      const overlay  = document.getElementById("overlay");
+      const closeBtn = document.getElementById("closeBtn");
+      const resendBtn = document.getElementById("resendBtn");
+
+      // Close on × button
+      closeBtn.addEventListener("click", function () {
+        overlay.style.animation = "fadeOut 0.3s ease-out";
+        setTimeout(() => { overlay.style.display = "none"; }, 300);
+      });
+
+      // Resend verification link
+      resendBtn.addEventListener("click", function () {
+        console.log("Resending verification email...");
+        alert("Verification email has been resent!");
+      });
+
+      // Close when clicking backdrop
+      overlay.addEventListener("click", function (e) {
+        if (e.target === overlay) {
+          overlay.style.animation = "fadeOut 0.3s ease-out";
+          setTimeout(() => { overlay.style.display = "none"; }, 300);
+        }
+      });
+
+      function submitForm() {
+        const firstName       = document.getElementById("firstName").value.trim();
+        const lastName        = document.getElementById("lastName").value.trim();
+        const email           = document.getElementById("email").value.trim();
+        const password        = document.getElementById("password").value;
+        const confirmPassword = document.getElementById("confirmPassword").value;
+
+        // Required fields
+        if (!firstName || !lastName || !email || !password || !confirmPassword) {
+          alert("Please fill in all required fields.");
+          return;
+        }
+
+        // Email format
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+          alert("Please enter a valid email address.");
+          return;
+        }
+
+        // Passwords match
+        if (password !== confirmPassword) {
+          alert("Passwords do not match.");
+          return;
+        }
+
+        // Password strength
+        if (password.length < 8) {
+          alert("Password must be at least 8 characters long.");
+          return;
+        }
+
+        const formData = {
+          firstName, lastName, email, password,
+          timestamp: new Date().toISOString(),
+        };
+        console.log("Form submitted with data:", formData);
+
+        localStorage.setItem("signupData", JSON.stringify({ firstName, lastName, email }));
+
+        // Show overlay (must be flex to center modal)
+        overlay.style.display = "flex";
+      }
+    </script>
+  </body>
+</html>

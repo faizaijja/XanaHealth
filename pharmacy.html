@@ -1,0 +1,1192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>XanaHealth – Pharmacy</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green: #1a7a4a;
+    --green-light: #e8f5ee;
+    --green-mid: #2d9e63;
+    --green-dark: #145c37;
+    --amber: #f59e0b;
+    --amber-light: #fef3c7;
+    --red: #ef4444;
+    --red-light: #fee2e2;
+    --blue: #3b82f6;
+    --blue-light: #eff6ff;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-400: #9ca3af;
+    --gray-500: #6b7280;
+    --gray-600: #4b5563;
+    --gray-700: #374151;
+    --gray-800: #1f2937;
+    --white: #ffffff;
+    --sidebar-w: 160px;
+    --header-h: 60px;
+    --font: 'DM Sans', sans-serif;
+    --mono: 'DM Mono', monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--font);
+    background: var(--gray-50);
+    color: var(--gray-800);
+    height: 100vh;
+    display: flex;
+    overflow: hidden;
+  }
+
+  /* ── Sidebar ── */
+  .sidebar {
+    width: var(--sidebar-w);
+    background: var(--white);
+    border-right: 1px solid var(--gray-200);
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    flex-shrink: 0;
+  }
+
+  .sidebar-logo {
+    padding: 18px 16px 8px;
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+  }
+
+  .sidebar-logo span { color: var(--green-mid); }
+
+  .sidebar-section-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--gray-400);
+    padding: 14px 16px 6px;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 9px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--gray-500);
+    cursor: pointer;
+    border-radius: 0;
+    transition: background 0.15s, color 0.15s;
+    text-decoration: none;
+  }
+
+  .nav-item:hover { background: var(--gray-50); color: var(--gray-700); }
+
+  .nav-item.active {
+    color: var(--green);
+    background: var(--green-light);
+    font-weight: 600;
+  }
+
+  .nav-item svg { flex-shrink: 0; }
+
+  .sidebar-bottom {
+    margin-top: auto;
+    border-top: 1px solid var(--gray-100);
+    padding: 10px 0;
+  }
+
+  .user-card {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+  }
+
+  .user-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--green-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--green);
+    flex-shrink: 0;
+  }
+
+  .user-info { min-width: 0; }
+  .user-name { font-size: 12px; font-weight: 600; color: var(--gray-800); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .user-role { font-size: 10px; color: var(--gray-400); }
+
+  /* ── Main ── */
+  .main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .topbar {
+    height: var(--header-h);
+    background: var(--white);
+    border-bottom: 1px solid var(--gray-200);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 28px;
+    flex-shrink: 0;
+  }
+
+  .topbar-title { font-size: 18px; font-weight: 700; }
+
+  .topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .topbar-bell {
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    cursor: pointer;
+    color: var(--gray-500);
+    transition: background 0.15s;
+  }
+
+  .topbar-bell:hover { background: var(--gray-100); }
+
+  .company-logo {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--green-mid);
+    cursor: pointer;
+  }
+
+  /* ── Content ── */
+  .content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px 28px;
+  }
+
+  /* ── Toolbar ── */
+  .toolbar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+  }
+
+  .btn-filter {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    border: 1px solid var(--gray-300);
+    border-radius: 7px;
+    background: var(--white);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--gray-700);
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+
+  .btn-filter:hover { background: var(--gray-50); }
+
+  .search-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid var(--gray-300);
+    border-radius: 7px;
+    background: var(--white);
+    padding: 7px 12px;
+    flex: 1;
+    max-width: 300px;
+  }
+
+  .search-wrap input {
+    border: none;
+    outline: none;
+    font-size: 13px;
+    color: var(--gray-700);
+    font-family: var(--font);
+    background: transparent;
+    width: 100%;
+  }
+
+  .search-wrap input::placeholder { color: var(--gray-400); }
+
+  .spacer { flex: 1; }
+
+  .btn-print {
+    padding: 7px 18px;
+    border: 1.5px solid var(--green);
+    border-radius: 7px;
+    background: var(--white);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--green);
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+
+  .btn-print:hover { background: var(--green-light); }
+
+  .btn-export {
+    padding: 7px 18px;
+    border: none;
+    border-radius: 7px;
+    background: var(--green);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--white);
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+
+  .btn-export:hover { background: var(--green-dark); }
+
+  /* Chips */
+  .chips {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+  }
+
+  .chips-label { font-size: 12px; color: var(--gray-500); font-weight: 500; }
+
+  .chip {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    background: var(--gray-100);
+    font-size: 12px;
+    color: var(--gray-600);
+    font-weight: 500;
+    cursor: pointer;
+  }
+
+  .chip-x { font-size: 14px; color: var(--gray-400); line-height: 1; }
+
+  .clear-filter { font-size: 12px; color: var(--red); font-weight: 500; cursor: pointer; }
+  .clear-filter:hover { text-decoration: underline; }
+
+  /* ── Table ── */
+  .table-card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  thead tr {
+    background: var(--gray-50);
+    border-bottom: 1px solid var(--gray-200);
+  }
+
+  th {
+    padding: 11px 14px;
+    text-align: left;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray-500);
+    white-space: nowrap;
+  }
+
+  th:first-child, td:first-child { padding-left: 18px; width: 36px; }
+
+  td {
+    padding: 13px 14px;
+    font-size: 13px;
+    color: var(--gray-700);
+    border-bottom: 1px solid var(--gray-100);
+    white-space: nowrap;
+  }
+
+  tr:last-child td { border-bottom: none; }
+
+  tr:hover td { background: var(--gray-50); }
+
+  .td-date { font-size: 12px; color: var(--gray-500); font-family: var(--mono); }
+
+  .td-name { color: var(--green-mid); font-weight: 500; cursor: pointer; }
+  .td-name:hover { text-decoration: underline; }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11.5px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .badge-pending {
+    background: var(--amber-light);
+    color: var(--amber);
+    border: 1px solid #fcd34d;
+  }
+
+  .badge-dispensed {
+    background: var(--green-light);
+    color: var(--green);
+    border: 1px solid #86efac;
+  }
+
+  .action-eye {
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    cursor: pointer;
+    color: var(--gray-400);
+    transition: background 0.15s, color 0.15s;
+    border: none;
+    background: transparent;
+  }
+
+  .action-eye:hover { background: var(--gray-100); color: var(--gray-700); }
+
+  /* Pagination */
+  .pagination {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 6px;
+    padding: 14px 18px;
+    border-top: 1px solid var(--gray-100);
+  }
+
+  .page-btn {
+    min-width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--gray-200);
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--gray-600);
+    cursor: pointer;
+    background: var(--white);
+    padding: 0 8px;
+    transition: background 0.15s;
+  }
+
+  .page-btn:hover { background: var(--gray-50); }
+  .page-btn.active { background: var(--green); color: var(--white); border-color: var(--green); }
+
+  /* ── MODAL OVERLAY ── */
+  .overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.35);
+    z-index: 100;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 0;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+  }
+
+  .overlay.active {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  /* ── PATIENT PRESCRIPTIONS PAGE (full-page modal) ── */
+  .patient-page {
+    position: fixed;
+    inset: 0;
+    background: var(--gray-50);
+    z-index: 101;
+    display: none;
+    flex-direction: column;
+    overflow-y: auto;
+  }
+
+  .patient-page.active { display: flex; }
+
+  .patient-page-topbar {
+    height: var(--header-h);
+    background: var(--white);
+    border-bottom: 1px solid var(--gray-200);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 28px;
+    flex-shrink: 0;
+  }
+
+  .patient-page-topbar .logo { font-size: 17px; font-weight: 700; }
+  .patient-page-topbar .logo span { color: var(--green-mid); }
+
+  .patient-inner {
+    display: flex;
+    flex: 1;
+  }
+
+  .patient-sidebar {
+    width: var(--sidebar-w);
+    background: var(--white);
+    border-right: 1px solid var(--gray-200);
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .patient-content {
+    flex: 1;
+    padding: 24px 28px;
+    overflow-y: auto;
+  }
+
+  .patient-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+
+  .btn-back {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    border: 1px solid var(--gray-300);
+    border-radius: 7px;
+    background: var(--white);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--gray-700);
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+
+  .btn-back:hover { background: var(--gray-50); }
+
+  .card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+
+  .card-header {
+    background: var(--gray-50);
+    border-bottom: 1px solid var(--gray-200);
+    padding: 12px 20px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--gray-700);
+  }
+
+  .card-body { padding: 20px; }
+
+  .detail-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px 24px;
+  }
+
+  .detail-item { }
+  .detail-label { font-size: 11px; color: var(--gray-400); font-weight: 500; margin-bottom: 2px; }
+  .detail-value { font-size: 13px; color: var(--gray-800); font-weight: 500; }
+  .detail-value.bold { font-weight: 700; }
+  .detail-value.green { color: var(--green-mid); }
+
+  /* Prescription table inside patient page */
+  .rx-table { width: 100%; border-collapse: collapse; }
+
+  .rx-table th {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray-500);
+    padding: 10px 14px;
+    text-align: left;
+    background: var(--gray-50);
+    border-bottom: 1px solid var(--gray-200);
+  }
+
+  .rx-table td {
+    padding: 13px 14px;
+    font-size: 13px;
+    color: var(--gray-700);
+    border-bottom: 1px solid var(--gray-100);
+  }
+
+  .rx-table tr:last-child td { border-bottom: none; }
+  .rx-table tr:hover td { background: var(--gray-50); }
+
+  .rx-label { font-size: 12px; color: var(--gray-400); font-style: italic; margin-right: 4px; }
+
+  .btn-pencil {
+    width: 30px;
+    height: 30px;
+    border: none;
+    background: transparent;
+    border-radius: 6px;
+    cursor: pointer;
+    color: var(--gray-400);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s, color 0.15s;
+  }
+
+  .btn-pencil:hover { background: var(--gray-100); color: var(--gray-700); }
+
+  /* Payment badges */
+  .badge-notpaid { background: #fee2e2; color: #ef4444; border: 1px solid #fca5a5; }
+  .badge-partial { background: #fef3c7; color: #d97706; border: 1px solid #fcd34d; }
+  .badge-paid { background: var(--green-light); color: var(--green); border: 1px solid #86efac; }
+
+  /* ── Prescription Modal ── */
+  .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 200;
+    display: none;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal-backdrop.active { display: flex; }
+
+  .modal {
+    background: var(--white);
+    border-radius: 12px;
+    width: 480px;
+    max-width: 95vw;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.18);
+    overflow: hidden;
+    animation: modalIn 0.2s ease;
+  }
+
+  @keyframes modalIn {
+    from { transform: scale(0.96) translateY(10px); opacity: 0; }
+    to { transform: scale(1) translateY(0); opacity: 1; }
+  }
+
+  .modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    background: var(--gray-50);
+    border-bottom: 1px solid var(--gray-200);
+  }
+
+  .modal-title { font-size: 15px; font-weight: 700; color: var(--gray-800); }
+
+  .modal-close {
+    width: 28px;
+    height: 28px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 18px;
+    color: var(--gray-400);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s;
+  }
+
+  .modal-close:hover { background: var(--gray-200); }
+
+  .modal-body { padding: 20px; }
+
+  .form-group { margin-bottom: 16px; }
+  .form-label { font-size: 12px; font-weight: 600; color: var(--gray-600); margin-bottom: 6px; display: block; }
+  .form-value { font-size: 14px; font-weight: 600; color: var(--gray-800); margin-bottom: 0; padding: 8px 0; }
+
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+  .form-input {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    font-size: 13px;
+    font-family: var(--font);
+    color: var(--gray-700);
+    background: var(--gray-50);
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  .form-input:focus { border-color: var(--green-mid); background: var(--white); }
+  .form-input::placeholder { color: var(--gray-300); }
+
+  .form-select {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    font-size: 13px;
+    font-family: var(--font);
+    color: var(--gray-400);
+    background: var(--gray-50);
+    outline: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    cursor: pointer;
+  }
+
+  .modal-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 20px;
+    border-top: 1px solid var(--gray-100);
+  }
+
+  .btn-edit {
+    padding: 8px 20px;
+    border: 1.5px solid var(--gray-300);
+    border-radius: 7px;
+    background: var(--white);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--gray-600);
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+
+  .btn-edit:hover { background: var(--gray-50); }
+
+  .btn-dispense {
+    padding: 8px 22px;
+    border: none;
+    border-radius: 7px;
+    background: var(--green);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--white);
+    cursor: pointer;
+    transition: background 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .btn-dispense:hover { background: var(--green-dark); }
+
+  .btn-dispense.dispensed {
+    background: var(--gray-200);
+    color: var(--gray-500);
+    cursor: default;
+  }
+
+  .btn-dispense.dispensed:hover { background: var(--gray-200); }
+
+  /* Checkbox */
+  input[type=checkbox] { accent-color: var(--green); width: 14px; height: 14px; cursor: pointer; }
+
+  /* scrollbar */
+  ::-webkit-scrollbar { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--gray-200); border-radius: 99px; }
+</style>
+</head>
+<body>
+
+<!-- ════════════════ SIDEBAR ════════════════ -->
+<aside class="sidebar">
+  <div class="sidebar-logo">Xana<span>Health</span></div>
+  <div class="sidebar-section-label">Pharmacy</div>
+  <a class="nav-item" href="#">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+    Dashboard
+  </a>
+  <a class="nav-item active" href="#">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/><path d="M9 12h6"/><path d="M9 16h4"/></svg>
+    Prescriptions
+  </a>
+  <a class="nav-item" href="#">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+    History
+  </a>
+
+  <div class="sidebar-bottom">
+    <div class="user-card">
+      <div class="user-avatar">JD</div>
+      <div class="user-info">
+        <div class="user-name">Pharm Joe Doe</div>
+        <div class="user-role">Pharmacist</div>
+      </div>
+    </div>
+    <a class="nav-item" href="#">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      Help
+    </a>
+    <a class="nav-item" href="#">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      Logout
+    </a>
+  </div>
+</aside>
+
+<!-- ════════════════ MAIN ════════════════ -->
+<main class="main">
+  <div class="topbar">
+    <h1 class="topbar-title">Prescriptions</h1>
+    <div class="topbar-right">
+      <div class="topbar-bell">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      </div>
+      <div class="company-logo">
+        Company Logo
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+    <!-- Toolbar -->
+    <div class="toolbar">
+      <button class="btn-filter">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
+        Filter by
+      </button>
+      <div class="search-wrap">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" placeholder="Search all requests">
+      </div>
+      <div class="spacer"></div>
+      <button class="btn-print">Print</button>
+      <button class="btn-export">Export to Excel</button>
+    </div>
+
+    <!-- Filter chips -->
+    <div class="chips">
+      <span class="chips-label">Applied Filter</span>
+      <div class="chip">Insurance <span class="chip-x">×</span></div>
+      <div class="chip">September <span class="chip-x">×</span></div>
+      <div class="chip">Month <span class="chip-x">×</span></div>
+      <div class="chip">Gender <span class="chip-x">×</span></div>
+      <span class="clear-filter">Clear filter</span>
+    </div>
+
+    <!-- Table -->
+    <div class="table-card">
+      <table>
+        <thead>
+          <tr>
+            <th><input type="checkbox"></th>
+            <th>Date</th>
+            <th>Patient Name</th>
+            <th>Gender</th>
+            <th>File No</th>
+            <th>Age</th>
+            <th>Prescribed By</th>
+            <th>Department</th>
+            <th>Insurance</th>
+            <th>Dispense Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="prescriptions-tbody">
+        </tbody>
+      </table>
+
+      <!-- Pagination -->
+      <div class="pagination">
+        <button class="page-btn">Previous</button>
+        <button class="page-btn active">1</button>
+        <button class="page-btn">2</button>
+        <button class="page-btn">3</button>
+        <button class="page-btn">Next</button>
+        <span style="font-size:12px;color:var(--gray-400);margin-left:4px;">1/5</span>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- ════════════════ PATIENT PRESCRIPTION PAGE ════════════════ -->
+<div class="patient-page" id="patient-page">
+  <div class="patient-page-topbar">
+    <div class="logo">Xana<span>Health</span></div>
+    <div class="topbar-right">
+      <div class="topbar-bell">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      </div>
+      <div class="company-logo">
+        Company Logo
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+    </div>
+  </div>
+
+  <div class="patient-inner">
+    <!-- Sidebar repeated -->
+    <div class="patient-sidebar">
+      <div style="padding-top:10px">
+        <div class="sidebar-section-label">Pharmacy</div>
+        <a class="nav-item" href="#">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+          Dashboard
+        </a>
+        <a class="nav-item active" href="#">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/></svg>
+          Prescriptions
+        </a>
+        <a class="nav-item" href="#">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          Prescription History
+        </a>
+      </div>
+      <div class="sidebar-bottom">
+        <div class="user-card">
+          <div class="user-avatar">JD</div>
+          <div class="user-info">
+            <div class="user-name">Pharm Joe Doe</div>
+            <div class="user-role">Pharmacist</div>
+          </div>
+        </div>
+        <a class="nav-item" href="#">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Help
+        </a>
+        <a class="nav-item" href="#">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          Logout
+        </a>
+      </div>
+    </div>
+
+    <div class="patient-content">
+      <div class="patient-toolbar">
+        <button class="btn-back" id="btn-back">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          Back
+        </button>
+        <button class="btn-export">Print</button>
+      </div>
+
+      <!-- Patient Details Card -->
+      <div class="card">
+        <div class="card-header">Patient Details</div>
+        <div class="card-body">
+          <div class="detail-grid">
+            <div class="detail-item">
+              <div class="detail-label">Health Facility</div>
+              <div class="detail-value bold">Shema Clinic</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">Name</div>
+              <div class="detail-value">Imani Adimbola</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">Insurance</div>
+              <div class="detail-value">Saniam</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">Phone</div>
+              <div class="detail-value">+2500000000000</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">Gender</div>
+              <div class="detail-value">Female</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">File Number</div>
+              <div class="detail-value">001/17</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">Date</div>
+              <div class="detail-value">17/04/2023, 4:06pm</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">Age</div>
+              <div class="detail-value">39</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">Doctor seen</div>
+              <div class="detail-value green">Dr. Jane Doe</div>
+            </div>
+            <div></div>
+            <div class="detail-item">
+              <div class="detail-label">Phone</div>
+              <div class="detail-value">+2500000000000</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">Diagnosis</div>
+              <div class="detail-value">Pending</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Prescription Table Card -->
+      <div class="card">
+        <div class="card-header">Prescription</div>
+        <table class="rx-table" id="rx-table">
+          <thead>
+            <tr>
+              <th>Drug Name</th>
+              <th>Comment</th>
+              <th>Drug Type</th>
+              <th>Dosage</th>
+              <th>Strength</th>
+              <th>Duration</th>
+              <th>Payment Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="rx-tbody">
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════ PRESCRIPTION MODAL ════════════════ -->
+<div class="modal-backdrop" id="rx-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">Prescription</span>
+      <button class="modal-close" id="modal-close">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Drug Name</label>
+        <div class="form-value" id="modal-drug-name">Momex</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Comment</label>
+        <div class="form-value" id="modal-comment" style="font-weight:400;color:var(--gray-600);font-size:13px;">Nasal spray & puff BID 7/7</div>
+      </div>
+      <div class="form-row" style="margin-bottom:16px;">
+        <div>
+          <label class="form-label">Drug Type</label>
+          <select class="form-select" id="modal-drug-type">
+            <option value="">Select</option>
+            <option value="Tablet">Tablet</option>
+            <option value="Spray">Spray</option>
+            <option value="Injection">Injection</option>
+            <option value="Syrup">Syrup</option>
+            <option value="Capsule">Capsule</option>
+          </select>
+        </div>
+        <div>
+          <label class="form-label">Dosage</label>
+          <input class="form-input" id="modal-dosage" type="text" placeholder="Type here">
+        </div>
+      </div>
+      <div class="form-row">
+        <div>
+          <label class="form-label">Duration</label>
+          <input class="form-input" id="modal-duration" type="text" placeholder="Type here">
+        </div>
+        <div>
+          <label class="form-label">Strength</label>
+          <input class="form-input" id="modal-strength" type="text" placeholder="Type here">
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-edit">Edit</button>
+      <button class="btn-dispense" id="btn-dispense">Dispense</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── Data ──
+const rows = [
+  { status: 'Pending' },
+  { status: 'Pending' },
+  { status: 'Pending' },
+  { status: 'Pending' },
+  { status: 'Pending' },
+  { status: 'Dispensed' },
+  { status: 'Dispensed' },
+  { status: 'Dispensed' },
+  { status: 'Dispensed' },
+  { status: 'Dispensed' },
+];
+
+const drugs = [
+  { name: 'Augmentin',  comment: 'Tab 580/68...', drugType: '',      dosage: '',    strength: '',      duration: '',       payment: 'Not Paid', dispensed: false },
+  { name: 'Amoxicillin',comment: 'Tab 580/68...', drugType: '',      dosage: '',    strength: '',      duration: '',       payment: 'Partial',  dispensed: false },
+  { name: 'Momex',      comment: 'Nasal spray...', drugType: '',     dosage: '',    strength: '',      duration: '',       payment: 'Paid',     dispensed: false },
+  { name: 'Momex',      comment: 'Nasal spray...', drugType: 'Spray',dosage: '7/7', strength: '200mg', duration: '7 days', payment: 'Paid',     dispensed: false },
+];
+
+// ── Render Prescriptions Table ──
+function renderPrescriptions() {
+  const tbody = document.getElementById('prescriptions-tbody');
+  tbody.innerHTML = '';
+  rows.forEach((row, i) => {
+    const dispensed = row.status === 'Dispensed';
+    const badge = dispensed
+      ? `<span class="badge badge-dispensed">
+           <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+           Dispensed
+         </span>`
+      : `<span class="badge badge-pending">Pending</span>`;
+
+    tbody.innerHTML += `
+      <tr>
+        <td><input type="checkbox"></td>
+        <td class="td-date">23/05/2023 - 05:23</td>
+        <td class="td-name" onclick="openPatient()">Raekwon...</td>
+        <td>Female</td>
+        <td>101/111</td>
+        <td>23</td>
+        <td>Dr. Ange Arn...</td>
+        <td>Consultation</td>
+        <td>Sanlam</td>
+        <td>${badge}</td>
+        <td>
+          <button class="action-eye" onclick="openPatient()" title="View">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </td>
+      </tr>`;
+  });
+}
+
+// ── Render Rx Table ──
+function paymentBadgeClass(p) {
+  if (p === 'Not Paid') return 'badge-notpaid';
+  if (p === 'Partial') return 'badge-partial';
+  return 'badge-paid';
+}
+
+function renderRxTable() {
+  const tbody = document.getElementById('rx-tbody');
+  tbody.innerHTML = '';
+  drugs.forEach((drug, i) => {
+    tbody.innerHTML += `
+      <tr>
+        <td><span class="rx-label">R/</span> ${drug.name}</td>
+        <td>${drug.comment}</td>
+        <td>${drug.drugType}</td>
+        <td>${drug.dosage}</td>
+        <td>${drug.strength}</td>
+        <td>${drug.duration}</td>
+        <td><span class="badge ${paymentBadgeClass(drug.payment)}">${drug.payment}</span></td>
+        <td>
+          <button class="btn-pencil" onclick="openModal(${i})" title="Edit / Dispense">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          </button>
+        </td>
+      </tr>`;
+  });
+}
+
+// ── Navigation ──
+function openPatient() {
+  document.getElementById('patient-page').classList.add('active');
+}
+
+document.getElementById('btn-back').addEventListener('click', () => {
+  document.getElementById('patient-page').classList.remove('active');
+});
+
+// ── Modal ──
+let currentDrugIndex = null;
+
+function openModal(i) {
+  currentDrugIndex = i;
+  const d = drugs[i];
+  document.getElementById('modal-drug-name').textContent = d.name;
+  document.getElementById('modal-comment').textContent = d.comment.replace('...', '') + ' BID 7/7';
+  document.getElementById('modal-drug-type').value = d.drugType || '';
+  document.getElementById('modal-dosage').value = d.dosage || '';
+  document.getElementById('modal-duration').value = d.duration || '';
+  document.getElementById('modal-strength').value = d.strength || '';
+
+  const btn = document.getElementById('btn-dispense');
+  if (d.dispensed) {
+    btn.textContent = 'Dispensed';
+    btn.classList.add('dispensed');
+  } else {
+    btn.textContent = 'Dispense';
+    btn.classList.remove('dispensed');
+  }
+
+  document.getElementById('rx-modal').classList.add('active');
+}
+
+document.getElementById('modal-close').addEventListener('click', closeModal);
+document.getElementById('rx-modal').addEventListener('click', (e) => {
+  if (e.target === document.getElementById('rx-modal')) closeModal();
+});
+
+function closeModal() {
+  document.getElementById('rx-modal').classList.remove('active');
+  currentDrugIndex = null;
+}
+
+document.getElementById('btn-dispense').addEventListener('click', () => {
+  if (currentDrugIndex === null) return;
+  const d = drugs[currentDrugIndex];
+  if (d.dispensed) return;
+
+  // Save form values
+  d.drugType = document.getElementById('modal-drug-type').value;
+  d.dosage = document.getElementById('modal-dosage').value;
+  d.duration = document.getElementById('modal-duration').value;
+  d.strength = document.getElementById('modal-strength').value;
+  d.dispensed = true;
+
+  const btn = document.getElementById('btn-dispense');
+  btn.textContent = 'Dispensed';
+  btn.classList.add('dispensed');
+
+  renderRxTable();
+  setTimeout(closeModal, 800);
+});
+
+// ── Init ──
+renderPrescriptions();
+renderRxTable();
+</script>
+</body>
+</html>

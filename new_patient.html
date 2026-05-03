@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>XanaHealth – New Patient</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.css"/>
+  <style>
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+    :root {
+      --green: #4a8f75;
+      --green-dark: #3d7360;
+      --green-light: #e8f5f1;
+      --green-lighter: #d5ebe4;
+      --green-border: #4a8f75;
+      --gray-bg: #f4f6f6;
+      --input-bg: #e8edef;
+      --border: #d9e2e2;
+      --text: #1a1a1a;
+      --muted: #6b7280;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--gray-bg);
+      color: var(--text);
+    }
+
+    .container { display:flex; min-height:100vh; }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      width: 240px;
+      flex-shrink: 0;
+      background: #fff;
+      border-right: 1px solid #e5e5e5;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      position: sticky;
+      top: 0;
+      overflow-y: auto;
+    }
+
+    .logo { padding:20px 24px; font-size:20px; font-weight:600; flex-shrink:0; }
+    .logo span:first-child { color:#333; }
+    .logo span:last-child { color:var(--green); }
+
+    .nav-section { padding:12px 0; flex-shrink:0; }
+    .nav-label { padding:8px 24px; font-size:11px; font-weight:600; color:#9ca3af; text-transform:uppercase; letter-spacing:.5px; }
+    .nav-item { display:flex; align-items:center; padding:10px 24px; color:#6b7280; text-decoration:none; font-size:14px; cursor:pointer; transition:background .2s; }
+    .nav-item:hover { background:#f9fafb; }
+    .nav-item.active { color:var(--green); border-right:3px solid var(--green); }
+    .nav-item svg { width:18px; height:18px; margin-right:12px; opacity:.6; flex-shrink:0; }
+
+    /* Spacer pushes user section to bottom */
+    .sidebar-spacer { flex: 1; }
+
+    .user-section {
+      padding: 16px 24px;
+      border-top: 1px solid #e5e5e5;
+      flex-shrink: 0;
+    }
+    .user-profile { display:flex; align-items:center; gap:12px; margin-bottom:12px; }
+    .user-avatar {
+      width:36px; height:36px; border-radius:50%;
+      background:var(--green); color:#fff;
+      display:flex; align-items:center; justify-content:center;
+      font-size:12px; font-weight:600; flex-shrink:0;
+    }
+    .user-info h4 { font-size:14px; font-weight:600; color:#333; }
+    .user-info p { font-size:12px; color:#9ca3af; }
+    .user-actions { display: flex; flex-direction: column; gap: 2px; }
+    .user-action { display: flex; align-items: center; padding: 7px 0; color: #6b7280; text-decoration: none; font-size: 13px; cursor: pointer; }
+    .user-action svg { width: 16px; height: 16px; margin-right: 10px; opacity: 0.6; flex-shrink:0; }
+
+    /* ── Main ── */
+    .main-content { flex:1; display:flex; flex-direction:column; overflow:hidden; min-width:0; }
+
+    /* ── Header ── */
+    .header {
+      background:#fff;
+      padding:0 32px;
+      height:64px;
+      border-bottom:1px solid #e5e5e5;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      flex-shrink:0;
+    }
+    .header h1 { font-size:22px; font-weight:600; color:#111827; white-space:nowrap; }
+    .header-right { display:flex; align-items:center; gap:16px; flex-shrink:0; }
+    .notification-icon { width:20px; height:20px; cursor:pointer; color:#6b7280; }
+    .company-dropdown {
+      display:flex; align-items:center; gap:8px;
+      padding:8px 14px; background:#fff; border:1px solid #e5e5e5;
+      border-radius:6px; cursor:pointer; color:#9ca3af; font-size:14px;
+      white-space:nowrap;
+    }
+
+    /* ── Toolbar ── */
+    .toolbar {
+      padding:16px 32px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+      flex-shrink:0;
+    }
+    .toolbar-left { display:flex; gap:10px; flex:1; min-width:0; }
+
+    .filter-btn, .action-btn {
+      display:flex; align-items:center; gap:8px;
+      padding:9px 16px; background:#fff; border:1px solid #d1d5db;
+      border-radius:6px; cursor:pointer; font-size:14px; color:#374151;
+      white-space:nowrap;
+    }
+    .search-box {
+      display:flex; align-items:center; gap:8px;
+      padding:9px 14px; background:#fff; border:1px solid #d1d5db;
+      border-radius:6px; flex:1; max-width:280px;
+    }
+    .search-box input { border:none; outline:none; flex:1; font-size:14px; color:#6b7280; font-family:inherit; }
+
+    .btn-green {
+      display:flex; align-items:center; gap:7px;
+      padding:9px 18px; background:var(--green); border:none;
+      border-radius:6px; cursor:pointer; font-size:14px;
+      color:#fff; font-weight:500; white-space:nowrap;
+      font-family:inherit;
+    }
+    .btn-green:hover { background:var(--green-dark); }
+    .btn-outline-green {
+      padding:9px 18px; background:#fff; border:1px solid var(--green);
+      border-radius:6px; cursor:pointer; font-size:14px;
+      color:var(--green); font-weight:500; white-space:nowrap;
+      font-family:inherit;
+    }
+    .btn-outline-green:hover { background:var(--green-light); }
+
+    /* ── Scrollable content ── */
+    .content-area {
+      flex:1;
+      overflow-y:auto;
+      padding:0 32px 40px;
+      background:white;
+      border-radius: 3px;
+      width: 1000px;
+      margin-left:60px;
+    }
+
+    /* ── Form sections ── */
+    .section-block { margin-bottom:10px; }
+
+    .section-header {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:14px 0; border-bottom:2px solid #e0e8e5;
+      margin-bottom:24px; margin-top:36px;
+      cursor: pointer;
+    }
+    .section-header:first-of-type { margin-top:8px; }
+    .section-header h2 { font-size:17px; font-weight:600; color:#1a1a1a; }
+
+    .collapse-btn {
+      background:none; border:none; color:var(--green);
+      font-size:13px; cursor:pointer; text-decoration:underline;
+      font-family:inherit; font-weight:500;
+      display: flex; align-items: center; gap: 5px;
+      white-space: nowrap;
+    }
+    .collapse-btn:hover { color:var(--green-dark); }
+
+    /* ── Section body collapse animation ── */
+    .section-body {
+      overflow: hidden;
+      transition: max-height 0.35s ease, opacity 0.3s ease;
+      max-height: 2000px;
+      opacity: 1;
+    }
+    .section-body.collapsed {
+      max-height: 0 !important;
+      opacity: 0;
+    }
+
+    .form-row { display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-bottom:20px; }
+    .form-row.single { grid-template-columns:1fr; }
+
+    .form-group { display:flex; flex-direction:column; gap:6px; }
+    .form-group label {
+      font-size:14px; font-weight:500; color:#374151;
+      display:flex; align-items:center; gap:6px;
+    }
+    .required-tag { font-size:11px; color:#dc3545; font-weight:400; }
+    .optional-tag { font-size:11px; color:#9ca3af; font-weight:400; }
+
+    .form-group input[type="text"],
+    .form-group input[type="email"],
+    .form-group input[type="date"],
+    .form-group select {
+      padding:12px 14px;
+      border:1px solid var(--border);
+      border-radius:8px;
+      background:var(--input-bg);
+      font-size:14px;
+      color:#374151;
+      font-family:inherit;
+      transition:all .2s;
+      width:100%;
+    }
+    .form-group input:focus, .form-group select:focus {
+      outline:none;
+      background:var(--green-lighter);
+      border-color:var(--green);
+      box-shadow:0 0 0 3px rgba(74,143,117,.15);
+    }
+    select {
+      appearance:none;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath fill='%236c757d' d='M8 11L3 6h10z'/%3E%3C/svg%3E");
+      background-repeat:no-repeat;
+      background-position:right 14px center;
+      padding-right:36px;
+      cursor:pointer;
+    }
+
+    .input-with-btn { position:relative; display:flex; align-items:center; }
+    .input-with-btn input { padding-right:148px; }
+    .fetch-btn {
+      position:absolute; right:6px;
+      background:var(--green); color:#fff;
+      border:none; padding:8px 16px; border-radius:6px;
+      font-size:13px; font-weight:500; cursor:pointer;
+      font-family:inherit; transition:background .2s; white-space:nowrap;
+    }
+    .fetch-btn:hover { background:var(--green-dark); }
+
+    .phone-group { position:relative; }
+    .phone-group .iti { width:100%; }
+    .phone-group .iti__flag-container {
+      background:var(--green-light);
+      border-right:1px solid rgba(74,143,117,.3);
+      border-radius:8px 0 0 8px;
+    }
+    .phone-group .iti__selected-flag {
+      background:var(--green-light) !important;
+      border-radius:8px 0 0 8px;
+      padding:0 10px 0 12px;
+    }
+    .phone-group .iti__selected-flag:hover,
+    .phone-group .iti__selected-flag:focus { background:var(--green-lighter) !important; }
+    .phone-group input[type="tel"] {
+      width:100%;
+      padding:12px 14px;
+      border:2px solid var(--green-border);
+      border-radius:8px;
+      background:var(--green-light);
+      font-size:14px;
+      color:var(--green-dark);
+      font-family:inherit;
+      font-weight:500;
+      transition:all .2s;
+    }
+    .phone-group input[type="tel"]:focus {
+      outline:none;
+      background:var(--green-lighter);
+      box-shadow:0 0 0 3px rgba(74,143,117,.2);
+    }
+    .phone-group input[type="tel"]::placeholder { color:#7fb5a0; }
+
+    .upload-box {
+      display:flex; align-items:center; justify-content:center;
+      width:100%; height:180px;
+      border:2px dashed #cbd5e1; border-radius:12px;
+      background:#f8fafc; cursor:pointer; transition:all .25s;
+      text-align:center;
+    }
+    .upload-box:hover { border-color:var(--green); background:#f0fdf4; }
+    .upload-icon { font-size:34px; color:#9ca3af; margin-bottom:8px; }
+    .upload-title { font-size:15px; font-weight:600; margin-bottom:4px; }
+    .upload-sub { font-size:13px; color:#64748b; }
+    .upload-actions { display:flex; gap:12px; margin-top:14px; }
+
+    @media(max-width:768px){
+      .form-row { grid-template-columns:1fr; }
+      .toolbar { padding:12px 16px; }
+      .content-area { padding:0 16px 32px; }
+      .header { padding:0 16px; }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="logo"><span>Xana</span><span>Health</span></div>
+    <nav class="nav-section">
+      <div class="nav-label">Reception / Cashier</div>
+      <a href="#" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard
+      </a>
+      <a href="#" class="nav-item active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>New Patient File
+      </a>
+      <a href="patient_list.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>Patients List
+      </a>
+      <a href="patient_visits.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Patient Visits
+      </a>
+      <a href="appointments.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Appointments
+      </a>
+      <a href="billing.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>Billing
+      </a>
+    </nav>
+
+    <!-- Spacer pushes user section to bottom -->
+    <div class="sidebar-spacer"></div>
+
+    <div class="user-section">
+      <div class="user-profile">
+        <div class="user-avatar">JD</div>
+        <div class="user-info"><h4>Jane Doe</h4><p>Receptionist</p></div>
+      </div>
+      <div class="user-actions">
+        <a href="#" class="user-action">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Help
+        </a>
+        <a href="#" class="user-action">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Logout
+        </a>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="main-content">
+
+    <!-- Header -->
+    <header class="header">
+      <h1>New Patient Information</h1>
+      <div class="header-right">
+        <svg class="notification-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+        </svg>
+        <div class="company-dropdown">
+          <span>Company Logo</span>
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M6 9L1 4h10z"/></svg>
+        </div>
+      </div>
+    </header>
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+      <div class="toolbar-left">
+        <button class="filter-btn">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/>
+            <line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/>
+            <line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/>
+          </svg>Filter by
+        </button>
+        <div class="search-box">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <input type="text" placeholder="Search all patients"/>
+        </div>
+        <button class="action-btn">Action <svg width="11" height="11" viewBox="0 0 12 12" fill="currentColor"><path d="M6 9L1 4h10z"/></svg></button>
+      </div>
+    </div>
+
+    <!-- Scrollable form area -->
+    <div class="content-area">
+      <form class="patient-form" id="patientForm" onsubmit="return false">
+
+        <!-- ══ PATIENT BIODATA ══ -->
+        <div class="section-header" onclick="toggleSection(this)">
+          <h2>Patient Biodata</h2>
+          <button type="button" class="collapse-btn">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>
+            Collapse
+          </button>
+        </div>
+        <div class="section-body">
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>National File Number</label>
+              <div class="input-with-btn">
+                <input type="text" placeholder="0000000000000"/>
+                <button type="button" class="fetch-btn">Fetch Patient Info</button>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Internal File Number</label>
+              <input type="text" placeholder="0000000000000"/>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>First Name <span class="required-tag">* Required</span></label>
+              <input type="text" placeholder="Enter patient's first name"/>
+            </div>
+            <div class="form-group">
+              <label>Middle Name <span class="optional-tag">Optional</span></label>
+              <input type="text" placeholder="Enter patient's middle name"/>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Last Name <span class="required-tag">* Required</span></label>
+              <input type="text" placeholder="Enter patient's last name"/>
+            </div>
+            <div class="form-group">
+              <label>Gender <span class="required-tag">* Required</span></label>
+              <select>
+                <option value="">Select a gender</option>
+                <option>Male</option>
+                <option>Female</option>
+                <option>Other</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Marital Status</label>
+              <select>
+                <option value="">Select marital status</option>
+                <option>Single</option>
+                <option>Married</option>
+                <option>Divorced</option>
+                <option>Widowed</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Date of Birth</label>
+              <input type="date"/>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Nationality</label>
+              <div class="phone-group">
+                <input id="phone-nationality" type="tel" name="nationality_phone" placeholder="Select country code"/>
+                <input type="hidden" id="nationality-full" name="nationality_full"/>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>National ID</label>
+              <input type="text" placeholder="Enter National ID number"/>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Passport Number</label>
+              <input type="text" placeholder="Enter passport number"/>
+            </div>
+            <div class="form-group">
+              <label>Blood Group</label>
+              <select>
+                <option value="">Select blood group</option>
+                <option>A+</option><option>A−</option>
+                <option>B+</option><option>B−</option>
+                <option>AB+</option><option>AB−</option>
+                <option>O+</option><option>O−</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Known Allergies</label>
+              <input type="text" placeholder="e.g. Penicillin, Pollen"/>
+            </div>
+            <div class="form-group">
+              <label>Deceased At <span class="optional-tag">If applicable</span></label>
+              <input type="date"/>
+            </div>
+          </div>
+
+        </div><!-- /section-body -->
+
+        <!-- ══ CONTACT INFORMATION ══ -->
+        <div class="section-header" onclick="toggleSection(this)">
+          <h2>Patient Contact Information</h2>
+          <button type="button" class="collapse-btn">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>
+            Collapse
+          </button>
+        </div>
+        <div class="section-body">
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Email</label>
+              <input type="email" placeholder="patient@example.com"/>
+            </div>
+            <div class="form-group">
+              <label>Phone Number 1 <span class="required-tag">* Required</span></label>
+              <div class="phone-group">
+                <input id="phone-1" type="tel" name="phone1" placeholder="Enter phone number"/>
+                <input type="hidden" id="phone1-full" name="phone1_full"/>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Phone Number 2 <span class="optional-tag">Optional</span></label>
+              <div class="phone-group">
+                <input id="phone-2" type="tel" name="phone2" placeholder="Enter phone number"/>
+                <input type="hidden" id="phone2-full" name="phone2_full"/>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Country of Residence</label>
+              <input type="text" placeholder="e.g. Rwanda"/>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Province / State</label>
+              <input type="text" placeholder="Enter province or state"/>
+            </div>
+            <div class="form-group">
+              <label>District / Local Government</label>
+              <input type="text" placeholder="Enter district"/>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Sector / City</label>
+              <input type="text" placeholder="Enter sector or city"/>
+            </div>
+            <div class="form-group">
+              <label>Cell</label>
+              <input type="text" placeholder="Enter cell"/>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Village</label>
+              <input type="text" placeholder="Enter village"/>
+            </div>
+            <div class="form-group">
+              <label>Street</label>
+              <input type="text" placeholder="Enter street"/>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ══ PARENT'S INFORMATION ══ -->
+        <div class="section-header" onclick="toggleSection(this)">
+          <h2>Parent's Information</h2>
+          <button type="button" class="collapse-btn">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>
+            Collapse
+          </button>
+        </div>
+        <div class="section-body">
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Father's Full Name</label>
+              <input type="text" placeholder="Enter father's full name"/>
+            </div>
+            <div class="form-group">
+              <label>Father's Phone Number</label>
+              <div class="phone-group">
+                <input id="phone-father" type="tel" name="father_phone" placeholder="Enter phone number"/>
+                <input type="hidden" id="father-phone-full" name="father_phone_full"/>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Mother's Full Name</label>
+              <input type="text" placeholder="Enter mother's full name"/>
+            </div>
+            <div class="form-group">
+              <label>Mother's Phone Number</label>
+              <div class="phone-group">
+                <input id="phone-mother" type="tel" name="mother_phone" placeholder="Enter phone number"/>
+                <input type="hidden" id="mother-phone-full" name="mother_phone_full"/>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ══ EMERGENCY CONTACT ══ -->
+        <div class="section-header" onclick="toggleSection(this)">
+          <h2>Emergency Contact</h2>
+          <button type="button" class="collapse-btn">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>
+            Collapse
+          </button>
+        </div>
+        <div class="section-body">
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>First Name</label>
+              <input type="text" placeholder="Enter first name"/>
+            </div>
+            <div class="form-group">
+              <label>Last Name</label>
+              <input type="text" placeholder="Enter last name"/>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Email</label>
+              <input type="email" placeholder="emergency@example.com"/>
+            </div>
+            <div class="form-group">
+              <label>Phone Number <span class="required-tag">* Required</span></label>
+              <div class="phone-group">
+                <input id="phone-emergency" type="tel" name="emergency_phone" placeholder="Enter phone number"/>
+                <input type="hidden" id="emergency-phone-full" name="emergency_phone_full"/>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Country</label>
+              <input type="text" placeholder="Enter country"/>
+            </div>
+            <div class="form-group">
+              <label>Province / State</label>
+              <input type="text" placeholder="Enter province or state"/>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>District / Local Government</label>
+              <input type="text" placeholder="Enter district"/>
+            </div>
+            <div class="form-group">
+              <label>Sector / City</label>
+              <input type="text" placeholder="Enter sector or city"/>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Cell</label>
+              <input type="text" placeholder="Enter cell"/>
+            </div>
+            <div class="form-group">
+              <label>Village</label>
+              <input type="text" placeholder="Enter village"/>
+            </div>
+          </div>
+
+          <div class="form-row single">
+            <div class="form-group">
+              <label>Street</label>
+              <input type="text" placeholder="Enter street"/>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ══ PATIENT IMAGE ══ -->
+        <div class="section-header" onclick="toggleSection(this)">
+          <h2>Patient's Image <span class="optional-tag" style="font-size:13px;font-weight:400;color:#9ca3af">Optional</span></h2>
+          <button type="button" class="collapse-btn">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>
+            Collapse
+          </button>
+        </div>
+        <div class="section-body">
+          <label class="upload-box">
+            <input type="file" accept=".png,.jpg,.jpeg" hidden onchange="previewFile(this)"/>
+            <div>
+              <div class="upload-icon">⬆</div>
+              <p class="upload-title">Upload patient photo here</p>
+              <p class="upload-sub">Supported formats: PNG, JPEG &nbsp;·&nbsp; Max 5 MB</p>
+            </div>
+          </label>
+          <div class="upload-actions">
+            <button type="button" class="btn-green" onclick="document.querySelector('.upload-box input').click()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              Choose File
+            </button>
+            <button type="button" class="btn-outline-green">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+              Take Photo With Webcam
+            </button>
+          </div>
+        </div>
+
+        <!-- ══ SUBMIT ══ -->
+        <div style="display:flex;justify-content:flex-end;gap:12px;margin-top:32px;padding-top:24px;border-top:1px solid #e5e5e5">
+          <button type="button" class="btn-outline-green">Cancel</button>
+          <button type="submit" class="btn-green" style="padding:11px 32px;font-size:15px;font-weight:600">Save Patient</button>
+        </div>
+
+      </form>
+    </div><!-- /content-area -->
+  </main>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
+<script>
+  // ── Init all phone inputs ──
+  const phoneIds = ['phone-nationality','phone-1','phone-2','phone-father','phone-mother','phone-emergency'];
+  const phoneInstances = {};
+
+  phoneIds.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    phoneInstances[id] = window.intlTelInput(el, {
+      preferredCountries: ['rw','ug','ke','tz','cd','us','gb'],
+      separateDialCode: true,
+      utilsScript: 'https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js',
+    });
+  });
+
+  // ── Collapse / Expand toggle ──
+  function toggleSection(header) {
+    const body = header.nextElementSibling;
+    const btn  = header.querySelector('.collapse-btn');
+    const icon = btn.querySelector('svg');
+
+    if (!body || !body.classList.contains('section-body')) return;
+
+    const isCollapsed = body.classList.contains('collapsed');
+
+    if (isCollapsed) {
+      body.classList.remove('collapsed');
+      btn.childNodes[btn.childNodes.length - 1].textContent = ' Collapse';
+      icon.innerHTML = '<polyline points="18 15 12 9 6 15"/>';
+    } else {
+      body.classList.add('collapsed');
+      btn.childNodes[btn.childNodes.length - 1].textContent = ' Expand';
+      icon.innerHTML = '<polyline points="6 9 12 15 18 9"/>';
+    }
+  }
+
+  // ── Prevent button click from double-firing header click ──
+  document.querySelectorAll('.collapse-btn').forEach(btn => {
+    btn.addEventListener('click', e => e.stopPropagation());
+    btn.addEventListener('click', () => {
+      toggleSection(btn.closest('.section-header'));
+    });
+  });
+
+  // ── Form submit: populate hidden full-number fields ──
+  document.getElementById('patientForm').addEventListener('submit', () => {
+    Object.entries(phoneInstances).forEach(([id, instance]) => {
+      const hiddenId = id.replace('phone-', '') + '-full';
+      const el = document.getElementById(hiddenId);
+      if (el) el.value = instance.getNumber();
+    });
+  });
+</script>
+</body>
+</html>

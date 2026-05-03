@@ -1,0 +1,1038 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>XanaHealth - Billing</title>
+  
+    <link href="css/layout/navigation.css" rel="stylesheet"/>
+     <link href="css/pages/billing.css" rel="stylesheet"/>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <script src="js/navigation/navbar.js" defer></script>
+  <style>
+   
+  </style>
+</head>
+<body>
+<div class="container">
+  <aside class="sidebar">
+    <div class="logo"><span>Xana</span><span>Health</span></div>
+    <nav class="nav-section">
+      <div class="nav-label">RECEPTION/CASHIER</div>
+      <div id="nav-links"></div>
+ 
+    </nav>
+    <div class="user-section">
+      <div class="user-profile">
+        <div class="user-avatar"><img src="https://i.pravatar.cc/150?img=47" alt="User"/></div>
+        <div class="user-info"><h4>Jane Doe</h4><p>Receptionist</p></div>
+      </div>
+      <div class="user-actions">
+        <a href="#" class="user-action"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Help</a>
+        <a href="#" class="user-action"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Logout</a>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main-content">
+    <header class="header">
+      <h1>Billing</h1>
+      <div class="header-right">
+        <svg class="notification-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <div class="company-dropdown"><span>Company Logo</span><svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M6 9L1 4h10z"/></svg></div>
+      </div>
+    </header>
+    <div class="content-area">
+      <div class="controls">
+        <button class="filter-btn" onclick="openFilterModal()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>Filter by
+        </button>
+        <div class="search-box"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input type="text" placeholder="Search all patients"/></div>
+        <button class="clear-filter-btn" onclick="clearAllFilters()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Clear filter
+        </button>
+      </div>
+      <div class="applied-filters" id="appliedFiltersBar" style="display:none">
+        <span class="filter-label">Applied Filter</span>
+        <div class="filter-tag" id="filterTagDate" style="display:none"></div>
+        <div class="filter-tag" id="filterTagIns" style="display:none"></div>
+        <div class="filter-tag" id="filterTagStatus" style="display:none"></div>
+      </div>
+      <div class="table-container">
+        <table id="visitsTable">
+          <thead>
+            <tr>
+              <th><input type="checkbox" class="checkbox"/></th>
+              <th>Date</th><th>Patient Name</th><th>Invoice</th>
+              <th>Doctor</th><th>Department</th>
+              <th>Insurance</th><th>Insurance Cont.</th><th>Patient Cont.</th>
+              <th>Total</th><th>Balance</th><th>Status</th><th>View</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr onclick="openInvoice('raekwon')">
+              <td><input type="checkbox" class="checkbox" onclick="event.stopPropagation()"/></td>
+              <td>05/23/2025</td><td>Raekwon Gbeho</td><td style="font-family:'IBM Plex Mono',monospace;font-size:11px">#03336/2021</td>
+              <td>Dr. Uwimana</td><td>Consultation</td>
+              <td>RSSB</td><td>Rwf 10,322</td><td>Rwf 1,822</td>
+              <td style="font-weight:600">Rwf 12,144</td><td style="color:#ef4444;font-weight:600">Rwf 403</td>
+              <td><span class="status-badge badge-partial">Partial</span></td>
+              <td onclick="event.stopPropagation()"><button class="eye-btn" onclick="openInvoice('raekwon')"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button></td>
+            </tr>
+            <tr onclick="openInvoice('milani')">
+              <td><input type="checkbox" class="checkbox" onclick="event.stopPropagation()"/></td>
+              <td>2025/05/24</td><td>Milani Mostafa</td><td style="font-family:'IBM Plex Mono',monospace;font-size:11px">#03337/2021</td>
+              <td>Dr. Nkusi</td><td>Laboratory</td>
+              <td>MMI</td><td>Rwf 8,000</td><td>Rwf 2,000</td>
+              <td style="font-weight:600">Rwf 10,000</td><td style="color:#ef4444;font-weight:600">Rwf 10,000</td>
+              <td><span class="status-badge badge-unpaid">Unpaid</span></td>
+              <td onclick="event.stopPropagation()"><button class="eye-btn" onclick="openInvoice('milani')"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button></td>
+            </tr>
+            <tr onclick="openInvoice('imani')">
+              <td><input type="checkbox" class="checkbox" onclick="event.stopPropagation()"/></td>
+              <td>2025/05/24</td><td>Imani Adimbaki</td><td style="font-family:'IBM Plex Mono',monospace;font-size:11px">#03338/2021</td>
+              <td>Dr. Habimana</td><td>Pharmacy</td>
+              <td>RSSB</td><td>Rwf 5,500</td><td>Rwf 1,419</td>
+              <td style="font-weight:600">Rwf 6,919</td><td style="color:#059669;font-weight:600">Rwf 0</td>
+              <td><span class="status-badge badge-paid">Paid</span></td>
+              <td onclick="event.stopPropagation()"><button class="eye-btn" onclick="openInvoice('imani')"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button></td>
+            </tr>
+            <tr onclick="openInvoice('kwame')">
+              <td><input type="checkbox" class="checkbox" onclick="event.stopPropagation()"/></td>
+              <td>2025/05/24</td><td>Kwame Mensah</td><td style="font-family:'IBM Plex Mono',monospace;font-size:11px">#03339/2021</td>
+              <td>Dr. Mutoni</td><td>Radiology</td>
+              <td>Activa</td><td>Rwf 14,000</td><td>Rwf 3,500</td>
+              <td style="font-weight:600">Rwf 17,500</td><td style="color:#ef4444;font-weight:600">Rwf 17,500</td>
+              <td><span class="status-badge badge-unpaid">Unpaid</span></td>
+              <td onclick="event.stopPropagation()"><button class="eye-btn" onclick="openInvoice('kwame')"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button></td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="pagination">
+          <button class="page-btn" disabled>Previous</button>
+          <button class="page-btn active">1</button><button class="page-btn">2</button><button class="page-btn">3</button>
+          <button class="page-btn">Next</button>
+          <span class="page-info">1/03</span>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Filter Report Modal -->
+<div class="filter-modal-overlay" id="filterModal" onclick="handleFilterOverlayClick(event)">
+  <div class="filter-modal">
+    <div class="filter-modal-header">
+      <h2>Filter Report</h2>
+      <button class="filter-close-btn" onclick="closeFilterModal()">×</button>
+    </div>
+    <div class="filter-modal-body">
+      <div class="filter-section">
+        <span class="filter-section-label">Date Range</span>
+        <div class="filter-date-row">
+          <input type="date" class="filter-date-input" id="filterDateFrom" value="2026-01-20"/>
+          <span class="filter-date-sep">to</span>
+          <input type="date" class="filter-date-input" id="filterDateTo" value="2026-02-19"/>
+        </div>
+        <div class="filter-date-hint">Maximum 31 days range</div>
+      </div>
+      <div class="filter-section">
+        <span class="filter-section-label">Insurance Provider</span>
+        <select class="filter-select" id="filterInsurance">
+          <option value="">All providers</option>
+          <option value="RSSB">RSSB</option>
+          <option value="MMI">MMI</option>
+          <option value="Activa">Activa</option>
+          <option value="Radiant">Radiant</option>
+          <option value="CORAR">CORAR</option>
+          <option value="none">None / Private Pay</option>
+        </select>
+      </div>
+      <div class="filter-section" style="margin-bottom:0">
+        <span class="filter-section-label">Claim Status</span>
+        <select class="filter-select" id="filterStatus">
+          <option value="">All</option>
+          <option value="paid">Paid</option>
+          <option value="unpaid">Unpaid</option>
+          <option value="partial">Partial</option>
+        </select>
+      </div>
+    </div>
+    <div class="filter-modal-footer">
+      <button class="filter-cancel-btn" onclick="closeFilterModal()">Cancel</button>
+      <button class="filter-apply-btn" onclick="applyFilters()">Apply Filters</button>
+    </div>
+  </div>
+</div>
+
+<!-- Invoice Overlay -->
+<div class="overlay" id="invoiceOverlay" onclick="handleInvoiceOverlayClick(event)">
+  <div class="invoice-page">
+    <div class="invoice-topbar">
+      <div class="inv-topbar-left">
+        <button class="back-btn" onclick="closeInvoice()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>Back</button>
+        <span class="inv-title">Patient Invoice <span id="invNumber" style="font-size:13px;color:#6b7280;font-family:'IBM Plex Mono',monospace;font-weight:400"></span></span>
+      </div>
+      <div class="inv-topbar-right">
+        <button class="inv-btn" onclick="downloadInvoicePDF()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Download PDF
+        </button>
+        <div class="send-wrapper" id="sendWrapper">
+          <button class="send-btn" id="sendBtnEl" onclick="toggleSendMenu()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            Send
+            <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="send-menu" id="sendMenu">
+            <div class="send-option" onclick="sendViaWhatsApp()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#25D366" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+              Send via WhatsApp
+            </div>
+            <div class="send-option" onclick="sendViaEmail()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#4f46e5" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="2,4 12,13 22,4"/></svg>
+              Send via Email
+            </div>
+          </div>
+        </div>
+        <button class="inv-btn green">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Edit visit info
+        </button>
+        <div class="inv-ebm-wrapper" id="inv-ebm">
+          <button class="inv-ebm-btn" onclick="toggleEbm('inv-ebm')">
+            EBM Receipt <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="ebm-menu" id="inv-ebm-menu">
+            <div class="ebm-menu-header">Select Receipt Type</div>
+            <div class="ebm-option" onclick="openReceiptFromInvoice('sale')"><span class="ebm-option-dot dot-sale"></span><div class="ebm-option-info"><strong>Generate EBM (Sale)</strong><span>Normal / Official</span></div></div>
+            <div class="ebm-option" onclick="openReceiptFromInvoice('refund')"><span class="ebm-option-dot dot-refund"></span><div class="ebm-option-info"><strong>Refund Receipt</strong><span>Copy Refund (CR)</span></div></div>
+            <div class="ebm-option" onclick="openReceiptFromInvoice('proforma')"><span class="ebm-option-dot dot-proforma"></span><div class="ebm-option-info"><strong>Proforma Invoice</strong><span>Not Official</span></div></div>
+            <div class="ebm-option" onclick="openReceiptFromInvoice('training')"><span class="ebm-option-dot dot-training"></span><div class="ebm-option-info"><strong>Training Receipt</strong><span>Simulation Only</span></div></div>
+          </div>
+        </div>
+        <button class="inv-btn red">Delete</button>
+      </div>
+    </div>
+
+    <div class="invoice-body">
+      <div class="invoice-main">
+        <!-- Visit Info -->
+        <div class="inv-card">
+          <div class="inv-card-header">
+            <h3>Visit information</h3>
+            <span id="invStatusBadge" class="status-badge badge-unpaid">UNPAID</span>
+          </div>
+          <div class="visit-info-grid">
+            <div class="visit-col"><h4>Shema Clinic</h4><div class="info-row">Kigali City, Rwanda</div><div class="info-row">Tel: +250000000000</div><div class="info-row">Email: info@shemaclinic.rw</div></div>
+            <div class="visit-col"><div class="info-row">Patient: <span id="invPatientName">—</span></div><div class="info-row">File No: <span id="invFileNo">—</span></div><div class="info-row">Phone: <span>+250 000 000 000</span></div></div>
+            <div class="visit-col"><div class="info-row">Visit No: <span id="invVisitNo" style="color:#059669;font-weight:600">—</span></div><div class="info-row">Department: <span id="invDept">—</span></div><div class="info-row">Insurance: <span id="invInsurance">—</span></div><div class="info-row">Copay: <span id="invCopay">—</span></div></div>
+          </div>
+          <div class="visit-tags">
+            <span class="visit-tag tag-visit" id="invVisitTag">V/—</span>
+            <span class="visit-tag tag-dept" id="invDeptTag">—</span>
+            <span class="visit-tag tag-ins" id="invInsTag">—</span>
+            <span class="visit-tag tag-copay" id="invCopayTag">—</span>
+            <div style="margin-left:auto;font-size:11px;color:#6b7280" id="invDate">—</div>
+          </div>
+        </div>
+
+        <!-- Invoice Items Card -->
+        <div class="inv-card">
+          <div class="inv-card-header">
+            <h3>Invoice items <span style="color:#9ca3af;font-size:12px;font-weight:400" id="invItemCount">(0)</span></h3>
+          </div>
+          <div id="categoryTablesContainer"></div>
+        </div>
+
+        <!-- Invoice Summary -->
+        <div class="inv-summary-card">
+          <div class="inv-card-header"><h3>Invoice Summary</h3></div>
+          <table class="inv-summary-table">
+            <tr><td>Sub-total (all items):</td><td id="sumSubtotal">0</td></tr>
+            <tr id="sumInsRow">
+              <td>
+                <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+                  <span>Insurance</span>
+                  <select id="summaryInsuranceSelect" onchange="onSummaryInsuranceChange()" style="padding:4px 28px 4px 9px;border:1px solid #d1d5db;border-radius:5px;font-size:12px;color:#374151;outline:none;background:#fff url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2210%22 height=%2210%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%236b7280%22 stroke-width=%222%22%3E%3Cpolyline points=%226 9 12 15 18 9%22/%3E%3C/svg%3E') no-repeat right 8px center;appearance:none;font-family:'Inter',sans-serif">
+                    <option value="none|0">None / Private</option>
+                    <option value="RSSB|85">RSSB (85%)</option>
+                    <option value="MMI|80">MMI (80%)</option>
+                    <option value="Activa|75">Activa (75%)</option>
+                    <option value="Radiant|70">Radiant (70%)</option>
+                    <option value="CORAR|65">CORAR (65%)</option>
+                  </select>
+                  <span id="sumInsPctLabel" style="font-size:12px;color:#059669;font-weight:600"></span>
+                </div>
+              </td>
+              <td id="sumInsurance" style="color:#059669">0</td>
+            </tr>
+            <tr><td>Patient contribution:</td><td id="sumPatient">0</td></tr>
+            <tr><td>Amount Paid (by patient):</td><td id="sumPaid">0</td></tr>
+            <tr class="balance-row"><td><strong>Patient Balance Due:</strong></td><td id="sumBalance" style="color:#ef4444"><strong>0</strong></td></tr>
+          </table>
+          <div class="initiated-by">Visit initiated by: <strong>Mrs. Agathe Amina Uwera</strong></div>
+        </div>
+
+        <!-- RSSB Details -->
+        <div class="rssb-card" id="rssbSection" style="display:none">
+          <div class="rssb-card-header">RSSB Details</div>
+          <div class="rssb-body">
+            <div class="rssb-col">
+              <h4>Beneficiary Details</h4>
+              <div class="rssb-field"><strong>Full Name:</strong><input class="rssb-underline" type="text" placeholder="_______________"/></div>
+              <div class="rssb-field"><strong>Phone:</strong><input class="rssb-underline" type="text" placeholder="_______________"/></div>
+              <div class="rssb-field"><strong>Beneficiary relationship:</strong><input class="rssb-underline" type="text" value="Spouse"/></div>
+              <div class="rssb-field"><strong>Signature:</strong><input class="rssb-underline" type="text" placeholder="_______________"/></div>
+            </div>
+            <div class="rssb-col">
+              <h4>Treatment Information</h4>
+              <div class="rssb-field"><strong>Disease Type:</strong><input class="rssb-underline" type="text" value="Natural disease"/></div>
+              <div class="rssb-field"><strong>Status:</strong><input class="rssb-underline" type="text" placeholder="_______________"/></div>
+              <div class="rssb-field"><strong>Entry Date:</strong><input class="rssb-underline" type="text" id="rssbEntryDate"/></div>
+              <div class="rssb-field"><strong>Discharge Date:</strong><input class="rssb-underline" type="text" placeholder="_______________"/></div>
+            </div>
+            <div class="rssb-col">
+              <h4>Attending Doctor</h4>
+              <div class="rssb-field"><strong>Name:</strong><input class="rssb-underline" type="text" id="rssbDoctorName"/></div>
+              <div class="rssb-field"><strong>License #:</strong><input class="rssb-underline" type="text" placeholder="_______________"/></div>
+              <div class="rssb-field"><strong>Signature:</strong><input class="rssb-underline" type="text" placeholder="_______________"/></div>
+              <div class="rssb-field"><strong>Stamp:</strong><input class="rssb-underline" type="text" placeholder="_______________"/></div>
+            </div>
+          </div>
+          <div class="rssb-footer"><strong>Facility stamp:</strong> <input class="rssb-underline" type="text" placeholder="_______________" style="max-width:200px"/></div>
+        </div>
+
+        <!-- Cash Paid -->
+        <div class="inv-card">
+          <div class="inv-card-header"><h3>Cash Paid</h3></div>
+          <table class="cash-table">
+            <thead><tr><th>Date</th><th>Amount</th><th>Received by</th><th>Method</th><th></th></tr></thead>
+            <tbody id="cashPaidBody">
+              <tr id="noCashRow"><td colspan="5" style="text-align:center;color:#9ca3af;font-size:12px;padding:14px">No payments recorded</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Right side -->
+      <div class="invoice-side">
+        <!-- Add items -->
+        <div class="side-card">
+          <div class="side-card-header">Add items to this invoice</div>
+          <div class="side-card-body">
+            <div class="form-group">
+              <label>Select Product</label>
+              <select class="form-control" id="productSelect" onchange="onProductChange()">
+                <option value="">Search for a product...</option>
+                <optgroup label="Medical Acts">
+                  <option value="General Consultation|Medical Acts|2690">General Consultation — Rwf 2,690</option>
+                  <option value="Intra oral peri apical x-ray|Medical Acts|16000">Intra oral peri apical x-ray — Rwf 16,000</option>
+                  <option value="Indirect pulp caping|Medical Acts|23000">Indirect pulp caping — Rwf 23,000</option>
+                  <option value="Crown and bridge (per unit)|Medical Acts|240000">Crown and bridge (per unit) — Rwf 240,000</option>
+                  <option value="Reconstruction of fractured crown|Medical Acts|81000">Reconstruction of fractured crown — Rwf 81,000</option>
+                </optgroup>
+                <optgroup label="Laboratory">
+                  <option value="Full blood count (NFS)|Laboratory|500">Full blood count (NFS) — Rwf 500</option>
+                  <option value="Malaria RDT|Laboratory|200">Malaria RDT — Rwf 200</option>
+                  <option value="Blood glucose|Laboratory|300">Blood glucose — Rwf 300</option>
+                </optgroup>
+                <optgroup label="Pharmacy">
+                  <option value="Amoxicillin 500mg caps|Pharmacy|200">Amoxicillin 500mg caps — Rwf 200/unit</option>
+                  <option value="Ibuprofen 400mg tabs|Pharmacy|100">Ibuprofen 400mg tabs — Rwf 100/unit</option>
+                  <option value="Metronidazole 500mg|Pharmacy|150">Metronidazole 500mg — Rwf 150/unit</option>
+                </optgroup>
+                <optgroup label="Radiology">
+                  <option value="Chest X-ray|Radiology|8000">Chest X-ray — Rwf 8,000</option>
+                  <option value="Echocardiography|Radiology|25000">Echocardiography — Rwf 25,000</option>
+                </optgroup>
+              </select>
+            </div>
+            <div class="form-group" id="productInfoBox" style="display:none">
+              <div style="padding:9px 11px;background:#f9fafb;border:1px solid #e5e5e5;border-radius:6px;font-size:11px">
+                <div style="display:flex;justify-content:space-between;margin-bottom:3px"><span style="color:#6b7280">Category</span><span style="font-weight:600;color:#374151" id="pCategory">—</span></div>
+                <div style="display:flex;justify-content:space-between"><span style="color:#6b7280">Unit Price</span><span style="font-weight:600;color:#059669" id="pPrice">—</span></div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Quantity</label>
+              <input type="number" class="form-control" value="1" min="1" id="qtyInput"/>
+            </div>
+            <div class="form-group">
+              <label>Note <span style="font-weight:400;color:#9ca3af">(optional)</span></label>
+              <input type="text" class="form-control" id="itemNote" placeholder="e.g. tooth 16, take 3×/day…"/>
+            </div>
+            <button class="side-submit-btn green" onclick="addItemToInvoice()">Submit</button>
+          </div>
+        </div>
+
+        <!-- Record Payment — only shown when balance > 0 -->
+        <div class="side-card" id="recordPaymentCard" style="display:none">
+          <div class="side-card-header">Record Payment</div>
+          <div class="side-card-body">
+            <div class="form-group"><label>Amount</label><input type="number" class="form-control" id="paymentAmount" placeholder="RWF"/></div>
+            <div class="form-group">
+              <label>Payment Method</label>
+              <select class="form-control" id="paymentMethod">
+                <option value="">Select payment method...</option>
+                <option>Cash</option><option>Mobile Money (MTN)</option><option>Mobile Money (Airtel)</option>
+                <option>Bank Card</option><option>Bank Transfer</option><option>Insurance Direct</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Transaction Reference</label>
+              <input type="text" class="form-control" id="paymentRef" placeholder="Required for non-cash payments"/>
+              <div style="font-size:10px;color:#9ca3af;margin-top:3px">Required for non-cash payments</div>
+            </div>
+            <button class="side-submit-btn green" onclick="recordPayment()">Submit</button>
+          </div>
+        </div>
+
+        <!-- Payments & Audit Trail -->
+        <div class="side-card">
+          <div class="side-card-header" style="display:flex;align-items:center;justify-content:space-between">
+            <span>Payments &amp; Audit Trail</span>
+            <span id="auditCount" style="background:#f3f4f6;border-radius:10px;padding:2px 8px;font-size:11px;color:#6b7280;font-weight:600">0</span>
+          </div>
+          <div id="auditTrailContainer">
+            <div class="audit-empty" id="auditEmptyMsg">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              No payments recorded
+            </div>
+            <div id="auditSectionLabel" class="audit-section-label" style="display:none">Payments</div>
+            <div id="auditItemsList"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Receipt Modal -->
+<div class="receipt-modal-overlay" id="receiptModal" onclick="handleReceiptOverlayClick(event)">
+  <div class="receipt-modal-box">
+    <div class="receipt-topbar">
+      <div class="receipt-topbar-left">
+        <span class="rtype-badge" id="receiptBadge"></span>
+        <h3 id="receiptTitle"></h3>
+      </div>
+      <button class="modal-close-btn" onclick="closeReceipt()">✕</button>
+    </div>
+    <div class="receipt-scroll"><div class="receipt-paper" id="receiptContent"></div></div>
+    <div class="receipt-footer">
+      <button class="rfooter-btn primary" onclick="closeReceipt()">Close</button>
+    </div>
+  </div>
+</div>
+<div class="printable-frame" id="printableFrame"></div>
+
+<script>
+const patients = {
+  raekwon: { name:'Raekwon Gbeho', invoice:'#03336/2021', total:12144, recNum:'152', date:'23/05/2023 - 10:14', insurance:'RSSB', copay:15, dept:'Consultation', visitNo:'V/RG/0336/2023', fileNo:'F/001/7', status:'partial', doctor:'Dr. Uwimana' },
+  milani:  { name:'Milani Mostafa', invoice:'#03337/2021', total:10000, recNum:'153', date:'24/05/2023 - 11:05', insurance:'MMI', copay:20, dept:'Laboratory', visitNo:'V/MM/0337/2023', fileNo:'F/002/7', status:'unpaid', doctor:'Dr. Nkusi' },
+  imani:   { name:'Imani Adimbaki', invoice:'#03338/2021', total:6919, recNum:'154', date:'05/12/2023 - 12:34', insurance:'RSSB', copay:15, dept:'Pharmacy', visitNo:'V/IA/0338/2023', fileNo:'F/003/7', status:'paid', doctor:'Dr. Habimana' },
+  kwame:   { name:'Kwame Mensah', invoice:'#03339/2021', total:17500, recNum:'155', date:'26/05/2023 - 09:22', insurance:'Activa', copay:25, dept:'Radiology', visitNo:'V/KM/0339/2023', fileNo:'F/004/7', status:'unpaid', doctor:'Dr. Mutoni' },
+};
+const defaultItems = {
+  raekwon: { 'Medical Acts': [ { name:'Intra oral peri apical x-ray', note:'16', qty:1, unitCost:16000, insPct:85 }, { name:'Indirect pulp caping', note:'tooth 16', qty:1, unitCost:23000, insPct:85 } ] },
+  milani:  { 'Laboratory': [ { name:'Full blood count (NFS)', note:'', qty:1, unitCost:500, insPct:80 }, { name:'Malaria RDT', note:'', qty:1, unitCost:200, insPct:80 } ] },
+  imani:   { 'Pharmacy': [ { name:'Amoxicillin 500mg caps', note:'Take 3×/day ×7 days', qty:21, unitCost:200, insPct:85 }, { name:'Ibuprofen 400mg tabs', note:'As needed', qty:10, unitCost:100, insPct:85 } ] },
+  kwame:   { 'Radiology': [ { name:'Chest X-ray', note:'', qty:1, unitCost:8000, insPct:75 } ] },
+};
+
+let currentPatientId = null, invoiceItems = {}, payments = [], totalPaid = 0;
+let currentReceiptHTML = '';
+let currentInsPct = 0; // summary-level insurance %
+
+function addItemToInvoice() {
+  const prodSel = document.getElementById('productSelect').value;
+  if (!prodSel) { alert('Please select a product'); return; }
+  const parts = prodSel.split('|');
+  const name = parts[0], category = parts[1], unitCost = Number(parts[2]);
+  const qty = Number(document.getElementById('qtyInput').value) || 1;
+  const note = document.getElementById('itemNote').value.trim();
+  if (!invoiceItems[category]) invoiceItems[category] = [];
+  invoiceItems[category].push({ name, note, qty, unitCost });
+  renderInvoiceTables();
+  document.getElementById('productSelect').value = '';
+  document.getElementById('qtyInput').value = 1;
+  document.getElementById('itemNote').value = '';
+  document.getElementById('productInfoBox').style.display = 'none';
+}
+
+function deleteItem(category, idx) {
+  invoiceItems[category].splice(idx, 1);
+  if (!invoiceItems[category].length) delete invoiceItems[category];
+  renderInvoiceTables();
+}
+
+function renderInvoiceTables() {
+  const container = document.getElementById('categoryTablesContainer');
+  container.innerHTML = '';
+  const categories = Object.keys(invoiceItems);
+  let grandTotal = 0, totalItems = 0;
+
+  if (!categories.length) {
+    container.innerHTML = '<div style="padding:20px;text-align:center;color:#9ca3af;font-size:12px">No items added yet.</div>';
+  }
+
+  categories.forEach(cat => {
+    const items = invoiceItems[cat];
+    let catTotal = 0;
+
+    const hdr = document.createElement('div');
+    hdr.className = 'category-header';
+    hdr.innerHTML = `<span class="category-title">${cat}</span>`;
+    container.appendChild(hdr);
+
+    const tbl = document.createElement('table');
+    tbl.className = 'items-table';
+    tbl.innerHTML = `<thead><tr><th>#</th><th>Description</th><th>Qty</th><th>Unit Cost</th><th>Total</th><th></th></tr></thead>`;
+    const tbody = document.createElement('tbody');
+
+    items.forEach((item, idx) => {
+      const lt = item.qty * item.unitCost;
+      catTotal += lt; totalItems++;
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${idx+1}</td><td>${item.name}${item.note ? `<div class="item-note">ⓘ ${item.note}</div>` : ''}</td><td>${item.qty}</td><td>${item.unitCost.toLocaleString()}</td><td>${lt.toLocaleString()}</td><td><button class="del-btn" onclick="deleteItem('${cat}',${idx})"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></button></td>`;
+      tbody.appendChild(tr);
+    });
+
+    // Subtotal row inside table
+    const stRow = document.createElement('tr');
+    stRow.className = 'subtotal-row';
+    stRow.innerHTML = `<td colspan="4" style="text-align:left;padding-left:12px;font-size:11px">Sub-total (${cat}):</td><td>${catTotal.toLocaleString()}</td><td></td>`;
+    tbody.appendChild(stRow);
+    tbl.appendChild(tbody);
+    container.appendChild(tbl);
+    grandTotal += catTotal;
+  });
+
+  document.getElementById('invItemCount').textContent = `(${totalItems})`;
+
+  // Insurance calculated on grand total
+  const insAmt = Math.round(grandTotal * currentInsPct / 100);
+  const patContrib = grandTotal - insAmt;
+  const balance = patContrib - totalPaid;
+
+  document.getElementById('sumSubtotal').textContent = grandTotal.toLocaleString();
+  document.getElementById('sumInsurance').textContent = insAmt.toLocaleString();
+  document.getElementById('sumPatient').textContent = patContrib.toLocaleString();
+  document.getElementById('sumPaid').textContent = totalPaid.toLocaleString();
+  document.getElementById('sumBalance').textContent = balance > 0 ? `-${balance.toLocaleString()}` : balance.toLocaleString();
+  document.getElementById('sumBalance').style.color = balance > 0 ? '#ef4444' : '#059669';
+
+  // Only show Record Payment if there's a balance AND invoice isn't fully paid
+  const p = currentPatientId ? patients[currentPatientId] : null;
+  const isPaid = p && p.status === 'paid';
+  document.getElementById('recordPaymentCard').style.display = (balance > 0 && !isPaid) ? 'block' : 'none';
+}
+
+function onSummaryInsuranceChange() {
+  const sel = document.getElementById('summaryInsuranceSelect').value;
+  const parts = sel.split('|');
+  currentInsPct = Number(parts[1]);
+  const label = document.getElementById('sumInsPctLabel');
+  label.textContent = currentInsPct > 0 ? `covers ${currentInsPct}%` : '';
+  renderInvoiceTables();
+}
+
+function recordPayment() {
+  const amt = Number(document.getElementById('paymentAmount').value);
+  const method = document.getElementById('paymentMethod').value;
+  if (!amt || amt <= 0) { alert('Please enter a valid amount'); return; }
+  if (!method) { alert('Please select a payment method'); return; }
+  const now = new Date();
+  const ds = now.toLocaleDateString('en-GB') + ' - ' + now.toTimeString().slice(0,8);
+  payments.push({ date:ds, amount:amt, method });
+  totalPaid += amt;
+
+  const nr = document.getElementById('noCashRow');
+  if (nr) nr.remove();
+  const cb = document.getElementById('cashPaidBody');
+  const tr = document.createElement('tr');
+  tr.innerHTML = `<td>${ds}</td><td>Rwf ${amt.toLocaleString()}</td><td>Jane Doe</td><td>${method}</td><td></td>`;
+  cb.appendChild(tr);
+
+  document.getElementById('auditEmptyMsg').style.display = 'none';
+  document.getElementById('auditSectionLabel').style.display = 'block';
+  const cnt = Number(document.getElementById('auditCount').textContent) + 1;
+  document.getElementById('auditCount').textContent = cnt;
+  const div = document.createElement('div');
+  div.className = 'audit-item';
+  div.innerHTML = `<div class="audit-item-top"><div><div class="audit-date">${ds}</div><div class="audit-meta">Received by: JANE DOE</div></div><div class="audit-amount">${amt.toLocaleString()}</div></div><button class="audit-del-btn" onclick="removePayment(this,${amt})"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></button>`;
+  document.getElementById('auditItemsList').appendChild(div);
+
+  document.getElementById('paymentAmount').value = '';
+  document.getElementById('paymentMethod').value = '';
+  document.getElementById('paymentRef').value = '';
+  renderInvoiceTables();
+}
+
+function removePayment(btn, amt) {
+  totalPaid = Math.max(0, totalPaid - amt);
+  btn.closest('.audit-item').remove();
+  const cnt = Number(document.getElementById('auditCount').textContent) - 1;
+  document.getElementById('auditCount').textContent = cnt;
+  if (cnt === 0) { document.getElementById('auditEmptyMsg').style.display = 'flex'; document.getElementById('auditSectionLabel').style.display = 'none'; }
+  renderInvoiceTables();
+}
+
+function onProductChange() {
+  const val = document.getElementById('productSelect').value;
+  const box = document.getElementById('productInfoBox');
+  if (!val) { box.style.display = 'none'; return; }
+  const p = val.split('|');
+  document.getElementById('pCategory').textContent = p[1];
+  document.getElementById('pPrice').textContent = 'Rwf ' + Number(p[2]).toLocaleString();
+  box.style.display = 'block';
+}
+
+function openInvoice(id) {
+  currentPatientId = id;
+  const p = patients[id];
+  invoiceItems = {}; payments = []; totalPaid = 0; currentInsPct = 0;
+  document.getElementById('cashPaidBody').innerHTML = '<tr id="noCashRow"><td colspan="5" style="text-align:center;color:#9ca3af;font-size:12px;padding:14px">No payments recorded</td></tr>';
+  document.getElementById('auditItemsList').innerHTML = '';
+  document.getElementById('auditCount').textContent = '0';
+  document.getElementById('auditEmptyMsg').style.display = 'flex';
+  document.getElementById('auditSectionLabel').style.display = 'none';
+
+  document.getElementById('invNumber').textContent = p.invoice;
+  document.getElementById('invPatientName').textContent = p.name;
+  document.getElementById('invDate').textContent = p.date;
+  document.getElementById('invDept').textContent = p.dept;
+  document.getElementById('invInsurance').textContent = p.insurance;
+  document.getElementById('invCopay').textContent = p.copay+'%';
+  document.getElementById('invVisitNo').textContent = p.visitNo;
+  document.getElementById('invFileNo').textContent = p.fileNo;
+  document.getElementById('invVisitTag').textContent = p.visitNo;
+  document.getElementById('invDeptTag').textContent = p.dept;
+  document.getElementById('invInsTag').textContent = p.insurance;
+  document.getElementById('invCopayTag').textContent = p.copay+'% Copay';
+
+  // Set summary insurance selector to match patient's insurance
+  const insCoverageMap = { RSSB:'RSSB|85', MMI:'MMI|80', Activa:'Activa|75', Radiant:'Radiant|70', CORAR:'CORAR|65' };
+  const insVal = insCoverageMap[p.insurance] || 'none|0';
+  const insSel = document.getElementById('summaryInsuranceSelect');
+  insSel.value = insVal;
+  currentInsPct = Number(insVal.split('|')[1]);
+  document.getElementById('sumInsPctLabel').textContent = currentInsPct > 0 ? `covers ${currentInsPct}%` : '';
+
+  const badge = document.getElementById('invStatusBadge');
+  badge.textContent = p.status.toUpperCase();
+  badge.className = 'status-badge '+(p.status==='paid'?'badge-paid':p.status==='partial'?'badge-partial':'badge-unpaid');
+
+  document.getElementById('rssbSection').style.display = (p.insurance==='RSSB') ? 'block' : 'none';
+  document.getElementById('rssbEntryDate').value = p.date.split(' ')[0]||'';
+  document.getElementById('rssbDoctorName').value = p.doctor;
+
+  const defs = defaultItems[id]||{};
+  Object.entries(defs).forEach(([cat,items]) => { invoiceItems[cat] = items.map(i=>({...i})); });
+  renderInvoiceTables();
+
+  document.getElementById('invoiceOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeInvoice() {
+  document.getElementById('invoiceOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+  currentPatientId = null;
+}
+function handleInvoiceOverlayClick(e) { if (e.target===document.getElementById('invoiceOverlay')) closeInvoice(); }
+
+// Download full invoice as PDF
+function downloadInvoicePDF() {
+  if (!currentPatientId) return;
+  const p = patients[currentPatientId];
+
+  const thS = `
+    padding:10px 14px;
+    text-align:left;
+    font-size:9px;
+    font-weight:700;
+    color:#94a3b8;
+    text-transform:uppercase;
+    letter-spacing:1.2px;
+    border-bottom:1px solid #e2e8f0;
+    background:#f8fafc;
+  `;
+  const tdS = `
+    padding:10px 14px;
+    font-size:12px;
+    color:#334155;
+    border-bottom:1px solid #f1f5f9;
+    vertical-align:top;
+  `;
+
+  // Build invoice items
+  let categoriesHTML = '';
+  let grandTotal = 0;
+  Object.entries(invoiceItems).forEach(([cat, items]) => {
+    let rows = '', catTotal = 0;
+    items.forEach((item, idx) => {
+      const lt = item.qty * item.unitCost;
+      catTotal += lt;
+      rows += `<tr>
+        <td style="${tdS}color:#94a3b8;font-size:11px">${String(idx + 1).padStart(2, '0')}</td>
+        <td style="${tdS}">
+          <span style="font-weight:500">${item.name}</span>
+          ${item.note ? `<br><span style="font-size:10px;color:#94a3b8;margin-top:2px;display:block">↳ ${item.note}</span>` : ''}
+        </td>
+        <td style="${tdS}text-align:center">${item.qty}</td>
+        <td style="${tdS}text-align:right;font-variant-numeric:tabular-nums">${item.unitCost.toLocaleString()} <span style="font-size:10px;color:#94a3b8">RWF</span></td>
+        <td style="${tdS}text-align:right;font-weight:600;font-variant-numeric:tabular-nums">${lt.toLocaleString()} <span style="font-size:10px;color:#94a3b8">RWF</span></td>
+      </tr>`;
+    });
+    categoriesHTML += `
+    <div style="margin-bottom:20px;border-radius:8px;overflow:hidden;border:1px solid #e2e8f0;box-shadow:0 1px 3px rgba(0,0,0,0.04)">
+      <div style="background:linear-gradient(135deg,#0f766e,#0d9488);padding:9px 16px;display:flex;align-items:center;justify-content:space-between">
+        <span style="font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:#fff">${cat}</span>
+        <span style="font-size:10px;color:rgba(255,255,255,0.7)">Sub-total</span>
+      </div>
+      <table style="width:100%;border-collapse:collapse">
+        <thead>
+          <tr>
+            <th style="${thS}width:36px">#</th>
+            <th style="${thS}">Description</th>
+            <th style="${thS}text-align:center">Qty</th>
+            <th style="${thS}text-align:right">Unit Cost</th>
+            <th style="${thS}text-align:right">Total</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+        <tfoot>
+          <tr style="background:#f0fdf9">
+            <td colspan="4" style="${tdS}font-weight:700;font-size:11px;color:#0f766e;border-bottom:none">
+              Sub-total · ${cat}
+            </td>
+            <td style="${tdS}font-weight:700;text-align:right;color:#0f766e;border-bottom:none;font-variant-numeric:tabular-nums">
+              ${catTotal.toLocaleString()} <span style="font-size:10px">RWF</span>
+            </td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>`;
+    grandTotal += catTotal;
+  });
+
+  const insAmt = Math.round(grandTotal * currentInsPct / 100);
+  const patContrib = grandTotal - insAmt;
+  const balance = patContrib - totalPaid;
+  const insSel = document.getElementById('summaryInsuranceSelect');
+  const insName = insSel.options[insSel.selectedIndex].text;
+
+  const statusConfig = {
+    unpaid: { bg: '#fef2f2', color: '#b91c1c', dot: '#ef4444' },
+    paid:   { bg: '#f0fdf4', color: '#166534', dot: '#22c55e' },
+    partial:{ bg: '#fffbeb', color: '#92400e', dot: '#f59e0b' },
+  };
+  const sc = statusConfig[p.status] || statusConfig.unpaid;
+
+  const rssbHTML = p.insurance === 'RSSB' ? `
+  <div style="border:1px solid #e2e8f0;border-radius:8px;overflow:hidden;margin-bottom:20px;box-shadow:0 1px 3px rgba(0,0,0,0.04)">
+    <div style="background:linear-gradient(135deg,#1e40af,#3b82f6);padding:11px 18px;display:flex;align-items:center;gap:8px">
+      <span style="font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:1.2px;color:#fff">RSSB Details</span>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr">
+      <div style="padding:14px 16px;border-right:1px solid #f1f5f9">
+        <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;color:#64748b">Beneficiary</div>
+        ${[['Full Name','_______________'],['Phone','_______________'],['Relationship','Spouse'],['Signature','_______________']].map(([k,v])=>`
+        <p style="font-size:11px;margin-bottom:6px;color:#334155"><span style="color:#94a3b8">${k}</span><br><strong>${v}</strong></p>`).join('')}
+      </div>
+      <div style="padding:14px 16px;border-right:1px solid #f1f5f9">
+        <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;color:#64748b">Treatment</div>
+        ${[['Disease Type','Natural disease'],['Status','_______________'],['Entry Date',p.date.split(' ')[0]],['Discharge Date','_______________']].map(([k,v])=>`
+        <p style="font-size:11px;margin-bottom:6px;color:#334155"><span style="color:#94a3b8">${k}</span><br><strong>${v}</strong></p>`).join('')}
+      </div>
+      <div style="padding:14px 16px">
+        <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;color:#64748b">Attending Doctor</div>
+        ${[['Name',p.doctor],['License #','_______________'],['Signature','_______________'],['Stamp','_______________']].map(([k,v])=>`
+        <p style="font-size:11px;margin-bottom:6px;color:#334155"><span style="color:#94a3b8">${k}</span><br><strong>${v}</strong></p>`).join('')}
+      </div>
+    </div>
+    <div style="padding:10px 16px;border-top:1px solid #f1f5f9;font-size:11px;color:#334155;background:#f8fafc">
+      <span style="color:#94a3b8">Facility stamp:</span> _______________
+    </div>
+  </div>` : '';
+
+  const html = `<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8"/>
+<title>Invoice ${p.invoice}</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'DM Sans',sans-serif;background:#fff;color:#334155;padding:32px 36px;font-size:12px;line-height:1.5}
+  @media print{body{padding:16px}@page{margin:10mm;size:A4}}
+</style>
+</head>
+<body>
+
+<!-- Header Bar -->
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:20px;border-bottom:2px solid #f1f5f9;margin-bottom:24px">
+  <div style="display:flex;align-items:center;gap:10px">
+    <div style="width:36px;height:36px;background:linear-gradient(135deg,#0f766e,#0d9488);border-radius:8px;display:flex;align-items:center;justify-content:center">
+      <span style="color:#fff;font-weight:800;font-size:16px">S</span>
+    </div>
+    <div>
+      <div style="font-weight:700;font-size:15px;color:#0f172a;letter-spacing:-0.3px">Shema Clinic</div>
+      <div style="font-size:10px;color:#94a3b8;letter-spacing:0.5px">MEDICAL CENTER · KIGALI</div>
+    </div>
+  </div>
+  <div style="text-align:right">
+    <div style="font-size:10px;color:#94a3b8;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">Patient Invoice</div>
+    <div style="font-family:'DM Mono',monospace;font-size:14px;font-weight:500;color:#0f172a;letter-spacing:0.5px">${p.invoice}</div>
+    <div style="margin-top:6px;display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;background:${sc.bg}">
+      <span style="width:6px;height:6px;background:${sc.dot};border-radius:50%;display:inline-block"></span>
+      <span style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:${sc.color}">${p.status}</span>
+    </div>
+  </div>
+</div>
+
+<!-- Patient Info Card -->
+<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:18px 20px;margin-bottom:24px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px">
+  <div>
+    <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#94a3b8;margin-bottom:8px">Patient</div>
+    <p style="font-weight:600;font-size:13px;color:#0f172a;margin-bottom:4px">${p.name}</p>
+    <p style="font-size:11px;color:#64748b">File No: <span style="color:#334155;font-weight:500">${p.fileNo}</span></p>
+    <p style="font-size:11px;color:#64748b">Phone: <span style="color:#334155;font-weight:500">+250 000 000 000</span></p>
+  </div>
+  <div style="border-left:1px solid #e2e8f0;padding-left:16px">
+    <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#94a3b8;margin-bottom:8px">Visit Details</div>
+    <p style="font-size:11px;color:#64748b;margin-bottom:4px">Visit No: <span style="color:#0d9488;font-weight:600">${p.visitNo}</span></p>
+    <p style="font-size:11px;color:#64748b;margin-bottom:4px">Dept: <span style="color:#334155;font-weight:500">${p.dept}</span></p>
+    <p style="font-size:11px;color:#64748b">Doctor: <span style="color:#334155;font-weight:500">${p.doctor}</span></p>
+  </div>
+  <div style="border-left:1px solid #e2e8f0;padding-left:16px">
+    <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#94a3b8;margin-bottom:8px">Insurance</div>
+    <p style="font-size:11px;color:#64748b;margin-bottom:4px">Provider: <span style="color:#334155;font-weight:500">${p.insurance}</span></p>
+    <p style="font-size:11px;color:#64748b;margin-bottom:4px">Copay: <span style="color:#334155;font-weight:500">${p.copay}%</span></p>
+    <p style="font-size:11px;color:#64748b">Date: <span style="color:#334155;font-weight:500">${p.date}</span></p>
+  </div>
+</div>
+
+<!-- Section Title -->
+<div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+  <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#0f172a">Invoice Items</span>
+  <div style="flex:1;height:1px;background:#e2e8f0"></div>
+</div>
+
+${categoriesHTML}
+
+<!-- Summary -->
+<div style="display:flex;justify-content:flex-end;margin-bottom:20px">
+  <div style="width:340px;border:1px solid #e2e8f0;border-radius:10px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.05)">
+    <div style="padding:12px 16px;font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:1px;background:#f8fafc;border-bottom:1px solid #e2e8f0;color:#64748b">Invoice Summary</div>
+    <div style="padding:4px 0">
+      ${[
+        ['Sub-total (all items)', grandTotal.toLocaleString() + ' RWF', '#334155', false],
+        [`Insurance (${insName})`, '−' + insAmt.toLocaleString() + ' RWF', '#0d9488', false],
+        ['Patient contribution', patContrib.toLocaleString() + ' RWF', '#334155', false],
+        ['Amount Paid', '−' + totalPaid.toLocaleString() + ' RWF', '#64748b', false],
+      ].map(([label, val, color]) => `
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 16px;border-bottom:1px solid #f1f5f9">
+        <span style="font-size:11px;color:#64748b">${label}</span>
+        <span style="font-size:12px;font-weight:500;color:${color};font-variant-numeric:tabular-nums">${val}</span>
+      </div>`).join('')}
+    </div>
+    <div style="padding:12px 16px;background:${balance > 0 ? 'linear-gradient(135deg,#7f1d1d,#991b1b)' : 'linear-gradient(135deg,#14532d,#166534)'};display:flex;justify-content:space-between;align-items:center">
+      <span style="font-size:11px;font-weight:600;color:rgba(255,255,255,0.8)">Balance Due</span>
+      <span style="font-size:15px;font-weight:700;color:#fff;font-variant-numeric:tabular-nums">${balance > 0 ? '−' : ''}${Math.abs(balance).toLocaleString()} <span style="font-size:11px;font-weight:400">RWF</span></span>
+    </div>
+    <div style="padding:8px 16px;background:#f8fafc;border-top:1px solid #e2e8f0;font-size:10px;color:#94a3b8;text-align:right">
+      Initiated by <strong style="color:#64748b">Mrs. Agathe Amina Uwera</strong>
+    </div>
+  </div>
+</div>
+
+${rssbHTML}
+
+<!-- Footer -->
+<div style="margin-top:32px;padding-top:16px;border-top:1px solid #f1f5f9;display:flex;justify-content:space-between;align-items:center">
+  <span style="font-size:10px;color:#cbd5e1">This document is computer-generated and valid without signature.</span>
+  <span style="font-size:10px;color:#94a3b8">Generated by <strong style="color:#0d9488">XanaHEALTH</strong></span>
+</div>
+
+<script>window.onload=function(){window.print();}<\/script>
+</body></html>`;
+
+  const w = window.open('', '_blank', 'width=900,height=700');
+  w.document.write(html);
+  w.document.close();
+}
+
+// Filter modal
+function openFilterModal() {
+  document.getElementById('filterModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeFilterModal() {
+  document.getElementById('filterModal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function handleFilterOverlayClick(e) {
+  if (e.target === document.getElementById('filterModal')) closeFilterModal();
+}
+
+function applyFilters() {
+  
+  const from = document.getElementById('filterDateFrom').value;
+  const to = document.getElementById('filterDateTo').value;
+  const ins = document.getElementById('filterInsurance').value;
+  const status = document.getElementById('filterStatus').value;
+
+  // Validate 31-day range
+  if (from && to) {
+    const diff = (new Date(to) - new Date(from)) / (1000*60*60*24);
+    if (diff < 0) { alert('End date must be after start date'); return; }
+    if (diff > 31) { alert('Maximum date range is 31 days'); return; }
+  }
+
+  const bar = document.getElementById('appliedFiltersBar');
+  const tagDate = document.getElementById('filterTagDate');
+  const tagIns = document.getElementById('filterTagIns');
+  const tagStatus = document.getElementById('filterTagStatus');
+  let hasFilter = false;
+
+  if (from && to) {
+    tagDate.textContent = `${from} → ${to}`;
+    tagDate.style.display = 'flex';
+    hasFilter = true;
+  } else tagDate.style.display = 'none';
+
+  if (ins) {
+    tagIns.textContent = ins;
+    tagIns.style.display = 'flex';
+    hasFilter = true;
+  } else tagIns.style.display = 'none';
+
+  if (status) {
+    tagStatus.textContent = status.charAt(0).toUpperCase()+status.slice(1);
+    tagStatus.style.display = 'flex';
+    hasFilter = true;
+  } else tagStatus.style.display = 'none';
+
+  bar.style.display = hasFilter ? 'flex' : 'none';
+  closeFilterModal();
+ filterData(from, to, ins, status);
+  
+}
+function filterData(from, to, ins, status) {
+  const table = document.getElementById('visitsTable');
+  const rows = table.tBodies[0].rows;
+
+  const fromObj = from ? new Date(from) : null;
+  const toObj = to ? new Date(to) : null;
+
+  for (let row of rows) {
+    const dateObj = new Date(row.cells[1].textContent);  // column 1 = Date
+    const insurance = row.cells[6].textContent;          // column 6 = Insurance
+    const rowStatus = row.cells[11].textContent.toLowerCase(); // column 11 = Status
+
+    let show = true;
+
+    if (fromObj && toObj && (dateObj < fromObj || dateObj > toObj)) show = false;
+    if (ins && insurance !== ins) show = false;
+    if (status && rowStatus !== status.toLowerCase()) show = false;
+
+    row.style.display = show ? '' : 'none';
+  }
+}
+function clearAllFilters() {
+  // Clear the filter inputs
+  document.getElementById('filterDateFrom').value = '';
+  document.getElementById('filterDateTo').value = '';
+  document.getElementById('filterInsurance').value = '';
+  document.getElementById('filterStatus').value = '';
+
+  // Hide the applied filters bar
+  document.getElementById('appliedFiltersBar').style.display = 'none';
+  document.getElementById('filterTagDate').style.display = 'none';
+  document.getElementById('filterTagIns').style.display = 'none';
+  document.getElementById('filterTagStatus').style.display = 'none';
+
+  // Show all rows in the table
+  const table = document.getElementById('visitsTable');
+  const rows = table.tBodies[0].rows;
+  for (let row of rows) {
+    row.style.display = ''; // reset to default (visible)
+  }
+}
+
+// Send
+let sendMenuOpen = false;
+function toggleSendMenu() {
+  sendMenuOpen = !sendMenuOpen;
+  document.getElementById('sendMenu').classList.toggle('open', sendMenuOpen);
+  document.getElementById('sendBtnEl').classList.toggle('open', sendMenuOpen);
+}
+function sendViaWhatsApp() {
+  if (!currentPatientId) return;
+  const p = patients[currentPatientId];
+  window.open('https://wa.me/?text='+encodeURIComponent(`Hello, please find your invoice ${p.invoice} from Shema Clinic. Total: Rwf ${p.total.toLocaleString()}. Thank you.`),'_blank');
+  toggleSendMenu();
+}
+function sendViaEmail() {
+  if (!currentPatientId) return;
+  const p = patients[currentPatientId];
+  window.open('mailto:?subject='+encodeURIComponent(`Invoice ${p.invoice} - Shema Clinic`)+'&body='+encodeURIComponent(`Dear ${p.name},\n\nPlease find your invoice ${p.invoice}.\n\nTotal: Rwf ${p.total.toLocaleString()}\n\nThank you.`));
+  toggleSendMenu();
+}
+
+// EBM
+let openEbmId = null;
+function toggleEbm(id) {
+  const menu = document.getElementById(id+'-menu'), btn = document.querySelector('#'+id+' .inv-ebm-btn');
+  if (!menu) return;
+  const was = menu.classList.contains('open'); closeAllEbmMenus();
+  if (!was) { menu.classList.add('open'); if(btn)btn.classList.add('open'); openEbmId = id; }
+}
+function closeAllEbmMenus() {
+  document.querySelectorAll('.ebm-menu').forEach(m=>m.classList.remove('open'));
+  document.querySelectorAll('.inv-ebm-btn').forEach(b=>b.classList.remove('open'));
+  openEbmId = null;
+}
+const receiptMeta = {
+  sale:     {title:'Sale Receipt',badgeClass:'badge-sale',badgeText:'SALE',stamp:'<span class="rp-stamp stamp-official">OFFICIAL</span>',typeLabel:'Normal Receipt (NR)',section:'SALE',notOfficial:false,watermark:''},
+  refund:   {title:'Refund Receipt',badgeClass:'badge-refund',badgeText:'CR',stamp:'<span class="rp-stamp stamp-copy">COPY</span>',typeLabel:'Copy Refund (CR)',section:'REFUND',notOfficial:true,watermark:''},
+  proforma: {title:'Proforma Invoice',badgeClass:'badge-proforma',badgeText:'PROFORMA',stamp:'<span class="rp-stamp stamp-draft">PROFORMA</span>',typeLabel:'Proforma Invoice (PI)',section:'PROFORMA',notOfficial:true,watermark:'<div style="text-align:center;margin:7px 0"><span class="watermark-proforma">⚠ PROFORMA — NOT VALID FOR TAX</span></div>'},
+  training: {title:'Training Receipt',badgeClass:'badge-training',badgeText:'TRAINING',stamp:'<span class="rp-stamp stamp-training">TRAINING</span>',typeLabel:'Training / Simulation',section:'TRAINING',notOfficial:true,watermark:'<div style="text-align:center;margin:7px 0"><span class="watermark-training">⚠ TRAINING MODE — NOT OFFICIAL</span></div>'},
+};
+function buildReceiptHTML(type,pName,inv,recNum,total) {
+  const m=receiptMeta[type], re=type==='refund'?`<div class="rp-row"><span>REF. RECEIPT#:</span><span>${recNum}</span></div><div class="rp-warn">REFUND APPROVED ONLY FOR ORIGINAL RECEIPT</div>`:'';
+  return `<div class="rp-header"><h1>EBM Receipt</h1><div class="sub">${m.typeLabel}</div></div><div class="rp-clinic"><p>Shema Clinic</p><p>Kigali, Rwanda</p><p>TIN: 0000000000</p>${m.stamp}</div><div class="rp-section"><div class="rp-title">${m.section}</div>${re}<div class="rp-row"><span>Patient:</span><span>${pName}</span></div><div class="rp-row"><span>Invoice:</span><span>${inv}</span></div></div><div class="rp-section"><div class="rp-row"><span>Medical Services</span></div><div class="rp-row sub"><span>1.00 × ${total}</span><span>${total} A-EX</span></div>${m.watermark}${m.notOfficial?'<div class="not-official">NOT AN OFFICIAL RECEIPT</div>':''}<div class="rp-row total"><span>TOTAL</span><span>${total}</span></div><div class="rp-row sub"><span>TOTAL TAX</span><span>0.00</span></div></div><div class="rp-section"><div class="rp-title">SDC INFORMATION</div><div class="rp-row"><span>Date: 25/12/2023</span><span>11:07:35</span></div><div class="rp-row"><span>SDC ID</span><span>SDC001000001</span></div><div class="rp-databox"><strong>Internal Data:</strong>TE68-SLA2-34J5-EAV3-N569-88LJ-Q7</div><div class="rp-databox"><strong>Signature:</strong>V249-J39C-FJ48-HE2W</div></div><div class="rp-section"><div class="rp-row"><span>RECEIPT#:</span><span>${recNum}</span></div><div class="rp-row"><span>DATE: 25/05/2023</span><span>11:09:32</span></div><div class="rp-row"><span>MRC:</span><span>AAACCI23456</span></div></div><div class="rp-thank">— THANK YOU —</div>`;
+}
+function openReceipt(type,pName,inv,recNum,total) {
+  closeAllEbmMenus();
+  const m=receiptMeta[type]; currentReceiptHTML=buildReceiptHTML(type,pName,inv,recNum,total);
+  const badge=document.getElementById('receiptBadge'); badge.textContent=m.badgeText; badge.className='rtype-badge '+m.badgeClass;
+  document.getElementById('receiptTitle').textContent=m.title;
+  document.getElementById('receiptContent').innerHTML=currentReceiptHTML;
+  document.getElementById('receiptModal').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function openReceiptFromInvoice(type) {
+  if (!currentPatientId) return;
+  const p=patients[currentPatientId];
+  openReceipt(type,p.name,p.invoice,p.recNum,'Rwf '+p.total.toLocaleString());
+}
+function closeReceipt() { document.getElementById('receiptModal').classList.remove('open'); document.body.style.overflow=''; }
+function handleReceiptOverlayClick(e) { if (e.target===document.getElementById('receiptModal')) closeReceipt(); }
+
+document.addEventListener('click', e => {
+  if (openEbmId && !e.target.closest('.inv-ebm-wrapper')) closeAllEbmMenus();
+  if (sendMenuOpen && !e.target.closest('.send-wrapper')) {
+    sendMenuOpen=false;
+    document.getElementById('sendMenu').classList.remove('open');
+    document.getElementById('sendBtnEl').classList.remove('open');
+  }
+});
+document.addEventListener('keydown', e => {
+  if (e.key==='Escape') { closeReceipt(); closeInvoice(); closeAllEbmMenus(); closeFilterModal(); }
+});
+</script>
+</body>
+</html>

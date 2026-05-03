@@ -1,0 +1,527 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>XanaHealth - Reception Dashboard</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+    <style>
+      :root {
+        --green:      #059669;
+        --green-light:#d1fae5;
+        --green-mid:  #10b981;
+        --green-dark: #065f46;
+        --bg:         #f4f6f5;
+        --white:      #fff;
+        --border:     #e5e7eb;
+        --text:       #111827;
+        --muted:      #6b7280;
+        --muted-light:#9ca3af;
+        --red:        #ef4444;
+        --amber:      #f59e0b;
+        --shadow:     0 1px 3px rgba(0,0,0,.08), 0 4px 16px rgba(0,0,0,.06);
+        --shadow-lg:  0 8px 32px rgba(0,0,0,.1);
+      }
+
+      * { margin:0; padding:0; box-sizing:border-box; }
+      body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--text); overflow-x:hidden; }
+
+      /* ── Sidebar ── */
+      .sidebar {
+        width:240px; background:var(--white);
+        border-right:1px solid var(--border);
+        display:flex; flex-direction:column;
+        position:fixed; top:0; left:0; height:100vh;
+        z-index:100; transition:transform .3s cubic-bezier(.4,0,.2,1);
+      }
+      .logo { padding:20px 24px; font-size:20px; font-weight:600; }
+      .logo .logo-x { color:#333; }
+      .logo .logo-h { color:var(--green); }
+
+      .nav-section { padding:8px 0; }
+      .nav-label { padding:8px 24px; font-size:10px; font-weight:600; color:var(--muted-light); text-transform:uppercase; letter-spacing:1px; }
+      .nav-item {
+        display:flex; align-items:center; padding:10px 24px;
+        color:var(--muted); text-decoration:none; font-size:14px; font-weight:500;
+        cursor:pointer; position:relative; transition:color .2s;
+      }
+      .nav-item::before {
+        content:''; position:absolute; left:0; top:50%;
+        transform:translateY(-50%) scaleY(0);
+        width:3px; height:60%; background:var(--green);
+        border-radius:0 2px 2px 0;
+        transition:transform .2s cubic-bezier(.34,1.56,.64,1);
+      }
+      .nav-item:hover { color:var(--text); }
+      .nav-item.active { color:var(--green); font-weight:600; }
+      .nav-item.active::before { transform:translateY(-50%) scaleY(1); }
+      .nav-item svg { width:17px; height:17px; margin-right:12px; flex-shrink:0; }
+
+      .user-section { margin-top:auto; padding:20px 24px; }
+      .user-profile { display:flex; align-items:center; margin-bottom:16px; }
+      .user-avatar  { width:40px; height:40px; border-radius:50%; background:#fecaca; margin-right:12px; }
+      .user-info h4 { font-size:14px; font-weight:600; color:#333; }
+      .user-info p  { font-size:12px; color:#9ca3af; }
+      .user-actions { display:flex; flex-direction:column; gap:8px; }
+      .user-action  { display:flex; align-items:center; padding:8px 0; color:#6b7280; text-decoration:none; font-size:14px; cursor:pointer; }
+      .user-action svg { width:18px; height:18px; margin-right:12px; opacity:.6; }
+
+      /* ── Layout ── */
+      .layout-container { display:flex; min-height:100vh; }
+      .main-content { flex:1; margin-left:240px; display:flex; flex-direction:column; min-height:100vh; }
+
+      /* ── Header ── */
+      .top-header {
+        background:#fff; padding:16px 32px;
+        border-bottom:1px solid #e5e5e5;
+        display:flex; justify-content:space-between; align-items:center;
+        position:relative;
+      }
+      .top-header h1 { font-size:24px; font-weight:600; color:var(--text); }
+
+      /* Notification button */
+      .notif-btn {
+        position:relative; width:36px; height:36px;
+        border:1px solid var(--border); border-radius:8px;
+        background:var(--white); cursor:pointer;
+        display:flex; align-items:center; justify-content:center;
+        transition:background .15s, border-color .15s;
+      }
+      .notif-btn:hover { background:#f9fafb; border-color:#d1d5db; }
+      .notif-badge {
+        position:absolute; top:-4px; right:-4px;
+        width:16px; height:16px; background:var(--red);
+        border-radius:50%; border:2px solid var(--white);
+        font-size:9px; font-weight:700; color:white;
+        display:flex; align-items:center; justify-content:center;
+        animation:bounce-in .4s cubic-bezier(.34,1.56,.64,1);
+      }
+      @keyframes bounce-in { 0% { transform:scale(0); } 100% { transform:scale(1); } }
+
+      /* Notification panel */
+      .notif-panel {
+        position:absolute; top:calc(100% + 8px); right:32px;
+        width:320px; background:var(--white);
+        border:1px solid var(--border); border-radius:12px;
+        box-shadow:var(--shadow-lg); z-index:200;
+        opacity:0; transform:translateY(-8px) scale(.97);
+        pointer-events:none;
+        transition:opacity .2s, transform .2s cubic-bezier(.34,1.56,.64,1);
+      }
+      .notif-panel.open { opacity:1; transform:translateY(0) scale(1); pointer-events:all; }
+      .notif-panel-header { padding:14px 16px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; font-weight:600; font-size:14px; }
+      .notif-mark-all { font-size:12px; color:var(--green); cursor:pointer; font-weight:500; }
+      .notif-item { padding:12px 16px; border-bottom:1px solid #f9fafb; display:flex; gap:10px; cursor:pointer; transition:background .15s; }
+      .notif-item:hover { background:#f9fafb; }
+      .notif-item:last-child { border-bottom:none; }
+      .notif-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; margin-top:4px; }
+      .notif-dot.green { background:var(--green); }
+      .notif-dot.amber { background:var(--amber); }
+      .notif-dot.red   { background:var(--red); }
+      .notif-text { font-size:13px; color:var(--text); line-height:1.4; }
+      .notif-time { font-size:11px; color:var(--muted-light); margin-top:2px; }
+
+      /* Today badge */
+      .today-badge {
+        display:flex; align-items:center; gap:6px;
+        padding:7px 14px; background:var(--bg);
+        border:1px solid var(--border); border-radius:8px;
+        font-size:13px; font-weight:500; color:var(--muted);
+      }
+      .live-dot {
+        width:6px; height:6px; background:var(--green); border-radius:50%;
+        animation:live-pulse 1.5s ease-in-out infinite;
+      }
+      @keyframes live-pulse {
+        0%,100% { opacity:1; box-shadow:0 0 0 0 rgba(5,150,105,.4); }
+        50%      { opacity:.8; box-shadow:0 0 0 4px rgba(5,150,105,0); }
+      }
+
+      /* ── Content area ── */
+      .content-area { padding:24px 32px; flex:1; background:var(--bg); }
+
+      /* Controls (search/filter bar) */
+      .controls { display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; gap:16px; }
+      .controls-left { display:flex; gap:12px; flex:1; }
+      .filter-btn, .action-btn {
+        display:flex; align-items:center; gap:8px;
+        padding:10px 16px; background:#fff;
+        border:1px solid #d1d5db; border-radius:6px;
+        cursor:pointer; font-size:14px; color:#374151;
+        white-space:nowrap;
+      }
+      .search-box {
+        display:flex; align-items:center; gap:8px;
+        padding:10px 16px; background:#fff;
+        border:1px solid #d1d5db; border-radius:6px;
+        flex:1; max-width:300px;
+      }
+      .search-box input { border:none; outline:none; flex:1; font-size:14px; color:#6b7280; }
+
+      /* Applied filters */
+      .applied-filters { display:flex; gap:8px; margin-bottom:16px; align-items:center; flex-wrap:wrap; }
+      .filter-label { font-size:13px; color:#6b7280; }
+      .filter-tag   { display:flex; align-items:center; gap:6px; padding:6px 12px; background:#f3f4f6; border-radius:4px; font-size:13px; color:#374151; }
+      .filter-tag .close { cursor:pointer; opacity:.6; }
+      .clear-filter { color:#ef4444; font-size:13px; cursor:pointer; font-weight:500; }
+
+      /* ── Report card ── */
+      .report-card {
+        background:var(--white); border-radius:14px;
+        box-shadow:var(--shadow); border:1px solid var(--border);
+        overflow:hidden; margin-bottom:24px;
+        animation:slide-up .4s ease .35s both;
+      }
+      @keyframes slide-up { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+
+      .report-header {
+        background:#dfe5e5; padding:18px 24px;
+        display:flex; justify-content:space-between; align-items:center;
+      }
+      .report-header h2 { font-size:16px; font-weight:700; text-align:center; }
+      .report-print-btn {
+        display:flex; align-items:center; gap:6px;
+        padding:7px 16px; background:rgba(255,255,255,.15);
+        border:1px solid rgba(255,255,255,.3); border-radius:8px;
+        color:black; font-size:12px; font-weight:600; cursor:pointer;
+        transition:background .15s; font-family:'DM Sans',sans-serif;
+      }
+      .report-print-btn:hover { background:rgba(255,255,255,.25); }
+
+      /* Report tabs — Bootstrap nav pills styled to match original */
+      .report-tabs { display:flex; border-bottom:1px solid var(--border); padding:0 24px; }
+      .report-tab {
+        padding:14px 18px; font-size:13px; font-weight:500;
+        color:var(--muted); cursor:pointer;
+        border-bottom:2px solid transparent; margin-bottom:-1px;
+        transition:color .15s, border-color .15s;
+        background:none; border-top:none; border-left:none; border-right:none;
+      }
+      .report-tab.active { color:var(--green); border-bottom-color:var(--green); }
+      .report-tab:hover  { color:var(--text); }
+
+      .report-body { padding:0 24px 24px; }
+      .tab-panel        { display:none; }
+      .tab-panel.active { display:block; }
+      .section-label { font-size:12px; font-weight:600; color:var(--muted-light); text-transform:uppercase; letter-spacing:.6px; padding:20px 0 12px; }
+
+      /* Table */
+      table { width:100%; border-collapse:collapse; }
+      thead tr { background:#f9fafb; }
+      th { padding:10px 14px; text-align:left; font-size:11px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.5px; border-bottom:1px solid var(--border); }
+      td { padding:13px 14px; border-bottom:1px solid #f9fafb; font-size:14px; color:var(--text); transition:background .15s; }
+      tbody tr { cursor:pointer; animation:fade-in .3s ease both; }
+      tbody tr:hover td { background:#f9fafb; }
+      tbody tr:last-child td { border-bottom:none; }
+      @keyframes fade-in { from { opacity:0; } to { opacity:1; } }
+
+      /* Status pills */
+      .status-pill { display:inline-flex; align-items:center; gap:5px; padding:3px 10px; border-radius:99px; font-size:12px; font-weight:600; }
+      .status-pill.paid    { background:#d1fae5; color:var(--green-dark); }
+      .status-pill.pending { background:#fef3c7; color:#92400e; }
+      .status-pill.overdue { background:#fee2e2; color:#991b1b; }
+
+      /* Summary bar */
+      .summary-bar { display:grid; grid-template-columns:repeat(4,1fr); border:1px solid var(--border); border-radius:12px; overflow:hidden; margin-top:20px; }
+      .summary-cell { padding:16px 20px; border-right:1px solid var(--border); transition:background .2s; }
+      .summary-cell:last-child { border-right:none; }
+      .summary-cell:hover { background:#f9fafb; }
+      .summary-cell-label { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.5px; margin-bottom:4px; font-weight:600; }
+      .summary-cell-value { font-size:20px; font-weight:700; color:var(--text); letter-spacing:-.5px; font-family:'DM Mono',monospace; }
+      .summary-cell-value.green { color:var(--green); }
+      .summary-cell-value.red   { color:var(--red); }
+
+      /* Toast */
+      .toast-wrap { position:fixed; bottom:24px; left:50%; transform:translateX(-50%); z-index:9999; pointer-events:none; }
+      .toast-box {
+        background:#1f2937; color:white; padding:12px 20px;
+        border-radius:10px; font-size:13px; font-weight:500;
+        box-shadow:0 4px 20px rgba(0,0,0,.25);
+        opacity:0; transform:translateY(8px);
+        transition:opacity .25s, transform .25s;
+        pointer-events:none;
+      }
+      .toast-box.show { opacity:1; transform:translateY(0); }
+
+      /* Scroll reveal */
+      .animate-on-scroll { opacity:0; transform:translateY(20px); transition:opacity .5s ease, transform .5s ease; }
+      .animate-on-scroll.visible { opacity:1; transform:translateY(0); }
+
+      @media (max-width:768px) {
+        .sidebar { transform:translateX(-100%); }
+        .main-content { margin-left:0; }
+        .summary-bar { grid-template-columns:repeat(2,1fr); }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="layout-container">
+
+      <!-- ── Sidebar ── -->
+      <aside class="sidebar">
+        <div class="logo">
+          <span class="logo-x">Xana</span><span class="logo-h">Health</span>
+        </div>
+
+        <nav class="nav-section">
+          <div class="nav-label">Reception / Cashier</div>
+          <a href="reception.html" class="nav-item active">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+            Dashboard
+          </a>
+          <a href="#" class="nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            New Patient File
+          </a>
+          <a href="#" class="nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+            Patients List
+          </a>
+          <a href="#" class="nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            Patient Visits
+          </a>
+          <a href="#" class="nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            Appointments
+          </a>
+          <a href="#" class="nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+            Billing
+          </a>
+        </nav>
+
+        <div class="user-section">
+          <div class="user-profile">
+            <div class="user-avatar"></div>
+            <div class="user-info"><h4>Jane Doe</h4><p>Receptionist</p></div>
+          </div>
+          <div class="user-actions">
+            <a href="#" class="user-action">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              Help
+            </a>
+            <a href="#" class="user-action">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+              Logout
+            </a>
+          </div>
+        </div>
+      </aside>
+
+      <!-- ── Main ── -->
+      <main class="main-content">
+
+        <!-- Header -->
+        <header class="top-header">
+          <h1>Reception</h1>
+          <div class="d-flex align-items-center gap-3">
+            <!-- Live clock badge -->
+            <div class="today-badge">
+              <span class="live-dot"></span>
+              <span id="live-clock">00:00</span>
+            </div>
+
+            <!-- Notification button -->
+            <button class="notif-btn" id="notif-btn" aria-label="Notifications">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+              <span class="notif-badge" id="notif-badge">3</span>
+            </button>
+
+            <!-- Notification panel -->
+            <div class="notif-panel" id="notif-panel">
+              <div class="notif-panel-header">
+                Notifications
+                <span class="notif-mark-all" id="notif-mark-all">Mark all read</span>
+              </div>
+              <div class="notif-item"><span class="notif-dot green"></span><div><div class="notif-text">New patient registered: John Kamali</div><div class="notif-time">2 min ago</div></div></div>
+              <div class="notif-item"><span class="notif-dot amber"></span><div><div class="notif-text">Insurance claim pending review — MMI batch #447</div><div class="notif-time">18 min ago</div></div></div>
+              <div class="notif-item"><span class="notif-dot red"></span><div><div class="notif-text">Overdue payment: Orthopedics dept — Rwf 18,000</div><div class="notif-time">1 hr ago</div></div></div>
+            </div>
+
+            <div class="d-flex align-items-center gap-2 px-3 py-2 border rounded" style="font-size:13px;color:#9ca3af;cursor:pointer;">
+              <span>Company Logo</span>
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M6 9L1 4h10z"/></svg>
+            </div>
+          </div>
+        </header>
+
+        <!-- Content -->
+        <div class="content-area">
+
+          <!-- Controls / Search bar -->
+          <div class="controls">
+            <div class="controls-left">
+              <button class="filter-btn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
+                Filter by
+              </button>
+              <div class="search-box">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                <input type="text" placeholder="Search all patients" />
+              </div>
+              <button class="action-btn">Action <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M6 9L1 4h10z"/></svg></button>
+            </div>
+          </div>
+
+          <!-- Applied filters -->
+          <div class="applied-filters">
+            <span class="filter-label">Applied Filter</span>
+            <div class="filter-tag">Recently added <span class="close">✕</span></div>
+            <div class="filter-tag">Recently Updated <span class="close">✕</span></div>
+            <span class="clear-filter">Clear filter</span>
+          </div>
+
+          <!-- Revenue Report card -->
+          <div class="report-card animate-on-scroll">
+            <div class="report-header">
+              <div><h2>Daily Revenue Report</h2></div>
+              <button class="report-print-btn" onclick="showToast('Opening print preview...')">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+                Print Report
+              </button>
+            </div>
+
+            <!-- Tabs -->
+            <div class="report-tabs">
+              <button class="report-tab active" data-tab="dept">By Department</button>
+              <button class="report-tab" data-tab="insurance">By Insurance</button>
+              <button class="report-tab" data-tab="summary">Summary</button>
+            </div>
+
+            <div class="report-body">
+
+              <!-- Dept tab -->
+              <div class="tab-panel active" id="tab-dept">
+                <div class="section-label">Department Breakdown</div>
+                <table>
+                  <thead><tr><th>Department</th><th>Patients</th><th>Patient Cont.</th><th>Insurance Cont.</th><th>Total</th><th>Status</th></tr></thead>
+                  <tbody>
+                    <tr onclick="showToast('Opening Dental department detail...')"><td><strong>Dental</strong></td><td>8</td><td>Rwf 24,000</td><td>Rwf 96,000</td><td><strong>Rwf 120,000</strong></td><td><span class="status-pill paid">● Paid</span></td></tr>
+                    <tr onclick="showToast('Opening General Medicine detail...')"><td><strong>General Medicine</strong></td><td>14</td><td>Rwf 42,000</td><td>Rwf 168,000</td><td><strong>Rwf 210,000</strong></td><td><span class="status-pill paid">● Paid</span></td></tr>
+                    <tr onclick="showToast('Opening Pediatrics detail...')"><td><strong>Pediatrics</strong></td><td>5</td><td>Rwf 0</td><td>Rwf 75,000</td><td><strong>Rwf 75,000</strong></td><td><span class="status-pill pending">◐ Pending</span></td></tr>
+                    <tr onclick="showToast('Opening Orthopedics detail...')"><td><strong>Orthopedics</strong></td><td>3</td><td>Rwf 18,000</td><td>Rwf 0</td><td><strong>Rwf 18,000</strong></td><td><span class="status-pill overdue">✕ Overdue</span></td></tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <!-- Insurance tab -->
+              <div class="tab-panel" id="tab-insurance">
+                <div class="section-label">Insurance Provider Breakdown</div>
+                <table>
+                  <thead><tr><th>Provider</th><th>Patients</th><th>Covered Amount</th><th>Uncovered</th><th>Total Claimed</th><th>Status</th></tr></thead>
+                  <tbody>
+                    <tr onclick="showToast('Opening RSSB detail...')"><td><strong>RSSB</strong></td><td>18</td><td>Rwf 270,000</td><td>Rwf 30,000</td><td><strong>Rwf 300,000</strong></td><td><span class="status-pill paid">● Paid</span></td></tr>
+                    <tr onclick="showToast('Opening MMI detail...')"><td><strong>MMI</strong></td><td>7</td><td>Rwf 84,000</td><td>Rwf 21,000</td><td><strong>Rwf 105,000</strong></td><td><span class="status-pill pending">◐ Pending</span></td></tr>
+                    <tr onclick="showToast('Opening Self-Pay detail...')"><td><strong>Self-Pay</strong></td><td>5</td><td>—</td><td>Rwf 45,000</td><td><strong>Rwf 45,000</strong></td><td><span class="status-pill overdue">✕ Overdue</span></td></tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <!-- Summary tab -->
+              <div class="tab-panel" id="tab-summary">
+                <div class="section-label">Financial Summary</div>
+                <table>
+                  <thead><tr><th>Category</th><th>Amount</th><th>vs Yesterday</th></tr></thead>
+                  <tbody>
+                    <tr><td>Cash Received</td><td>Rwf 12,000</td><td style="color:var(--green)">↑ 20%</td></tr>
+                    <tr><td>Insurance Claims Submitted</td><td>Rwf 339,000</td><td style="color:var(--green)">↑ 12%</td></tr>
+                    <tr><td>Total Due</td><td>Rwf 450,000</td><td style="color:var(--muted)">→ 0%</td></tr>
+                    <tr><td>Total Paid</td><td>Rwf 405,000</td><td style="color:var(--green)">↑ 9%</td></tr>
+                    <tr><td>Outstanding</td><td style="color:var(--red)">Rwf 45,000</td><td style="color:var(--red)">↑ 3%</td></tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <!-- Summary bar (always visible) -->
+              <div class="summary-bar">
+                <div class="summary-cell"><div class="summary-cell-label">Cash Received</div><div class="summary-cell-value green">Rwf 12k</div></div>
+                <div class="summary-cell"><div class="summary-cell-label">Total Paid</div><div class="summary-cell-value">Rwf 405k</div></div>
+                <div class="summary-cell"><div class="summary-cell-label">Total Due</div><div class="summary-cell-value">Rwf 450k</div></div>
+                <div class="summary-cell"><div class="summary-cell-label">Outstanding</div><div class="summary-cell-value red">Rwf 45k</div></div>
+              </div>
+
+            </div>
+          </div><!-- /report-card -->
+
+        </div><!-- /content-area -->
+      </main>
+    </div><!-- /layout-container -->
+
+    <!-- Toast -->
+    <div class="toast-wrap">
+      <div class="toast-box" id="toast"><span id="toast-msg"></span></div>
+    </div>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+      // ── All original JS preserved exactly ──
+
+      // Live clock
+      function updateClock() {
+        const now = new Date();
+        const h = String(now.getHours()).padStart(2,'0');
+        const m = String(now.getMinutes()).padStart(2,'0');
+        document.getElementById('live-clock').textContent = h + ':' + m;
+      }
+      updateClock();
+      setInterval(updateClock, 30000);
+
+      // Toast
+      let toastTimer;
+      function showToast(msg) {
+        const t = document.getElementById('toast');
+        document.getElementById('toast-msg').textContent = msg;
+        t.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+      }
+
+      // Notification panel toggle
+      const notifBtn   = document.getElementById('notif-btn');
+      const notifPanel = document.getElementById('notif-panel');
+      notifBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        notifPanel.classList.toggle('open');
+      });
+      document.addEventListener('click', () => notifPanel.classList.remove('open'));
+      notifPanel.addEventListener('click', e => e.stopPropagation());
+
+      // Mark all notifications read
+      document.getElementById('notif-mark-all').addEventListener('click', () => {
+        const badge = document.getElementById('notif-badge');
+        badge.style.transform = 'scale(0)';
+        badge.style.transition = 'transform .3s cubic-bezier(.34,1.56,.64,1)';
+        setTimeout(() => badge.remove(), 300);
+        notifPanel.classList.remove('open');
+        showToast('All notifications marked as read');
+      });
+
+      // Report tab switching
+      document.querySelectorAll('.report-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+          document.querySelectorAll('.report-tab').forEach(t => t.classList.remove('active'));
+          document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+          tab.classList.add('active');
+          document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+        });
+      });
+
+      // Scroll reveal
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+      }, { threshold: 0.1 });
+      document.querySelectorAll('.animate-on-scroll').forEach(el => observer.observe(el));
+    </script>
+  </body>
+</html>

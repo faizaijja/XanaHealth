@@ -1,0 +1,971 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>XanaHealth Dashboard</title>
+    <link rel="stylesheet" href="css/dashboard.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+        /* Main Content */
+      .main-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+      }
+
+       .empty-state {
+            text-align: center;
+            max-width: 600px;
+            margin-top: 180px;
+            margin-left:250px;
+        }
+
+        .icon-circle {
+            width: 80px;
+            height: 80px;
+            border: 4px solid #6b7280;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 32px;
+        }
+
+        .x-icon {
+            width: 40px;
+            height: 40px;
+            position: relative;
+        }
+
+        .x-icon::before,
+        .x-icon::after {
+            content: '';
+            position: absolute;
+            width: 4px;
+            height: 40px;
+            background-color: #6b7280;
+            top: 0;
+            left: 18px;
+        }
+
+        .x-icon::before {
+            transform: rotate(45deg);
+        }
+
+        .x-icon::after {
+            transform: rotate(-45deg);
+        }
+
+        .message {
+            font-size: 18px;
+            color: #6b7280;
+            line-height: 1.6;
+            margin-bottom: 32px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 14px 28px;
+            font-size: 16px;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+
+        .btn-primary {
+            background-color: #3d7d6c;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #2d6858;
+        }
+
+        .btn-secondary {
+            background-color: white;
+            color: #374151;
+            border: 2px solid #d1d5db;
+        }
+
+        .btn-secondary:hover {
+            background-color: #f9fafb;
+            border-color: #9ca3af;
+        }
+      /* Header */
+      .header {
+        background-color: #fff;
+        padding: 16px 32px;
+        border-bottom: 1px solid #e5e5e5;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .header h1 {
+        font-size: 24px;
+        font-weight: 600;
+        color: #111827;
+      }
+
+      .header-right {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+      }
+
+      .notification-icon {
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+      }
+
+      .company-dropdown {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 16px;
+        background-color: #fff;
+        border: 1px solid #e5e5e5;
+        border-radius: 6px;
+        cursor: pointer;
+        color: #9ca3af;
+      }
+
+      /* Content Area */
+      .content-area {
+        padding: 24px 32px;
+        flex: 1;
+        background-color: #f9fafb;
+      }
+
+      .controls {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+        gap: 16px;
+      }
+
+      .controls-left {
+        display: flex;
+        gap: 12px;
+        flex: 1;
+      }
+
+      .filter-btn,
+      .action-btn {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 16px;
+        background-color: #fff;
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 14px;
+        color: #374151;
+      }
+
+      .search-box {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 16px;
+        background-color: #fff;
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+        flex: 1;
+        max-width: 300px;
+      }
+
+      .search-box input {
+        border: none;
+        outline: none;
+        flex: 1;
+        font-size: 14px;
+        color: #6b7280;
+      }
+
+      .controls-right {
+        display: flex;
+        gap: 12px;
+      }
+
+      .export-btn,
+      .import-btn {
+        padding: 10px 20px;
+        background-color: #fff;
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 14px;
+        color: #374151;
+        font-weight: 500;
+      }
+
+      .add-patient-btn {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 20px;
+        background-color: #4a8f75;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 14px;
+        color: #fff;
+        font-weight: 500;
+      }
+
+      /* Filters */
+      .applied-filters {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 16px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+
+      .filter-label {
+        font-size: 13px;
+        color: #6b7280;
+      }
+
+      .filter-tag {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 12px;
+        background-color: #f3f4f6;
+        border-radius: 4px;
+        font-size: 13px;
+        color: #374151;
+      }
+
+      .filter-tag .close {
+        cursor: pointer;
+        opacity: 0.6;
+      }
+
+      .clear-filter {
+        color: #ef4444;
+        font-size: 13px;
+        cursor: pointer;
+        font-weight: 500;
+      }
+   #staffForm {
+  display: none;
+  background: white;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
+
+#staffForm.active {
+  display: block;
+}
+
+#staffForm h3 {
+  margin-bottom: 20px;
+  color: #111827;
+}
+
+#staffForm label {
+  display: block;
+  margin-top: 15px;
+  margin-bottom: 5px;
+  font-weight: 500;
+  color: #374151;
+}
+
+#staffForm input,
+#staffForm textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+#staffForm textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+#staffForm button {
+  margin-top: 20px;
+  margin-right: 10px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+#staffForm button:first-of-type {
+  background: white;
+  color: #374151;
+  border: 1px solid #d1d5db;
+}
+
+#staffForm button:last-of-type {
+  background: #4a8f75;
+  color: white;
+}
+     .table-container {
+        background-color: #fff;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        height: 800px;
+      }
+
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <div class="logo">Xana<span>Health</span></div>
+
+        <nav>
+          <div class="nav-section">
+            <div class="nav-label">Facility Admin</div>
+            <a href="#" class="nav-item active">
+              <svg
+                class="nav-icon"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+                />
+              </svg>
+              <span>Dashboard</span>
+            </a>
+            <a href="#" class="nav-item">
+              <svg
+                class="nav-icon"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                />
+              </svg>
+              <span>Patient Files</span>
+            </a>
+            <a href="#" class="nav-item">
+              <svg
+                class="nav-icon"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                />
+              </svg>
+              <span>Patient Visits</span>
+            </a>
+            <a href="#" class="nav-item">
+              <svg
+                class="nav-icon"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"
+                />
+              </svg>
+              <span>Billing</span>
+            </a>
+            <a href="staff_list.html" class="nav-item">
+              <svg
+                class="nav-icon"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
+                />
+              </svg>
+              <span>Staff</span>
+            </a>
+            <a href="#" class="nav-item">
+              <svg
+                class="nav-icon"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                />
+              </svg>
+              <span>Reports</span>
+            </a>
+          </div>
+        </nav>
+
+        <div class="user-section">
+          <div class="user-profile">
+            <div class="user-avatar">DD</div>
+            <div class="user-info">
+              <div class="user-name">Dr Jane Doe</div>
+              <div class="user-role">doctor@mail.com</div>
+            </div>
+          </div>
+          <div class="user-actions">
+             <a href="#" class="user-action">
+              <svg
+                width="16"
+                height="16"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+                />
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                />
+              </svg>
+              Subscription
+            </a>
+            <a href="#" class="user-action">
+              <svg
+                width="16"
+                height="16"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+                />
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                />
+              </svg>
+              Settings
+            </a>
+            <a href="#" class="user-action">
+              <svg
+                width="16"
+                height="16"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              Help
+            </a>
+            <a href="landing.html" class="user-action">
+              <svg
+                width="16"
+                height="16"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                />
+              </svg>
+              Logout
+            </a>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="main-content">
+        <!-- Header -->
+        <div class="header">
+          <h1 class="header-title">Staff List</h1>
+          <div class="header-actions">
+            <div class="company-logo">
+              <svg
+                width="20"
+                height="20"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                />
+              </svg>
+              Company Logo
+              <svg
+                width="16"
+                height="16"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        
+        <!-- Content Area -->
+        <div class="content-area">
+          <!-- Controls -->
+          <div class="controls">
+            <div class="controls-left">
+              <button class="filter-btn">
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <line x1="4" y1="21" x2="4" y2="14"></line>
+                  <line x1="4" y1="10" x2="4" y2="3"></line>
+                  <line x1="12" y1="21" x2="12" y2="12"></line>
+                  <line x1="12" y1="8" x2="12" y2="3"></line>
+                  <line x1="20" y1="21" x2="20" y2="16"></line>
+                  <line x1="20" y1="12" x2="20" y2="3"></line>
+                  <line x1="1" y1="14" x2="7" y2="14"></line>
+                  <line x1="9" y1="8" x2="15" y2="8"></line>
+                  <line x1="17" y1="16" x2="23" y2="16"></line>
+                </svg>
+                Filter by
+              </button>
+              <div class="search-box">
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <path d="m21 21-4.35-4.35"></path>
+                </svg>
+                <input type="text" placeholder="Search all staff" />
+              </div>
+              <button class="action-btn">
+                Action
+                <svg
+                  width="12"
+                  height="12"
+                  viewBox="0 0 12 12"
+                  fill="currentColor"
+                >
+                  <path d="M6 9L1 4h10z"></path>
+                </svg>
+              </button>
+            </div>
+            <div class="controls-right">
+              <button class="export-btn">Export</button>
+              <button class="import-btn">Import</button>
+         
+               <button class="add-patient-btn" onclick="showStaffForm()">
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                Add New Staff
+              </button>
+           
+            </div>
+ 
+          </div>
+
+       
+          <div class="table-container">
+            
+            <div class="empty-state">
+                         <!-- Add Staff Form - MOVED HERE -->
+<div class="step" id="staffForm">
+  <h3 style="text-align: center">Add New Staff</h3>
+  
+  <label>First Name</label>
+  <input type="text" placeholder="Enter first name" />
+  
+  <label>Last Name</label>
+  <input type="text" placeholder="Enter last name" />
+  
+  <label>Email</label>
+  <input type="email" placeholder="Enter email address" />
+  
+  <label>Department</label>
+  <input type="text" placeholder="Enter department" />
+  
+  <label>Role</label>
+  <input type="text" placeholder="Enter role/position" />
+  
+  <div style="text-align: center;">
+    <button onclick="hideStaffForm()">Cancel</button>
+    <button onclick="saveStaff()">Save Staff</button>
+  </div>
+</div>
+        <div class="icon-circle">
+            <div class="x-icon"></div>
+        </div>
+        
+        <p class="message">
+            You currently do not have any staff. Add new staff or<br>
+            import existing records to see staff list here.
+        </p>
+        
+        <div class="button-group">
+            <button class="btn btn-primary">Add New Staff</button>
+            <button class="btn btn-secondary">Import CSV File</button>
+        </div>
+    </div>
+          </div>
+
+        
+
+                 
+         
+          </div>
+        </div>
+        </main>
+
+        <!-- Stats Grid -->
+       
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+      let currentStep = 0;
+      const steps = document.querySelectorAll(".step");
+      const stepNum = document.getElementById("stepNum");
+
+      function nextStep() {
+        if (currentStep < steps.length - 1) {
+          steps[currentStep].classList.remove("active");
+          currentStep++;
+          steps[currentStep].classList.add("active");
+          stepNum.textContent = currentStep + 1;
+        } else {
+          closeOnboarding();
+        }
+      }
+
+      function closeOnboarding() {
+        document.getElementById("onboarding").style.display = "none";
+      }
+      // Revenue Chart (Line Chart)
+      const revenueCtx = document
+        .getElementById("revenueChart")
+        .getContext("2d");
+      new Chart(revenueCtx, {
+        type: "line",
+        data: {
+          labels: [
+            "Jan",
+            "Feb",
+            "Mar",
+            "Apr",
+            "May",
+            "Jun",
+            "Jul",
+            "Aug",
+            "Sep",
+            "Oct",
+            "Nov",
+            "Dec",
+          ],
+          datasets: [
+            {
+              label: "Revenue 2024",
+              data: [30, 40, 35, 50, 49, 60, 70, 80, 75, 85, 90, 95],
+              borderColor: "#1a5f5a",
+              backgroundColor: "rgba(26, 95, 90, 0.1)",
+              tension: 0.4,
+              fill: true,
+              pointBackgroundColor: "#1a5f5a",
+              pointRadius: 4,
+              pointHoverRadius: 6,
+            },
+            {
+              label: "Revenue 2023",
+              data: [20, 30, 28, 40, 39, 50, 60, 70, 65, 75, 80, 85],
+              borderColor: "#7dd3c0",
+              backgroundColor: "rgba(125, 211, 192, 0.1)",
+              tension: 0.4,
+              fill: true,
+              pointBackgroundColor: "#7dd3c0",
+              pointRadius: 4,
+              pointHoverRadius: 6,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: false,
+            },
+            tooltip: {
+              backgroundColor: "#1e293b",
+              padding: 12,
+              titleColor: "#fff",
+              bodyColor: "#e2e8f0",
+              borderColor: "#334155",
+              borderWidth: 1,
+              displayColors: true,
+              boxPadding: 6,
+            },
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              grid: {
+                color: "#e2e8f0",
+                drawBorder: false,
+              },
+              ticks: {
+                color: "#64748b",
+                font: {
+                  size: 11,
+                },
+              },
+            },
+            x: {
+              grid: {
+                display: false,
+                drawBorder: false,
+              },
+              ticks: {
+                color: "#64748b",
+                font: {
+                  size: 11,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      // Donut Chart (Disease Prevalence)
+      const donutCtx = document.getElementById("donutChart").getContext("2d");
+      new Chart(donutCtx, {
+        type: "doughnut",
+        data: {
+          labels: ["Malaria", "Cancer", "Typhoid", "Flu/Fever"],
+          datasets: [
+            {
+              data: [40, 25, 20, 15],
+              backgroundColor: ["#1a5f5a", "#2d8b83", "#7dd3c0", "#b8e6de"],
+              borderWidth: 0,
+              spacing: 2,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: false,
+            },
+            tooltip: {
+              backgroundColor: "#1e293b",
+              padding: 12,
+              titleColor: "#fff",
+              bodyColor: "#e2e8f0",
+            },
+          },
+          cutout: "70%",
+        },
+      });
+
+      // Area Chart (Patient Visits)
+      const areaCtx = document.getElementById("areaChart").getContext("2d");
+      new Chart(areaCtx, {
+        type: "line",
+        data: {
+          labels: [
+            "August",
+            "September",
+            "October",
+            "November",
+            "December",
+            "January",
+            "February",
+          ],
+          datasets: [
+            {
+              label: "Patient Visits",
+              data: [200, 350, 300, 450, 350, 500, 400],
+              borderColor: "#1a5f5a",
+              backgroundColor: "rgba(26, 95, 90, 0.2)",
+              tension: 0.4,
+              fill: true,
+              pointBackgroundColor: "#1a5f5a",
+              pointRadius: 5,
+              pointHoverRadius: 7,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: false,
+            },
+            tooltip: {
+              backgroundColor: "#1e293b",
+              padding: 12,
+            },
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              grid: {
+                color: "#e2e8f0",
+                drawBorder: false,
+              },
+              ticks: {
+                color: "#64748b",
+                font: {
+                  size: 11,
+                },
+              },
+            },
+            x: {
+              grid: {
+                display: false,
+                drawBorder: false,
+              },
+              ticks: {
+                color: "#64748b",
+                font: {
+                  size: 11,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      // Animate numbers
+      function animateValue(id, start, end, duration) {
+        const obj = document.getElementById(id);
+        const range = end - start;
+        const minTimer = 50;
+        const stepTime = Math.abs(Math.floor(duration / range));
+        const timer = stepTime < minTimer ? minTimer : stepTime;
+        let current = start;
+        const increment = end > start ? 1 : -1;
+        const step = () => {
+          current += increment * 100;
+          obj.textContent = current.toLocaleString();
+          if (
+            current !== end &&
+            (increment > 0 ? current < end : current > end)
+          ) {
+            setTimeout(step, timer);
+          } else {
+            obj.textContent = end.toLocaleString();
+          }
+        };
+        setTimeout(step, timer);
+      }
+
+      
+
+      // Trigger animations on load
+      window.addEventListener("load", () => {
+        animateValue("patientVisits", 0, 120000, 2000);
+      });
+      function showStaffForm() {
+  const form = document.getElementById('staffForm');
+  form.classList.add('active');
+  // Optionally scroll to the form
+  form.scrollIntoView({ behavior: 'smooth' });
+}
+function hideStaffForm() {
+  const form = document.getElementById('staffForm');
+  form.classList.remove('active');
+}
+    </script>
+  </body>
+</html>
