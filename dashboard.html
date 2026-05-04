@@ -4,18 +4,44 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>XanaHealth Dashboard</title>
-    <link rel="stylesheet" href="css/dashboard.css" />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.css"
-    />
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+    <!-- intl-tel-input -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.css" />
+    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <style>
-      /* Loading Screen */
+      :root {
+        --primary-teal: #1a5f5a;
+        --secondary-teal: #2d8b83;
+        --light-teal: #e8f5f4;
+        --accent-mint: #7dd3c0;
+        --bg-primary: #f8fafb;
+        --bg-white: #ffffff;
+        --text-dark: #1e293b;
+        --text-medium: #64748b;
+        --text-light: #94a3b8;
+        --border-color: #e2e8f0;
+        --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+        --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+        --shadow-lg: 0 10px 30px rgba(0,0,0,0.1);
+        --sidebar-width: 240px;
+      }
+
+      body {
+        font-family: "Outfit", sans-serif;
+        background: var(--bg-primary);
+        color: var(--text-dark);
+        line-height: 1.6;
+      }
+
+      /* ── Loading Screen ── */
       .loading-screen {
         position: fixed;
         inset: 0;
@@ -25,271 +51,306 @@
         align-items: center;
         justify-content: center;
         z-index: 9999;
-        transition:
-          opacity 0.5s ease,
-          visibility 0.5s ease;
+        transition: opacity 0.5s ease, visibility 0.5s ease;
       }
-
-      .loading-screen.hidden {
-        opacity: 0;
-        visibility: hidden;
-      }
+      .loading-screen.hidden { opacity: 0; visibility: hidden; }
 
       .loader {
-        width: 50px;
-        height: 50px;
+        width: 50px; height: 50px;
         border: 4px solid #e5e7eb;
-        border-top: 4px solid #3f7f63;
+        border-top: 4px solid var(--primary-teal);
         border-radius: 50%;
         animation: spin 1s linear infinite;
         margin-bottom: 24px;
       }
+      @keyframes spin { to { transform: rotate(360deg); } }
 
-      @keyframes spin {
-        0% {
-          transform: rotate(0deg);
-        }
-        100% {
-          transform: rotate(360deg);
-        }
+      /* ── Sidebar ── */
+      .sidebar {
+        width: var(--sidebar-width);
+        background: var(--bg-white);
+        border-right: 1px solid var(--border-color);
+        position: fixed;
+        top: 0; left: 0; bottom: 0;
+        overflow-y: auto;
+        z-index: 100;
+        display: flex;
+        flex-direction: column;
       }
-
-      .loading-message {
-        text-align: center;
-        max-width: 400px;
-        padding: 0 20px;
+      .sidebar-brand {
+        padding: 24px 24px 32px;
+        font-size: 22px;
+        font-weight: 700;
+        color: var(--text-dark);
+        text-decoration: none;
       }
+      .sidebar-brand span { color: var(--primary-teal); }
 
-      .loading-message h3 {
-        color: #2c3e50;
-        margin-bottom: 12px;
-        font-size: 20px;
+      .nav-label {
+        padding: 0 24px;
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: var(--text-light);
+        margin-bottom: 4px;
+        margin-top: 8px;
       }
-
-      .loading-message p {
-        color: #666;
+      .sidebar .nav-link {
+        padding: 11px 24px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: var(--text-medium);
         font-size: 14px;
-        line-height: 1.6;
+        font-weight: 500;
+        border-radius: 0;
+        position: relative;
+        transition: all .2s;
       }
+      .sidebar .nav-link:hover,
+      .sidebar .nav-link.active {
+        background: var(--light-teal);
+        color: var(--primary-teal);
+      }
+      .sidebar .nav-link.active { font-weight: 600; }
+      .sidebar .nav-link.active::before {
+        content: "";
+        position: absolute;
+        left: 0; top: 0; bottom: 0;
+        width: 4px;
+        background: var(--primary-teal);
+        border-radius: 0 4px 4px 0;
+      }
+      .nav-icon { width: 20px; height: 20px; opacity: .7; flex-shrink: 0; }
+      .sidebar .nav-link.active .nav-icon,
+      .sidebar .nav-link:hover .nav-icon { opacity: 1; }
+
+      /* Sidebar user section */
+      .sidebar-user {
+        margin-top: auto;
+        padding: 16px 24px;
+        border-top: 1px solid var(--border-color);
+      }
+      .user-avatar {
+        width: 40px; height: 40px;
+        border-radius: 50%;
+        background: var(--primary-teal);
+        color: #fff;
+        display: flex; align-items: center; justify-content: center;
+        font-weight: 600; font-size: 14px; flex-shrink: 0;
+      }
+      .user-name { font-weight: 600; font-size: 14px; color: var(--text-dark); }
+      .user-role { font-size: 12px; color: var(--text-light); }
+      .user-action {
+        padding: 8px 0;
+        font-size: 13px;
+        color: var(--text-medium);
+        text-decoration: none;
+        display: flex; align-items: center; gap: 8px;
+        transition: all .2s;
+        border-radius: 6px;
+      }
+      .user-action:hover { color: var(--primary-teal); }
+
+      /* ── Main ── */
+      .main-content {
+        margin-left: var(--sidebar-width);
+        padding: 32px;
+        min-height: 100vh;
+      }
+
+      /* ── Stat Cards ── */
+      .stat-card {
+        background: var(--bg-white);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        box-shadow: var(--shadow-sm);
+        transition: all .3s;
+        animation: fadeIn .6s ease forwards;
+        overflow: hidden;
+      }
+      .stat-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+      .stat-value {
+        font-size: 32px;
+        font-weight: 700;
+        color: var(--text-dark);
+        font-family: "JetBrains Mono", monospace;
+        line-height: 1.1;
+      }
+      .stat-label { font-size: 13px; color: var(--text-medium); font-weight: 500; }
+      .stat-icon {
+        width: 40px; height: 40px;
+        background: var(--light-teal);
+        border-radius: 8px;
+        display: flex; align-items: center; justify-content: center;
+        color: var(--primary-teal);
+        flex-shrink: 0;
+      }
+
+      /* ── Chart Cards ── */
+      .chart-card {
+        background: var(--bg-white);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        box-shadow: var(--shadow-sm);
+        padding: 24px;
+        height: 420px;
+        display: flex;
+        flex-direction: column;
+        animation: fadeIn .6s ease forwards;
+      }
+      .chart-title { font-size: 16px; font-weight: 600; color: var(--text-dark); }
+      .chart-wrapper {
+        position: relative;
+        flex: 1;
+        min-height: 0;
+      }
+      .chart-wrapper canvas { width: 100% !important; height: 100% !important; }
+
+      /* Disease legend */
+      .legend { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+      .legend-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-medium); }
+      .legend-color { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+
+      /* ── Table ── */
+      .table-card {
+        background: var(--bg-white);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        box-shadow: var(--shadow-sm);
+        overflow: hidden;
+        animation: fadeIn .6s ease .8s forwards;
+      }
+      .table-card .table thead { background: var(--bg-primary); }
+      .table-card .table thead th {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--text-medium);
+        text-transform: uppercase;
+        letter-spacing: .5px;
+        border-bottom: 1px solid var(--border-color);
+        padding: 12px 16px;
+      }
+      .table-card .table tbody td {
+        padding: 14px 16px;
+        border-top: 1px solid var(--border-color);
+        font-size: 14px;
+        color: var(--text-dark);
+        vertical-align: middle;
+      }
+      .table-card .table tbody tr:hover { background: var(--bg-primary); }
+
+      /* Disease badges */
+      .badge-fever    { background: #fee; color: #c33; }
+      .badge-cough    { background: #ffefd5; color: #d97706; }
+      .badge-malaria  { background: #f0e8ff; color: #7c3aed; }
+      .badge-typhoid  { background: #dbeafe; color: #2563eb; }
+      .badge-cholera  { background: #d1fae5; color: #059669; }
+      .badge-infection{ background: #fce7f3; color: #db2777; }
+      .disease-badge {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 500;
+      }
+
+      /* Action buttons */
+      .btn-consult {
+        padding: 5px 14px;
+        border-radius: 6px;
+        border: 1px solid var(--border-color);
+        background: var(--bg-white);
+        color: var(--text-medium);
+        font-size: 13px;
+        font-weight: 500;
+        transition: all .2s;
+      }
+      .btn-consult:hover {
+        border-color: var(--primary-teal);
+        color: var(--primary-teal);
+        background: var(--light-teal);
+      }
+      .btn-icon {
+        width: 32px; height: 32px;
+        border-radius: 6px;
+        border: 1px solid var(--border-color);
+        background: var(--bg-white);
+        display: inline-flex; align-items: center; justify-content: center;
+        cursor: pointer;
+        transition: all .2s;
+        color: var(--text-medium);
+      }
+      .btn-icon:hover { border-color: #ef4444; color: #ef4444; background: #fef2f2; }
+
+      /* ── Company logo pill ── */
+      .company-logo-pill {
+        display: flex; align-items: center; gap: 8px;
+        padding: 8px 16px;
+        background: var(--bg-white);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        font-weight: 500;
+        font-size: 14px;
+        color: var(--text-dark);
+      }
+
+      /* ── Animations ── */
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to   { opacity: 1; transform: translateY(0); }
+      }
+      .stat-card:nth-child(1) { animation-delay: .1s; }
+      .stat-card:nth-child(2) { animation-delay: .2s; }
+      .stat-card:nth-child(3) { animation-delay: .3s; }
+      .stat-card:nth-child(4) { animation-delay: .4s; }
+
+      /* ── Onboarding Overlay ── */
       .onboarding-overlay {
         position: fixed;
         inset: 0;
-        background: rgba(0, 0, 0, 0.4);
+        background: rgba(0,0,0,.4);
         display: flex;
         align-items: center;
         justify-content: center;
-        z-index: 1000;
+        z-index: 1050;
       }
-
       .onboarding-modal {
         background: #fff;
         width: 520px;
+        max-width: 95vw;
         max-height: 90vh;
         padding: 40px;
         border-radius: 14px;
         display: flex;
         flex-direction: column;
-        transition: width 0.35s ease;
+        transition: width .35s ease;
+        overflow: hidden;
       }
+      .onboarding-modal.large { width: 1100px; }
 
-      /* BIG MODE */
-      .onboarding-modal.large {
-        width: 1100px;
-      }
+      .steps { flex: 1; overflow-y: auto; overflow-x: hidden; margin-bottom: 20px; scrollbar-width: none; }
+      .steps::-webkit-scrollbar { display: none; }
+      .step { display: none; }
+      .step.active { display: block; }
 
-      .close-btn {
-        position: absolute;
-        top: 16px;
-        right: 16px;
-        background: none;
-        border: none;
-        font-size: 20px;
-        cursor: pointer;
-      }
-
-      .subtitle {
-        color: #777;
-        margin-bottom: 30px;
-      }
-
-      .steps {
-        flex: 1;
-        overflow-y: auto;
-        overflow-x: hidden;
-        margin-bottom: 20px;
-        padding-right: 8px;
-        min-height: 0; /* Important for flex children to scroll */
-        scrollbar-width: none; /* Firefox */
-        -ms-overflow-style: none; /* IE and Edge */
-      }
-
-      /* Hide scrollbar for Chrome, Safari and Opera */
-      .steps::-webkit-scrollbar {
-        display: none;
-      }
-
-      .step {
-        display: none;
-      }
-
-      .big-form {
-        padding: 0;
-        background: transparent;
-        box-shadow: none;
-      }
-
-      .form-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 40px;
-      }
-
-      .form-header h1 {
-        font-size: 28px;
-        font-weight: 500;
-        color: #1a1a1a;
-      }
-
-      .collapse-btn {
-        background: none;
-        border: none;
-        color: #4a8f75;
-        font-size: 16px;
-        cursor: pointer;
-        text-decoration: underline;
-        font-weight: 500;
-      }
-
-      .collapse-btn:hover {
-        color: #3d7360;
-      }
-
-      .file-form-group {
-        margin-bottom: 25px;
-      }
-
-      .file-form-group label {
-        font-weight: 600;
-        display: block;
-        margin-bottom: 6px;
-      }
-
-      .required {
-        font-size: 12px;
-        color: #888;
-        margin-left: 8px;
-      }
-
-      /* Wrapper */
-      .upload-wrapper {
+      /* ── Onboarding form inputs ── */
+      .ob-label { font-size: 15px; color: #4a4a4a; margin-bottom: 8px; font-weight: 400; display: block; }
+      .ob-input {
         width: 100%;
-      }
-
-      /* Big Upload Box */
-      .upload-box {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-
-        width: 100%;
-        height: 220px; /* Makes it BIG */
-        border: 2px dashed #cbd5e1; /* Light gray dashed border */
-        border-radius: 16px;
-        background-color: #f8fafc; /* Very light background */
-        cursor: pointer;
-        transition: all 0.3s ease;
-        position: relative;
-      }
-
-      /* Hover Effect */
-      .upload-box:hover {
-        border-color: #22c55e; /* Green border on hover */
-        background-color: #f0fdf4; /* Light green background */
-      }
-
-      /* Upload Content */
-      .upload-content {
-        pointer-events: none; /* So clicking anywhere triggers input */
-      }
-
-      /* Icon */
-      .upload-icon {
-        font-size: 40px;
-        margin-bottom: 10px;
-        color: gray;
-      }
-
-      /* Title */
-      .upload-title {
-        font-size: 16px;
-        font-weight: 600;
-        margin-bottom: 5px;
-      }
-
-      /* Sub text */
-      .upload-sub {
-        font-size: 13px;
-        color: #64748b;
-      }
-
-      .form-row {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 30px;
-        margin-bottom: 30px;
-      }
-
-      .form-group {
-        display: flex;
-        flex-direction: column;
-      }
-
-      .form-group label {
-        font-size: 15px;
-        color: #4a4a4a;
-        margin-bottom: 10px;
-        font-weight: 400;
-      }
-
-      .required {
-        color: #dc3545;
-        margin-left: 4px;
-      }
-
-      .input-wrapper {
-        position: relative;
-        display: flex;
-        align-items: center;
-      }
-
-      input[type="text"],
-      input[type="date"],
-      select {
-        width: 100%;
-        padding: 14px 16px;
+        padding: 13px 16px;
         border: none;
         border-radius: 8px;
         background: #e8edef;
         font-size: 15px;
         color: #6c757d;
-        transition: all 0.3s ease;
+        transition: all .3s ease;
+        font-family: "Outfit", sans-serif;
       }
-
-      input[type="text"]::placeholder,
-      select option:first-child {
-        color: #9ca3af;
-      }
-
-      input[type="text"]:focus,
-      input[type="date"]:focus,
-      select:focus {
-        outline: none;
-        background: #dde2e5;
-      }
-
-      select {
+      .ob-input:focus { outline: none; background: #dde2e5; }
+      .ob-textarea { height: 120px; resize: vertical; }
+      .ob-select {
         appearance: none;
         cursor: pointer;
         padding-right: 40px;
@@ -297,1506 +358,790 @@
         background-repeat: no-repeat;
         background-position: right 16px center;
       }
+      .ob-date { color: #9ca3af; }
+      .ob-date::-webkit-calendar-picker-indicator { cursor: pointer; opacity: .6; }
 
-      input[type="date"] {
-        color: #9ca3af;
-        position: relative;
-      }
+      .required-star { color: #dc3545; margin-left: 4px; }
+      .required-note { font-size: 12px; color: #888; margin-left: 8px; }
 
-      input[type="date"]::-webkit-calendar-picker-indicator {
-        position: absolute;
-        right: 16px;
-        cursor: pointer;
-        opacity: 0.6;
-      }
-
-      /* Fetch Button */
+      /* Input with fetch button */
+      .input-with-btn { position: relative; display: flex; align-items: center; }
+      .input-with-btn .ob-input { padding-right: 140px; }
       .fetch-btn {
-        position: absolute;
-        right: 8px;
-        background: #4a8f75;
-        color: white;
-        border: none;
-        padding: 10px 20px;
-        border-radius: 6px;
-        font-size: 14px;
-        font-weight: 500;
-        cursor: pointer;
-        transition: background 0.3s ease;
+        position: absolute; right: 8px;
+        background: var(--secondary-teal); color: #fff;
+        border: none; padding: 9px 18px;
+        border-radius: 6px; font-size: 13px; font-weight: 500;
+        cursor: pointer; transition: background .2s; font-family: "Outfit", sans-serif;
+        white-space: nowrap;
       }
+      .fetch-btn:hover { background: var(--primary-teal); }
 
-      .fetch-btn:hover {
-        background: #3d7360;
-      }
-
-      /* Nationality Field - Enhanced */
-      .nationality-field {
-        position: relative;
-      }
-
-      .nationality-field::before {
-        content: "";
-        position: absolute;
-        top: -8px;
-        left: -8px;
-        right: -8px;
-        bottom: -8px;
-        background: linear-gradient(135deg, #4a8f75 0%, #3d7360 100%);
-        border-radius: 12px;
-        opacity: 0.1;
-        pointer-events: none;
-      }
-
-      .nationality-field label {
-        color: #4a8f75;
-        font-weight: 600;
-      }
-
-      .nationality-select {
-        background: #e8f5f1 !important;
-        border: 2px solid #4a8f75 !important;
-        font-weight: 500;
-        color: #4a8f75 !important;
-        padding-left: 45px !important;
-      }
-
-      .nationality-select:focus {
-        background: #d5ebe4 !important;
-        box-shadow: 0 0 0 3px rgba(74, 143, 117, 0.2);
-      }
-
-      .flag-icon {
-        position: absolute;
-        left: 16px;
-        top: 50%;
+      /* Nationality field */
+      .nationality-wrapper { position: relative; }
+      .flag-icon-abs {
+        position: absolute; left: 14px; top: 50%;
         transform: translateY(-50%);
-        font-size: 24px;
-        z-index: 1;
+        font-size: 22px; z-index: 1; pointer-events: none;
+      }
+      .ob-input.nationality-select {
+        background: #e8f5f1;
+        border: 2px solid var(--secondary-teal);
+        color: var(--primary-teal);
+        font-weight: 500;
+        padding-left: 44px;
+      }
+      .ob-input.nationality-select:focus {
+        background: #d5ebe4;
+        box-shadow: 0 0 0 3px rgba(74,143,117,.2);
       }
 
-      /* Responsive */
-      @media (max-width: 768px) {
-        .form-row {
-          grid-template-columns: 1fr;
-          gap: 20px;
-        }
-
-        .form-container {
-          padding: 24px;
-        }
-
-        .form-header h1 {
-          font-size: 24px;
-        }
+      /* Upload box */
+      .upload-box {
+        display: flex; align-items: center; justify-content: center;
+        text-align: center;
+        width: 100%; height: 180px;
+        border: 2px dashed #cbd5e1;
+        border-radius: 14px;
+        background: #f8fafc;
+        cursor: pointer;
+        transition: all .3s ease;
       }
+      .upload-box:hover { border-color: #22c55e; background: #f0fdf4; }
+      .upload-icon { font-size: 36px; margin-bottom: 8px; color: #94a3b8; }
+      .upload-title { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+      .upload-sub { font-size: 13px; color: #64748b; }
 
-      .step.active {
-        display: block;
+      /* Section headers with collapse */
+      .section-hdr {
+        display: flex; justify-content: space-between; align-items: center;
+        margin-bottom: 20px; margin-top: 10px;
+        border-bottom: 1px solid var(--border-color); padding-bottom: 10px;
       }
+      .section-hdr h5 { font-size: 18px; font-weight: 600; margin: 0; color: var(--text-dark); }
+      .collapse-btn {
+        background: none; border: none;
+        color: var(--secondary-teal); font-size: 14px;
+        cursor: pointer; text-decoration: underline; font-weight: 500;
+        font-family: "Outfit", sans-serif;
+      }
+      .collapse-btn:hover { color: var(--primary-teal); }
 
-      label {
-        display: block;
-        margin: 16px 0 6px;
-      }
-
-      input,
-      textarea {
-        width: 100%;
-        padding: 12px;
-        border-radius: 8px;
-        border: 1px solid #ddd;
-      }
-      input {
-        background: rgba(79, 143, 117, 0.08);
-      }
-
-      textarea {
-        height: 120px;
-      }
-
-      .modal-footer {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-top: 20px;
+      /* Modal footer */
+      .modal-footer-ob {
+        display: flex; align-items: center; justify-content: space-between;
         padding-top: 20px;
         border-top: 1px solid #eee;
-        flex-shrink: 0; /* Prevent footer from shrinking */
+        flex-shrink: 0;
       }
-      .import-btn {
-        background: #3f7f63;
-        color: white;
-        padding: 10px 22px;
-        border-radius: 10px;
-        border: none;
+      .btn-ob-primary {
+        background: var(--primary-teal); color: #fff;
+        padding: 10px 24px; border-radius: 10px; border: none;
+        font-family: "Outfit", sans-serif; font-size: 14px; font-weight: 500;
+        cursor: pointer; transition: background .2s;
       }
-      .btn-primary {
-        background: #3f7f63;
-        color: white;
-        padding: 10px 22px;
-        border-radius: 10px;
-        border: none;
+      .btn-ob-primary:hover { background: #134844; }
+      .btn-ob-outline {
+        background: none; border: 1px solid var(--primary-teal);
+        color: var(--primary-teal); padding: 10px 24px;
+        border-radius: 10px; font-family: "Outfit", sans-serif;
+        font-size: 14px; cursor: pointer; transition: all .2s;
       }
-
-      .btn-outline {
-        background: none;
-        border: 1px solid #3f7f63;
-        color: #3f7f63;
-        padding: 10px 22px;
-        border-radius: 10px;
+      .btn-ob-outline:hover { background: var(--light-teal); }
+      .btn-ob-import {
+        background: var(--primary-teal); color: #fff;
+        padding: 9px 20px; border-radius: 8px; border: none;
+        font-family: "Outfit", sans-serif; font-size: 13px; font-weight: 500;
+        cursor: pointer;
       }
-      /* GRID */
-.chart-grid{
-  display:grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap:24px;
-  padding:30px;
-}
+      .step-indicator { font-size: 14px; color: var(--text-medium); }
 
-/* CARD */
-.chart-card{
-  background:#ffffff;
-  border-radius:18px;
-  padding:24px;
-  height:420px;
-  display:flex;
-  flex-direction:column;
-  justify-content:space-between;
-  box-shadow:0 6px 20px rgba(0,0,0,0.05);
-  overflow:hidden;
-}
-
-/* HEADER */
-.chart-header{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
-
-.chart-title{
-  font-size:18px;
-  font-weight:600;
-}
-
-/* WRAPPER (IMPORTANT FIX) */
-.chart-wrapper{
-  position:relative;
-  width:100%;
-  height:260px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
-
-.chart-wrapper canvas{
-  max-width:100% !important;
-  max-height:100% !important;
-}
-
-/* LEGEND */
-.legend{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:12px;
-  margin-top:10px;
-}
-
-.legend-item{
-  display:flex;
-  align-items:center;
-  gap:8px;
-}
-
-.legend-color{
-  width:14px;
-  height:14px;
-  border-radius:50%;
-}
-
-@media(max-width:900px){
-  .chart-grid{
-    grid-template-columns:1fr;
-  }
-}
+      /* ── Responsive ── */
+      @media (max-width: 991px) {
+        .sidebar {
+          transform: translateX(-100%);
+          transition: transform .3s;
+        }
+        .sidebar.open { transform: translateX(0); }
+        .main-content { margin-left: 0; padding: 16px; }
+      }
     </style>
   </head>
   <body>
+
+    <!-- ═══════════════════════════════ LOADING SCREEN ═══════════════════════════════ -->
     <div class="loading-screen" id="loadingScreen">
       <div class="loader"></div>
-      <div class="loading-message">
-        <h3>Setting Up Your Dashboard</h3>
-        <p>
-          Hang on we're setting up your health facility. Do not turn off your
-          device.This will take a while.
-        </p>
+      <div class="text-center px-4" style="max-width:400px">
+        <h5 class="fw-semibold mb-2" style="color:#2c3e50">Setting Up Your Dashboard</h5>
+        <p class="text-muted" style="font-size:14px">Hang on, we're setting up your health facility. Do not turn off your device. This will take a while.</p>
       </div>
     </div>
-    <!-- Onboarding Modal -->
-    <div class="onboarding-overlay" id="onboarding">
-      <div class="onboarding-modal">
-        <!-- Close -->
-        <button class="close-btn" onclick="closeOnboarding()">×</button>
 
-        <!-- Header -->
-        <h2 style="text-align: center">Welcome to your dashboard</h2>
-        <p class="subtitle" style="text-align: center">
-          Let’s get you started.
-        </p>
+    <!-- ═══════════════════════════════ ONBOARDING MODAL ═══════════════════════════════ -->
+    <div class="onboarding-overlay" id="onboarding" style="display:none">
+      <div class="onboarding-modal" id="onboardingModal">
 
-        <!-- STEPS -->
-        <div class="steps">
-          <!-- STEP 1 -->
+        <button class="btn-close position-absolute top-0 end-0 m-3" onclick="closeOnboarding()" aria-label="Close"></button>
+
+        <h4 class="text-center fw-bold mb-1">Welcome to your dashboard</h4>
+        <p class="text-center text-muted mb-3" style="font-size:14px">Let's get you started.</p>
+
+        <div class="steps" id="stepsContainer">
+
+          <!-- STEP 1: Add Department -->
           <div class="step active">
-            <h3 style="text-align: center">Add New Department</h3>
-
-            <label>Department Name</label>
-            <input type="text" placeholder="Enter your department name here" />
-
-            <label>Department Description</label>
-            <textarea></textarea>
+            <h5 class="text-center mb-4">Add New Department</h5>
+            <div class="mb-3">
+              <label class="ob-label">Department Name</label>
+              <input type="text" class="ob-input" placeholder="Enter your department name here" />
+            </div>
+            <div class="mb-3">
+              <label class="ob-label">Department Description</label>
+              <textarea class="ob-input ob-textarea"></textarea>
+            </div>
           </div>
 
-          <!-- STEP 2 -->
+          <!-- STEP 2: Add Staff -->
           <div class="step">
-            <h3 style="text-align: center">Add New Staff Information</h3>
-            <p style="text-align: center">
-              Import existing staff records in bulk <br />or enter staff
-              information manually
-            </p>
-            <button class="import-btn" style="margin-left: 150px">
-              Import CSV File
-            </button>
+            <h5 class="text-center mb-2">Add New Staff Information</h5>
+            <p class="text-center text-muted mb-3" style="font-size:13px">Import existing staff records in bulk or enter staff information manually</p>
+            <div class="mb-4">
+              <button class="btn-ob-import">
+                <i class="bi bi-upload me-2"></i>Import CSV File
+              </button>
+            </div>
 
-            <div class="form-content">
-              <div class="form-group">
-                <label>First Name</label>
-
-                <input
-                  type="text"
-                  id="facilityName"
-                  placeholder="Enter your facility's name here"
-                  required
-                />
+            <div class="row g-3">
+              <div class="col-6">
+                <label class="ob-label">First Name</label>
+                <input type="text" class="ob-input" placeholder="Enter first name" />
               </div>
-
-              <div class="form-group">
-                <label>Last Name</label>
-
-                <input
-                  type="text"
-                  id="facilityName"
-                  placeholder="Enter your facility's name here"
-                  required
-                />
+              <div class="col-6">
+                <label class="ob-label">Last Name</label>
+                <input type="text" class="ob-input" placeholder="Enter last name" />
               </div>
-
-              <div class="form-group">
-                <label>Gender </label>
-
-                <input
-                  type="email"
-                  id="facilityEmail"
-                  placeholder="Enter your facility's email here"
-                  required
-                />
+              <div class="col-6">
+                <label class="ob-label">Gender</label>
+                <select class="ob-input ob-select">
+                  <option value="">Select gender</option>
+                  <option>Male</option>
+                  <option>Female</option>
+                  <option>Other</option>
+                </select>
               </div>
-              <div class="form-group">
-                <label>Email</label>
-
-                <input
-                  type="text"
-                  id="facilityName"
-                  placeholder="Enter your facility's name here"
-                  required
-                />
+              <div class="col-6">
+                <label class="ob-label">Email</label>
+                <input type="email" class="ob-input" placeholder="Enter email address" />
               </div>
-
-              <div class="form-group">
-                <label>Phone Number </label>
-                <span class="required">*Required</span>
-                <div>
-                  <input
-                    style="width: 600px"
-                    id="phone"
-                    type="tel"
-                    name="phone"
-                  />
-
-                  <!-- Add a hidden input to store the full international number -->
-                  <input type="hidden" name="full_phone" id="full-phone" />
-                </div>
+              <div class="col-12">
+                <label class="ob-label">Phone Number <span class="required-star">*Required</span></label>
+                <input id="phone" type="tel" name="phone" class="ob-input" style="width:100%" />
+                <input type="hidden" name="full_phone" id="full-phone" />
               </div>
-              <div class="form-group">
-                <label>Department</label>
-
-                <input
-                  type="text"
-                  id="facilityName"
-                  placeholder="Enter your facility's name here"
-                  required
-                />
+              <div class="col-6">
+                <label class="ob-label">Department</label>
+                <input type="text" class="ob-input" placeholder="Enter department" />
               </div>
-              <div class="form-group">
-                <label>Role</label>
-
-                <input
-                  type="text"
-                  id="facilityName"
-                  placeholder="Enter your facility's name here"
-                  required
-                />
+              <div class="col-6">
+                <label class="ob-label">Role</label>
+                <input type="text" class="ob-input" placeholder="Enter role" />
               </div>
-              <div class="form-group">
-                <label>Job Title</label>
-
-                <input
-                  type="text"
-                  id="facilityName"
-                  placeholder="Enter your facility's name here"
-                  required
-                />
+              <div class="col-6">
+                <label class="ob-label">Job Title</label>
+                <input type="text" class="ob-input" placeholder="Enter job title" />
               </div>
-              <div class="form-group">
-                <label>Password</label>
-
-                <input
-                  type="text"
-                  id="facilityName"
-                  placeholder="Enter your facility's name here"
-                  required
-                />
+              <div class="col-6">
+                <label class="ob-label">Password</label>
+                <input type="password" class="ob-input" placeholder="Enter password" />
               </div>
-              <div class="form-group">
-                <label>Confirm Password</label>
-
-                <input
-                  type="text"
-                  id="facilityName"
-                  placeholder="Enter your facility's name here"
-                  required
-                />
+              <div class="col-6">
+                <label class="ob-label">Confirm Password</label>
+                <input type="password" class="ob-input" placeholder="Confirm password" />
               </div>
-              <div class="form-group">
-                <label>Profile Image</label>
-                <div class="file-form-group">
-                  <span class="required">Optional</span>
-                  <div class="upload-wrapper">
-                    <label class="upload-box">
-                      <input
-                        type="file"
-                        id="licenseDocument"
-                        accept=".png,.jpg,.jpeg"
-                        hidden
-                      />
-
-                      <div class="upload-content">
-                        <div class="upload-icon">⬆</div>
-                        <p class="upload-title">Upload your file here</p>
-                        <p class="upload-sub">
-                          Supported formats: png, jpeg.<br />
-                          Maximum size 5MB
-                        </p>
-                      </div>
-                    </label>
-                  </div>
-                </div>
+              <div class="col-12">
+                <label class="ob-label">Profile Image <span class="required-note">Optional</span></label>
+                <label class="upload-box d-flex flex-column align-items-center justify-content-center">
+                  <input type="file" accept=".png,.jpg,.jpeg" hidden />
+                  <div class="upload-icon">⬆</div>
+                  <p class="upload-title mb-1">Upload your file here</p>
+                  <p class="upload-sub mb-0">Supported formats: png, jpeg. Max 5MB</p>
+                </label>
               </div>
             </div>
           </div>
 
-          <!-- STEP 3 -->
+          <!-- STEP 3: Add Patient (large modal) -->
           <div class="step big-form">
-            <h3 style="text-align: center">Add New Patient Information</h3>
-            <p style="text-align: center">
-              Import existing patient records in bulk or enter patient
-              information manually
-            </p>
-            <button class="import-btn" style="margin-left: 450px">
-              Import CSV File
-            </button>
+            <h5 class="text-center mb-2">Add New Patient Information</h5>
+            <p class="text-center text-muted mb-3" style="font-size:13px">Import existing patient records in bulk or enter patient information manually</p>
+            <div class="mb-4">
+              <button class="btn-ob-import">
+                <i class="bi bi-upload me-2"></i>Import CSV File
+              </button>
+            </div>
 
-            <div class="patient-content">
-              <form id="patientForm">
-                <div class="form-header">
-                  <h1>Patient Biodata</h1>
-                  <button class="collapse-btn">Collapse</button>
-                </div>
-                <!-- Row 1: National File Number & Internal File Number -->
-                <div class="form-row">
-                  <div class="form-group">
-                    <label for="nationalFileNumber">National File Number</label>
-                    <div class="input-wrapper">
-                      <input
-                        type="text"
-                        id="nationalFileNumber"
-                        placeholder="0000000000000"
-                        value="0000000000000"
-                      />
-                      <button type="button" class="fetch-btn">
-                        Fetch Patient Info
-                      </button>
-                    </div>
-                  </div>
+            <form id="patientForm">
 
-                  <div class="form-group">
-                    <label for="internalFileNumber">Internal File Number</label>
-                    <input
-                      type="text"
-                      id="internalFileNumber"
-                      placeholder="0000000000000"
-                      value="0000000000000"
-                    />
+              <!-- Patient Biodata -->
+              <div class="section-hdr">
+                <h5>Patient Biodata</h5>
+                <button type="button" class="collapse-btn">Collapse</button>
+              </div>
+              <div class="row g-3 mb-3">
+                <div class="col-6">
+                  <label class="ob-label">National File Number</label>
+                  <div class="input-with-btn">
+                    <input type="text" class="ob-input" id="nationalFileNumber" placeholder="0000000000000" value="0000000000000" />
+                    <button type="button" class="fetch-btn">Fetch Patient Info</button>
                   </div>
                 </div>
-
-                <!-- Row 2: First Name & Middle Name -->
-                <div class="form-row">
-                  <div class="form-group">
-                    <label for="firstName">
-                      First Name <span class="required">*Required</span>
-                    </label>
-                    <input
-                      type="text"
-                      id="firstName"
-                      placeholder="Enter patient's first name here"
-                      required
-                    />
-                  </div>
-
-                  <div class="form-group">
-                    <label for="middleName">Middle Name</label>
-                    <input
-                      type="text"
-                      id="middleName"
-                      placeholder="Enter patient's middle name here"
-                    />
-                  </div>
+                <div class="col-6">
+                  <label class="ob-label">Internal File Number</label>
+                  <input type="text" class="ob-input" id="internalFileNumber" placeholder="0000000000000" value="0000000000000" />
                 </div>
-
-                <!-- Row 3: Last Name & Gender -->
-                <div class="form-row">
-                  <div class="form-group">
-                    <label for="lastName">
-                      Last Name <span class="required">*Required</span>
-                    </label>
-                    <input
-                      type="text"
-                      id="lastName"
-                      placeholder="Enter patient's last name here"
-                      required
-                    />
-                  </div>
-
-                  <div class="form-group">
-                    <label for="gender">
-                      Gender <span class="required">*Required</span>
-                    </label>
-                    <select id="gender" required>
-                      <option value="">Select a gender</option>
-                      <option value="male">Male</option>
-                      <option value="female">Female</option>
-                      <option value="other">Other</option>
+                <div class="col-6">
+                  <label class="ob-label">First Name <span class="required-star">*Required</span></label>
+                  <input type="text" class="ob-input" id="firstName" placeholder="Enter patient's first name here" required />
+                </div>
+                <div class="col-6">
+                  <label class="ob-label">Middle Name</label>
+                  <input type="text" class="ob-input" id="middleName" placeholder="Enter patient's middle name here" />
+                </div>
+                <div class="col-6">
+                  <label class="ob-label">Last Name <span class="required-star">*Required</span></label>
+                  <input type="text" class="ob-input" id="lastName" placeholder="Enter patient's last name here" required />
+                </div>
+                <div class="col-6">
+                  <label class="ob-label">Gender <span class="required-star">*Required</span></label>
+                  <select class="ob-input ob-select" id="gender" required>
+                    <option value="">Select a gender</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+                <div class="col-6">
+                  <label class="ob-label">Marital Status</label>
+                  <select class="ob-input ob-select" id="maritalStatus">
+                    <option value="">Select marital status</option>
+                    <option value="single">Single</option>
+                    <option value="married">Married</option>
+                    <option value="divorced">Divorced</option>
+                    <option value="widowed">Widowed</option>
+                  </select>
+                </div>
+                <div class="col-6">
+                  <label class="ob-label">Date of Birth</label>
+                  <input type="date" class="ob-input ob-date" id="dateOfBirth" />
+                </div>
+                <div class="col-6">
+                  <label class="ob-label" style="color:var(--secondary-teal);font-weight:600">Nationality</label>
+                  <div class="nationality-wrapper">
+                    <span class="flag-icon-abs">🇷🇼</span>
+                    <select id="nationality" class="ob-input ob-select nationality-select">
+                      <option value="rwanda" selected>Rwandan (Default)</option>
+                      <option value="kenya">🇰🇪 Kenyan</option>
+                      <option value="uganda">🇺🇬 Ugandan</option>
+                      <option value="tanzania">🇹🇿 Tanzanian</option>
+                      <option value="burundi">🇧🇮 Burundian</option>
+                      <option value="drc">🇨🇩 Congolese</option>
+                      <option value="ethiopia">🇪🇹 Ethiopian</option>
+                      <option value="somalia">🇸🇴 Somalian</option>
+                      <option value="south-sudan">🇸🇸 South Sudanese</option>
+                      <option value="other">🌍 Other</option>
                     </select>
                   </div>
                 </div>
-
-                <!-- Row 4: Marital Status & Date of Birth -->
-                <div class="form-row">
-                  <div class="form-group">
-                    <label for="maritalStatus">Marital Status</label>
-                    <select id="maritalStatus">
-                      <option value="">Select marital status</option>
-                      <option value="single">Single</option>
-                      <option value="married">Married</option>
-                      <option value="divorced">Divorced</option>
-                      <option value="widowed">Widowed</option>
-                    </select>
-                  </div>
-
-                  <div class="form-group">
-                    <label for="dateOfBirth">Date of Birth</label>
-                    <input
-                      type="date"
-                      id="dateOfBirth"
-                      placeholder="00/00/0000"
-                    />
-                  </div>
+                <div class="col-6">
+                  <label class="ob-label">National ID</label>
+                  <input type="text" class="ob-input" placeholder="Enter National ID number here" />
                 </div>
-
-                <!-- Row 5: Nationality & National ID (EMPHASIZED) -->
-                <div class="form-row">
-                  <div class="form-group nationality-field">
-                    <label for="nationality">Nationality</label>
-                    <div class="input-wrapper">
-                      <span class="flag-icon">🇷🇼</span>
-                      <select id="nationality" class="nationality-select">
-                        <option value="rwanda" selected>
-                          Rwandan (Default)
-                        </option>
-                        <option value="kenya">🇰🇪 Kenyan</option>
-                        <option value="uganda">🇺🇬 Ugandan</option>
-                        <option value="tanzania">🇹🇿 Tanzanian</option>
-                        <option value="burundi">🇧🇮 Burundian</option>
-                        <option value="drc">🇨🇩 Congolese</option>
-                        <option value="ethiopia">🇪🇹 Ethiopian</option>
-                        <option value="somalia">🇸🇴 Somalian</option>
-                        <option value="south-sudan">🇸🇸 South Sudanese</option>
-                        <option value="other">🌍 Other</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  <div class="form-group">
-                    <label for="nationalId">National ID</label>
-                    <input
-                      type="text"
-                      id="nationalId"
-                      placeholder="Enter National ID number here"
-                    />
-                  </div>
+                <div class="col-6">
+                  <label class="ob-label">Passport Number</label>
+                  <input type="text" class="ob-input" placeholder="Enter passport number here" />
                 </div>
-
-                <div class="form-row">
-                  <div class="form-group">
-                    <label for="nationalId">Passport Number</label>
-                    <input
-                      type="text"
-                      id="nationalId"
-                      placeholder="Enter National ID number here"
-                    />
-                  </div>
-
-                  <div class="form-group">
-                    <label for="nationalId">Blood Group</label>
-                    <input
-                      type="text"
-                      id="nationalId"
-                      placeholder="Enter National ID number here"
-                    />
-                  </div>
+                <div class="col-6">
+                  <label class="ob-label">Blood Group</label>
+                  <input type="text" class="ob-input" placeholder="e.g. A+" />
                 </div>
-
-                <div class="form-row">
-                  <div class="form-group">
-                    <label for="nationalId">Known Allergies</label>
-                    <input
-                      type="text"
-                      id="nationalId"
-                      placeholder="Enter National ID number here"
-                    />
-                  </div>
-
-                  <div class="form-group">
-                    <label for="nationalId">Deceased At</label>
-                    <input
-                      type="date"
-                      id="nationalId"
-                      placeholder="Enter National ID number here"
-                    />
-                  </div>
+                <div class="col-6">
+                  <label class="ob-label">Known Allergies</label>
+                  <input type="text" class="ob-input" placeholder="Enter known allergies" />
                 </div>
-
-                <!--------------Part 2--------------------------->
-
-                <div class="form-header">
-                  <h1>Patient Contact Information</h1>
-                  <button class="collapse-btn">Collapse</button>
+                <div class="col-6">
+                  <label class="ob-label">Deceased At</label>
+                  <input type="date" class="ob-input ob-date" />
                 </div>
-                <!-- Row 1: National File Number & Internal File Number -->
-                <div class="form-row">
-                  <div class="form-group">
-                    <label for="nationalFileNumber">Email</label>
-                    <input
-                      type="text"
-                      id="internalFileNumber"
-                      placeholder="0000000000000"
-                      value="0000000000000"
-                    />
-                  </div>
+              </div>
 
-                  <div class="form-group">
-                    <label for="internalFileNumber">Phone Number 1</label>
-                    <input
-                      type="text"
-                      id="internalFileNumber"
-                      placeholder="0000000000000"
-                      value="0000000000000"
-                    />
-                  </div>
+              <!-- Patient Contact Information -->
+              <div class="section-hdr">
+                <h5>Patient Contact Information</h5>
+                <button type="button" class="collapse-btn">Collapse</button>
+              </div>
+              <div class="row g-3 mb-3">
+                <div class="col-6">
+                  <label class="ob-label">Email</label>
+                  <input type="email" class="ob-input" placeholder="Enter email address" />
                 </div>
-
-                <!-- Row 2: First Name & Middle Name -->
-                <div class="form-row">
-                  <div class="form-group">
-                    <label for="firstName"> Phone Number 2 </label>
-                    <input
-                      type="text"
-                      id="firstName"
-                      placeholder="Enter patient's first name here"
-                      required
-                    />
-                  </div>
-
-                  <div class="form-group">
-                    <label for="middleName">Country of Residence</label>
-                    <input
-                      type="text"
-                      id="middleName"
-                      placeholder="Enter patient's middle name here"
-                    />
-                  </div>
+                <div class="col-6">
+                  <label class="ob-label">Phone Number 1</label>
+                  <input type="text" class="ob-input" placeholder="Enter phone number" />
                 </div>
-
-                <!-- Row 3: Last Name & Gender -->
-                <div class="form-row">
-                  <div class="form-group">
-                    <label for="lastName"> Province/State </label>
-                    <input
-                      type="text"
-                      id="lastName"
-                      placeholder="Enter patient's last name here"
-                      required
-                    />
-                  </div>
-
-                  <div class="form-group">
-                    <label for="gender"> District/Local Government </label>
-                    <input
-                      type="text"
-                      id="lastName"
-                      placeholder="Enter patient's last name here"
-                      required
-                    />
-                  </div>
+                <div class="col-6">
+                  <label class="ob-label">Phone Number 2</label>
+                  <input type="text" class="ob-input" placeholder="Enter phone number" />
                 </div>
-
-                <!-- Row 4: Marital Status & Date of Birth -->
-                <div class="form-row">
-                  <div class="form-group">
-                    <label for="maritalStatus">Sector/City</label>
-                    <input
-                      type="text"
-                      id="lastName"
-                      placeholder="Enter patient's last name here"
-                      required
-                    />
-                  </div>
-
-                  <div class="form-group">
-                    <label for="dateOfBirth">Cell</label>
-                    <input
-                      type="text"
-                      id="dateOfBirth"
-                      placeholder="00/00/0000"
-                    />
-                  </div>
+                <div class="col-6">
+                  <label class="ob-label">Country of Residence</label>
+                  <input type="text" class="ob-input" placeholder="Enter country" />
                 </div>
-
-                <!-- Row 5: Nationality & National ID (EMPHASIZED) -->
-                <div class="form-row">
-                  <div class="form-group">
-                    <label for="nationalId">Village</label>
-                    <input
-                      type="text"
-                      id="nationalId"
-                      placeholder="Enter National ID number here"
-                    />
-                  </div>
-
-                  <div class="form-group">
-                    <label for="nationalId">Street</label>
-                    <input
-                      type="text"
-                      id="nationalId"
-                      placeholder="Enter National ID number here"
-                    />
-                  </div>
+                <div class="col-6">
+                  <label class="ob-label">Province/State</label>
+                  <input type="text" class="ob-input" placeholder="Enter province/state" />
                 </div>
-
-                <div class="form-header">
-                  <h1>Parent's Information</h1>
-                  <button class="collapse-btn">Collapse</button>
+                <div class="col-6">
+                  <label class="ob-label">District/Local Government</label>
+                  <input type="text" class="ob-input" placeholder="Enter district" />
                 </div>
-                <!-- Row 1: National File Number & Internal File Number -->
-                <div class="form-row">
-                  <div class="form-group">
-                    <label for="nationalFileNumber">Father's Full Name</label>
-                    <input
-                      type="text"
-                      id="internalFileNumber"
-                      placeholder="0000000000000"
-                      value="0000000000000"
-                    />
-                  </div>
-
-                  <div class="form-group">
-                    <label for="internalFileNumber"
-                      >Father's Phone Number</label
-                    >
-                    <input
-                      type="text"
-                      id="internalFileNumber"
-                      placeholder="0000000000000"
-                      value="0000000000000"
-                    />
-                  </div>
+                <div class="col-6">
+                  <label class="ob-label">Sector/City</label>
+                  <input type="text" class="ob-input" placeholder="Enter sector or city" />
                 </div>
-
-                <!-- Row 2: First Name & Middle Name -->
-                <div class="form-row">
-                  <div class="form-group">
-                    <label for="nationalFileNumber">Father's Full Name</label>
-                    <input
-                      type="text"
-                      id="internalFileNumber"
-                      placeholder="0000000000000"
-                      value="0000000000000"
-                    />
-                  </div>
-
-                  <div class="form-group">
-                    <label for="internalFileNumber"
-                      >Father's Phone Number</label
-                    >
-                    <input
-                      type="text"
-                      id="internalFileNumber"
-                      placeholder="0000000000000"
-                      value="0000000000000"
-                    />
-                  </div>
+                <div class="col-6">
+                  <label class="ob-label">Cell</label>
+                  <input type="text" class="ob-input" placeholder="Enter cell" />
                 </div>
-
-                <div class="form-header">
-                  <h1>Emergency Contact</h1>
-                  <button class="collapse-btn">Collapse</button>
+                <div class="col-6">
+                  <label class="ob-label">Village</label>
+                  <input type="text" class="ob-input" placeholder="Enter village" />
                 </div>
-
-                <!-- Row 1: National File Number & Internal File Number -->
-                <div class="form-row">
-                  <div class="form-group">
-                    <label for="nationalFileNumber">First Name</label>
-                    <input
-                      type="text"
-                      id="internalFileNumber"
-                      placeholder="0000000000000"
-                      value="0000000000000"
-                    />
-                  </div>
-
-                  <div class="form-group">
-                    <label for="nationalFileNumber">Last Name</label>
-                    <input
-                      type="text"
-                      id="internalFileNumber"
-                      placeholder="0000000000000"
-                      value="0000000000000"
-                    />
-                  </div>
+                <div class="col-6">
+                  <label class="ob-label">Street</label>
+                  <input type="text" class="ob-input" placeholder="Enter street" />
                 </div>
+              </div>
 
-                <!-- Row 2: First Name & Middle Name -->
-                <div class="form-row">
-                  <div class="form-group">
-                    <label for="nationalFileNumber">Email</label>
-                    <input
-                      type="text"
-                      id="internalFileNumber"
-                      placeholder="0000000000000"
-                      value="0000000000000"
-                    />
-                  </div>
-
-                  <div class="form-group">
-                    <label for="internalFileNumber">Phone Number</label>
-                    <input
-                      type="text"
-                      id="internalFileNumber"
-                      placeholder="0000000000000"
-                      value="0000000000000"
-                    />
-                  </div>
+              <!-- Parent's Information -->
+              <div class="section-hdr">
+                <h5>Parent's Information</h5>
+                <button type="button" class="collapse-btn">Collapse</button>
+              </div>
+              <div class="row g-3 mb-3">
+                <div class="col-6">
+                  <label class="ob-label">Father's Full Name</label>
+                  <input type="text" class="ob-input" placeholder="Enter father's name" />
                 </div>
-
-                <div class="form-row">
-                  <div class="form-group">
-                    <label for="nationalFileNumber">Country</label>
-                    <input
-                      type="text"
-                      id="internalFileNumber"
-                      placeholder="0000000000000"
-                      value="0000000000000"
-                    />
-                  </div>
-
-                  <div class="form-group">
-                    <label for="internalFileNumber">Province/State</label>
-                    <input
-                      type="text"
-                      id="internalFileNumber"
-                      placeholder="0000000000000"
-                      value="0000000000000"
-                    />
-                  </div>
+                <div class="col-6">
+                  <label class="ob-label">Father's Phone Number</label>
+                  <input type="text" class="ob-input" placeholder="Enter phone number" />
                 </div>
-
-                <div class="form-row">
-                  <div class="form-group">
-                    <label for="nationalFileNumber"
-                      >District/Local Government</label
-                    >
-                    <input
-                      type="text"
-                      id="internalFileNumber"
-                      placeholder="0000000000000"
-                      value="0000000000000"
-                    />
-                  </div>
-
-                  <div class="form-group">
-                    <label for="internalFileNumber">Sector/City</label>
-                    <input
-                      type="text"
-                      id="internalFileNumber"
-                      placeholder="0000000000000"
-                      value="0000000000000"
-                    />
-                  </div>
+                <div class="col-6">
+                  <label class="ob-label">Mother's Full Name</label>
+                  <input type="text" class="ob-input" placeholder="Enter mother's name" />
                 </div>
-
-                <div class="form-row">
-                  <div class="form-group">
-                    <label for="nationalFileNumber">Cell</label>
-                    <input
-                      type="text"
-                      id="internalFileNumber"
-                      placeholder="0000000000000"
-                      value="0000000000000"
-                    />
-                  </div>
-
-                  <div class="form-group">
-                    <label for="internalFileNumber">Village</label>
-                    <input
-                      type="text"
-                      id="internalFileNumber"
-                      placeholder="0000000000000"
-                      value="0000000000000"
-                    />
-                  </div>
+                <div class="col-6">
+                  <label class="ob-label">Mother's Phone Number</label>
+                  <input type="text" class="ob-input" placeholder="Enter phone number" />
                 </div>
+              </div>
 
-                <div class="form-row">
-                  <div class="form-group">
-                    <label for="internalFileNumber">Street</label>
-                    <input
-                      type="text"
-                      id="internalFileNumber"
-                      placeholder="0000000000000"
-                      value="0000000000000"
-                    />
-                  </div>
+              <!-- Emergency Contact -->
+              <div class="section-hdr">
+                <h5>Emergency Contact</h5>
+                <button type="button" class="collapse-btn">Collapse</button>
+              </div>
+              <div class="row g-3 mb-3">
+                <div class="col-6">
+                  <label class="ob-label">First Name</label>
+                  <input type="text" class="ob-input" placeholder="Enter first name" />
                 </div>
-
-                <div class="form-header">
-                  <h1>Patient's Image</h1>
-                  <button class="collapse-btn">Collapse</button>
+                <div class="col-6">
+                  <label class="ob-label">Last Name</label>
+                  <input type="text" class="ob-input" placeholder="Enter last name" />
                 </div>
-
-                <div class="file-form-group">
-                  <span class="required">Optional</span>
-                  <div class="upload-wrapper">
-                    <label class="upload-box">
-                      <input
-                        type="file"
-                        id="licenseDocument"
-                        accept=".png,.jpg,.jpeg"
-                        hidden
-                      />
-
-                      <div class="upload-content">
-                        <div class="upload-icon">⬆</div>
-                        <p class="upload-title">Upload your file here</p>
-                        <p class="upload-sub">
-                          Supported formats: png, jpeg.<br />
-                          Maximum size 5MB
-                        </p>
-                      </div>
-                    </label>
-                  </div>
+                <div class="col-6">
+                  <label class="ob-label">Email</label>
+                  <input type="text" class="ob-input" placeholder="Enter email" />
                 </div>
+                <div class="col-6">
+                  <label class="ob-label">Phone Number</label>
+                  <input type="text" class="ob-input" placeholder="Enter phone number" />
+                </div>
+                <div class="col-6">
+                  <label class="ob-label">Country</label>
+                  <input type="text" class="ob-input" placeholder="Enter country" />
+                </div>
+                <div class="col-6">
+                  <label class="ob-label">Province/State</label>
+                  <input type="text" class="ob-input" placeholder="Enter province/state" />
+                </div>
+                <div class="col-6">
+                  <label class="ob-label">District/Local Government</label>
+                  <input type="text" class="ob-input" placeholder="Enter district" />
+                </div>
+                <div class="col-6">
+                  <label class="ob-label">Sector/City</label>
+                  <input type="text" class="ob-input" placeholder="Enter sector or city" />
+                </div>
+                <div class="col-6">
+                  <label class="ob-label">Cell</label>
+                  <input type="text" class="ob-input" placeholder="Enter cell" />
+                </div>
+                <div class="col-6">
+                  <label class="ob-label">Village</label>
+                  <input type="text" class="ob-input" placeholder="Enter village" />
+                </div>
+                <div class="col-12">
+                  <label class="ob-label">Street</label>
+                  <input type="text" class="ob-input" placeholder="Enter street" />
+                </div>
+              </div>
 
-                <button class="import-btn">Choose File</button>
-                <button
-                  class="import-btn"
-                  style="
-                    background: white;
-                    color: #4a8f75;
-                    border: 1px solid #4a8f75;
-                  "
-                >
-                  Take Photo With Webcam
-                </button>
-              </form>
+              <!-- Patient Image -->
+              <div class="section-hdr">
+                <h5>Patient's Image</h5>
+                <button type="button" class="collapse-btn">Collapse</button>
+              </div>
+              <div class="mb-3">
+                <p class="text-muted mb-2" style="font-size:12px">Optional</p>
+                <label class="upload-box d-flex flex-column align-items-center justify-content-center">
+                  <input type="file" accept=".png,.jpg,.jpeg" hidden />
+                  <div class="upload-icon">⬆</div>
+                  <p class="upload-title mb-1">Upload your file here</p>
+                  <p class="upload-sub mb-0">Supported formats: png, jpeg. Max 5MB</p>
+                </label>
+                <div class="d-flex gap-2 mt-3">
+                  <button type="button" class="btn-ob-primary">Choose File</button>
+                  <button type="button" class="btn-ob-outline">Take Photo With Webcam</button>
+                </div>
+              </div>
+
+            </form>
+          </div><!-- /step 3 -->
+
+          <!-- STEP 4: Insurance Company -->
+          <div class="step">
+            <h5 class="text-center mb-4">Add Insurance Company</h5>
+            <div class="mb-3">
+              <label class="ob-label">Insurance Company</label>
+              <input type="text" class="ob-input" placeholder="Enter insurance company name" />
+            </div>
+            <div class="mb-3">
+              <label class="ob-label">Additional Information</label>
+              <textarea class="ob-input ob-textarea"></textarea>
             </div>
           </div>
 
-          <!-- STEP 4 -->
-          <div class="step">
-            <h3 style="text-align: center">Add Insurance Company</h3>
+        </div><!-- /steps -->
 
-            <label>Insurance Company</label>
-            <input type="text" placeholder="Enter your department name here" />
-
-            <label>Additional Information</label>
-            <textarea></textarea>
-          </div>
+        <!-- Modal Footer -->
+        <div class="modal-footer-ob">
+          <button class="btn-ob-primary" onclick="nextStep()">Save</button>
+          <span class="step-indicator">Step <span id="stepNum">1</span> of 4</span>
+          <button class="btn-ob-outline" onclick="closeOnboarding()">Skip</button>
         </div>
 
-        <!-- Footer -->
-        <div class="modal-footer">
-          <button class="btn-primary" onclick="nextStep()">Save</button>
-          <span class="step-indicator"
-            >Step <span id="stepNum">1</span> of 4</span
-          >
-          <button class="btn-outline" onclick="closeOnboarding()">Skip</button>
-        </div>
-      </div>
-    </div>
+      </div><!-- /onboarding-modal -->
+    </div><!-- /onboarding-overlay -->
 
-    <div class="container">
-      <!-- Sidebar -->
-      <aside class="sidebar">
-        <div class="logo">Xana<span>Health</span></div>
+    <!-- ═══════════════════════════════ APP SHELL ═══════════════════════════════ -->
+    <div class="d-flex">
 
-        <nav>
-          <div class="nav-section">
-            <div class="nav-label">Facility Admin</div>
-            <a href="#" class="nav-item active">
-              <svg
-                class="nav-icon"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
-                />
-              </svg>
-              <span>Dashboard</span>
-            </a>
-            <a href="#" class="nav-item">
-              <svg
-                class="nav-icon"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                />
-              </svg>
-              <span>Patient Files</span>
-            </a>
-            <a href="patient_visits.html" class="nav-item">
-              <svg
-                class="nav-icon"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                />
-              </svg>
-              <span>Patient Visits</span>
-            </a>
-            <a href="billing.html" class="nav-item">
-              <svg
-                class="nav-icon"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"
-                />
-              </svg>
-              <span>Billing</span>
-            </a>
-            <a href="staff_list.html" class="nav-item">
-              <svg
-                class="nav-icon"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
-                />
-              </svg>
-              <span>Staff</span>
-            </a>
-            <a href="#" class="nav-item">
-              <svg
-                class="nav-icon"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-                />
-              </svg>
-              <span>Reports</span>
-            </a>
-          </div>
+      <!-- ── SIDEBAR ── -->
+      <aside class="sidebar" id="sidebar">
+        <a href="#" class="sidebar-brand">Xana<span>Health</span></a>
+
+        <nav class="flex-grow-1">
+          <div class="nav-label">Facility Admin</div>
+          <ul class="nav flex-column mb-0">
+            <li class="nav-item">
+              <a href="#" class="nav-link active">
+                <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                <span>Dashboard</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="#" class="nav-link">
+                <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                <span>Patient Files</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="patient_visits.html" class="nav-link">
+                <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                <span>Patient Visits</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="billing.html" class="nav-link">
+                <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                <span>Billing</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="staff_list.html" class="nav-link">
+                <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                <span>Staff</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="#" class="nav-link">
+                <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                <span>Reports</span>
+              </a>
+            </li>
+          </ul>
         </nav>
 
-        <div class="user-section">
-          <div class="user-profile">
+        <!-- User section -->
+        <div class="sidebar-user">
+          <div class="d-flex align-items-center gap-2 mb-3">
             <div class="user-avatar">DD</div>
             <div class="user-info">
               <div class="user-name">Dr Jane Doe</div>
-              <div class="user-role">
-                <a
-                  href="/cdn-cgi/l/email-protection"
-                  class="__cf_email__"
-                  data-cfemail="dbbfb4b8afb4a99bb6bab2b7f5b8b4b6"
-                  >[email&#160;protected]</a
-                >
-              </div>
+              <div class="user-role">jane@xanahealth.rw</div>
             </div>
           </div>
-          <div class="user-actions">
+          <div class="d-flex flex-column gap-1">
             <a href="#" class="user-action">
-              <svg
-                width="16"
-                height="16"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
-                />
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                />
-              </svg>
+              <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
               Settings
             </a>
             <a href="#" class="user-action">
-              <svg
-                width="16"
-                height="16"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
+              <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
               Help
             </a>
             <a href="landing.html" class="user-action">
-              <svg
-                width="16"
-                height="16"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-                />
-              </svg>
+              <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
               Logout
             </a>
           </div>
         </div>
       </aside>
 
-      <!-- Main Content -->
-      <main class="main-content">
+      <!-- ── MAIN CONTENT ── -->
+      <main class="main-content flex-grow-1">
+
         <!-- Header -->
-        <div class="header">
-          <h1 class="header-title">Dashboard</h1>
-          <div class="header-actions">
-            <div class="company-logo">
-              <svg
-                width="20"
-                height="20"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
-                />
-              </svg>
-              Company Logo
-              <svg
-                width="16"
-                height="16"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M19 9l-7 7-7-7"
-                />
-              </svg>
-            </div>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h1 class="fw-bold mb-0" style="font-size:28px;color:var(--text-dark)">Dashboard</h1>
+          <div class="company-logo-pill">
+            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+            Company Logo
+            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
           </div>
         </div>
 
-        <!-- Stats Grid -->
-        <div class="stats-grid">
-          <div class="stat-card">
-            <div class="stat-header">
-              <div>
-                <div class="stat-value" id="patientVisits">120,000</div>
-                <div class="stat-label">Patient Visits</div>
-              </div>
-              <div class="stat-icon">
-                <svg
-                  width="24"
-                  height="24"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
-                  />
-                </svg>
+        <!-- Stats Row -->
+        <div class="row g-4 mb-4">
+          <div class="col-xl-3 col-md-6">
+            <div class="stat-card p-4">
+              <div class="d-flex justify-content-between align-items-start">
+                <div>
+                  <div class="stat-value" id="patientVisits">120,000</div>
+                  <div class="stat-label mt-1">Patient Visits</div>
+                </div>
+                <div class="stat-icon">
+                  <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                </div>
               </div>
             </div>
           </div>
-
-          <div class="stat-card">
-            <div class="stat-header">
-              <div>
-                <div class="stat-value">Rwf 2000</div>
-                <div class="stat-label">Total Revenue</div>
-              </div>
-              <div class="stat-icon">
-                <svg
-                  width="24"
-                  height="24"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
+          <div class="col-xl-3 col-md-6">
+            <div class="stat-card p-4">
+              <div class="d-flex justify-content-between align-items-start">
+                <div>
+                  <div class="stat-value">Rwf 2000</div>
+                  <div class="stat-label mt-1">Total Revenue</div>
+                </div>
+                <div class="stat-icon">
+                  <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                </div>
               </div>
             </div>
           </div>
-
-          <div class="stat-card">
-            <div class="stat-header">
-              <div>
-                <div class="stat-value">5000</div>
-                <div class="stat-label">Patients Admitted</div>
-              </div>
-              <div class="stat-icon">
-                <svg
-                  width="24"
-                  height="24"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-                  />
-                </svg>
+          <div class="col-xl-3 col-md-6">
+            <div class="stat-card p-4">
+              <div class="d-flex justify-content-between align-items-start">
+                <div>
+                  <div class="stat-value">5,000</div>
+                  <div class="stat-label mt-1">Patients Admitted</div>
+                </div>
+                <div class="stat-icon">
+                  <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                </div>
               </div>
             </div>
           </div>
-
-          <div class="stat-card">
-            <div class="stat-header">
-              <div>
-                <div class="stat-value">2000</div>
-                <div class="stat-label">Reports Generated</div>
-              </div>
-              <div class="stat-icon">
-                <svg
-                  width="24"
-                  height="24"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                  />
-                </svg>
+          <div class="col-xl-3 col-md-6">
+            <div class="stat-card p-4">
+              <div class="d-flex justify-content-between align-items-start">
+                <div>
+                  <div class="stat-value">2,000</div>
+                  <div class="stat-label mt-1">Reports Generated</div>
+                </div>
+                <div class="stat-icon">
+                  <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Charts -->
-      <div class="chart-grid">
+        <!-- Charts Row 1: Revenue (8 cols) + Disease Prevalence (4 cols) -->
+        <div class="row g-4 mb-4">
+          <div class="col-lg-8">
+            <div class="chart-card">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <span class="chart-title">Revenue Generated</span>
+              </div>
+              <div class="chart-wrapper">
+                <canvas id="revenueChart"></canvas>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-4">
+            <div class="chart-card">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <span class="chart-title">Disease Prevalence</span>
+              </div>
+              <div class="chart-wrapper">
+                <canvas id="donutChart"></canvas>
+              </div>
+              <div class="legend mt-2">
+                <div class="legend-item"><div class="legend-color" style="background:#1a5f5a"></div>Malaria</div>
+                <div class="legend-item"><div class="legend-color" style="background:#2d8b83"></div>Cancer</div>
+                <div class="legend-item"><div class="legend-color" style="background:#7dd3c0"></div>Typhoid</div>
+                <div class="legend-item"><div class="legend-color" style="background:#b8e6de"></div>Flu/Fever</div>
+              </div>
+            </div>
+          </div>
+        </div>
 
-  <!-- REVENUE CHART -->
-  <div class="chart-card">
-    <div class="chart-header">
-      <div class="chart-title">Revenue Generated</div>
-    </div>
+        <!-- Charts Row 2: Patient Visits + Patient Gender -->
+        <div class="row g-4 mb-4">
+          <div class="col-md-6">
+            <div class="chart-card">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <span class="chart-title">Patient Visits</span>
+              </div>
+              <div class="chart-wrapper">
+                <canvas id="patientVisitsChart"></canvas>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="chart-card">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <span class="chart-title">Patient Gender</span>
+              </div>
+              <div class="chart-wrapper">
+                <canvas id="genderChart"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
 
-    <div class="chart-wrapper">
-      <canvas id="revenueChart"></canvas>
-    </div>
-  </div>
-
-  
-
-  <!-- DISEASE PREVALENCE -->
-  <div class="chart-card">
-    <div class="chart-header">
-      <div class="chart-title">Disease Prevalence</div>
-    </div>
-
-    <div class="chart-wrapper">
-      <canvas id="donutChart"></canvas>
-    </div>
-
-    <div class="legend">
-      <div class="legend-item">
-        <div class="legend-color" style="background:#1a5f5a"></div>
-        Malaria
-      </div>
-      <div class="legend-item">
-        <div class="legend-color" style="background:#2d8b83"></div>
-        Cancer
-      </div>
-      <div class="legend-item">
-        <div class="legend-color" style="background:#7dd3c0"></div>
-        Typhoid
-      </div>
-      <div class="legend-item">
-        <div class="legend-color" style="background:#b8e6de"></div>
-        Flu/Fever
-      </div>
-    </div>
-  </div>
-
-   <div class="chart-card">
-    <div class="chart-header">
-      <div class="chart-title">Patient Visits</div>
-    </div>
-
-    <div class="chart-wrapper">
-      <canvas id="revenueChart"></canvas>
-    </div>
-  </div>
-
-   <div class="chart-card">
-    <div class="chart-header">
-      <div class="chart-title">Patient Gender</div>
-    </div>
-
-    <div class="chart-wrapper">
-      <canvas id="revenueChart"></canvas>
-    </div>
-  </div>
-
-</div>
-        <!-- Table -->
+        <!-- Appointments Table -->
         <div class="table-card">
-          <div class="table-header">
-            <h2 class="table-title">Recent Booked Appointments</h2>
+          <div class="d-flex justify-content-between align-items-center p-3 px-4" style="border-bottom:1px solid var(--border-color)">
+            <h5 class="fw-semibold mb-0" style="font-size:16px">Recent Booked Appointments</h5>
           </div>
-          <table>
-            <thead>
-              <tr>
-                <th>File Number</th>
-                <th>First Name</th>
-                <th>Last Name</th>
-                <th>Assigned Doctor</th>
-                <th>Date</th>
-                <th>Diseases</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>192611</td>
-                <td>Nathan</td>
-                <td>Nathan Rivers</td>
-                <td>Dr. Jacob Ryan</td>
-                <td>23/05/2023</td>
-                <td><span class="badge badge-fever">Fever</span></td>
-                <td>
-                  <button class="action-button">Consult</button>
-                  <button class="icon-button">🗑</button>
-                </td>
-              </tr>
-              <tr>
-                <td>192611</td>
-                <td>Sarah</td>
-                <td>Smith</td>
-                <td>Dr. Ropoik</td>
-                <td>25/05/2023</td>
-                <td><span class="badge badge-cough">Cough</span></td>
-                <td>
-                  <button class="action-button">Consult</button>
-                  <button class="icon-button">🗑</button>
-                </td>
-              </tr>
-              <tr>
-                <td>192611</td>
-                <td>An'drea</td>
-                <td>Batley</td>
-                <td>Dr. Jay Suri</td>
-                <td>23/05/2023</td>
-                <td><span class="badge badge-malaria">Malaria</span></td>
-                <td>
-                  <button class="action-button">Consult</button>
-                  <button class="icon-button">🗑</button>
-                </td>
-              </tr>
-              <tr>
-                <td>192611</td>
-                <td>Angelica</td>
-                <td>Angelica Ramos</td>
-                <td>Dr. Jane Doe</td>
-                <td>23/05/2023</td>
-                <td><span class="badge badge-typhoid">Typhoid</span></td>
-                <td>
-                  <button class="action-button">Consult</button>
-                  <button class="icon-button">🗑</button>
-                </td>
-              </tr>
-              <tr>
-                <td>192611</td>
-                <td>Andrew</td>
-                <td>Csur</td>
-                <td>Dr. Megha Trivedi</td>
-                <td>02/05/2023</td>
-                <td><span class="badge badge-cholera">Cholera</span></td>
-                <td>
-                  <button class="action-button">Consult</button>
-                  <button class="icon-button">🗑</button>
-                </td>
-              </tr>
-              <tr>
-                <td>192611</td>
-                <td>Csiro</td>
-                <td>Csuro Stevens</td>
-                <td>Dr. Sarah Smith</td>
-                <td>02/05/2023</td>
-                <td><span class="badge badge-infection">Infection</span></td>
-                <td>
-                  <button class="action-button">Consult</button>
-                  <button class="icon-button">🗑</button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+          <div class="table-responsive">
+            <table class="table mb-0">
+              <thead>
+                <tr>
+                  <th>File Number</th>
+                  <th>First Name</th>
+                  <th>Last Name</th>
+                  <th>Assigned Doctor</th>
+                  <th>Date</th>
+                  <th>Diseases</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>192611</td><td>Nathan</td><td>Nathan Rivers</td><td>Dr. Jacob Ryan</td><td>23/05/2023</td>
+                  <td><span class="disease-badge badge-fever">Fever</span></td>
+                  <td class="d-flex gap-2 align-items-center">
+                    <button class="btn-consult">Consult</button>
+                    <button class="btn-icon">🗑</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>192611</td><td>Sarah</td><td>Smith</td><td>Dr. Ropoik</td><td>25/05/2023</td>
+                  <td><span class="disease-badge badge-cough">Cough</span></td>
+                  <td class="d-flex gap-2 align-items-center">
+                    <button class="btn-consult">Consult</button>
+                    <button class="btn-icon">🗑</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>192611</td><td>An'drea</td><td>Batley</td><td>Dr. Jay Suri</td><td>23/05/2023</td>
+                  <td><span class="disease-badge badge-malaria">Malaria</span></td>
+                  <td class="d-flex gap-2 align-items-center">
+                    <button class="btn-consult">Consult</button>
+                    <button class="btn-icon">🗑</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>192611</td><td>Angelica</td><td>Angelica Ramos</td><td>Dr. Jane Doe</td><td>23/05/2023</td>
+                  <td><span class="disease-badge badge-typhoid">Typhoid</span></td>
+                  <td class="d-flex gap-2 align-items-center">
+                    <button class="btn-consult">Consult</button>
+                    <button class="btn-icon">🗑</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>192611</td><td>Andrew</td><td>Csur</td><td>Dr. Megha Trivedi</td><td>02/05/2023</td>
+                  <td><span class="disease-badge badge-cholera">Cholera</span></td>
+                  <td class="d-flex gap-2 align-items-center">
+                    <button class="btn-consult">Consult</button>
+                    <button class="btn-icon">🗑</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>192611</td><td>Csiro</td><td>Csuro Stevens</td><td>Dr. Sarah Smith</td><td>02/05/2023</td>
+                  <td><span class="disease-badge badge-infection">Infection</span></td>
+                  <td class="d-flex gap-2 align-items-center">
+                    <button class="btn-consult">Consult</button>
+                    <button class="btn-icon">🗑</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
+
       </main>
-    </div>
+    </div><!-- /d-flex -->
 
-    <script
-      data-cfasync="false"
-      src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"
-    ></script>
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- intl-tel-input JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <script>
+      // ─── Onboarding wizard ───────────────────────────────────────────────────
       let currentStep = 0;
-      const steps = document.querySelectorAll(".step");
+      const steps   = document.querySelectorAll(".step");
       const stepNum = document.getElementById("stepNum");
-      const modal = document.querySelector(".onboarding-modal");
+      const modal   = document.getElementById("onboardingModal");
 
-      function updateModalSize(stepIndex) {
-        if (stepIndex === 2) {
-          // STEP 3 (index starts at 0)
-          modal.classList.add("large");
-        } else {
-          modal.classList.remove("large");
-        }
+      function updateModalSize(idx) {
+        if (idx === 2) modal.classList.add("large");
+        else           modal.classList.remove("large");
       }
-
-      // Phone number validation
-      const phoneInputField = document.querySelector("#phone");
-      const phoneInput = window.intlTelInput(phoneInputField, {
-        preferredCountries: ["rw", "us", "gb"],
-        separateDialCode: true,
-        utilsScript:
-          "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
-      });
-      const form = document.querySelector("form"); // Replace 'form' with your form selector
-      form.addEventListener("submit", (event) => {
-        const fullNumber = phoneInput.getNumber();
-        document.querySelector("#full-phone").value = fullNumber;
-      });
 
       function nextStep() {
         if (currentStep < steps.length - 1) {
           steps[currentStep].classList.remove("active");
           currentStep++;
           steps[currentStep].classList.add("active");
-
           stepNum.textContent = currentStep + 1;
-
           updateModalSize(currentStep);
         } else {
           closeOnboarding();
@@ -1806,80 +1151,103 @@
       function closeOnboarding() {
         document.getElementById("onboarding").style.display = "none";
       }
-      // Revenue Chart (Line Chart) - Enhanced
-      const revenueCtx = document
-        .getElementById("revenueChart")
-        .getContext("2d");
 
-      // Create gradient for 2024
-      const gradient2024 = revenueCtx.createLinearGradient(0, 0, 0, 400);
-      gradient2024.addColorStop(0, "rgba(26, 95, 90, 0.4)");
-      gradient2024.addColorStop(0.5, "rgba(26, 95, 90, 0.2)");
-      gradient2024.addColorStop(1, "rgba(26, 95, 90, 0.0)");
+      // ─── Phone input (intl-tel-input) ────────────────────────────────────────
+      const phoneInputField = document.querySelector("#phone");
+      const phoneInput = window.intlTelInput(phoneInputField, {
+        preferredCountries: ["rw", "us", "gb"],
+        separateDialCode: true,
+        utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
+      });
 
-      // Create gradient for 2023
-      const gradient2023 = revenueCtx.createLinearGradient(0, 0, 0, 400);
-      gradient2023.addColorStop(0, "rgba(125, 211, 192, 0.3)");
-      gradient2023.addColorStop(0.5, "rgba(125, 211, 192, 0.15)");
-      gradient2023.addColorStop(1, "rgba(125, 211, 192, 0.0)");
-
+      // ─── Charts ──────────────────────────────────────────────────────────────
+      // Revenue Chart
       new Chart(document.getElementById("revenueChart"), {
-  type: "line",
-  data: {
-    labels: ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],
-    datasets: [{
-      label:"Revenue",
-      data:[30,40,35,50,49,60,70,80,75,85,90,95],
-      borderColor:"#1a5f5a",
-      backgroundColor:"rgba(26,95,90,0.15)",
-      tension:0.4,
-      fill:true,
-      pointRadius:4
-    }]
-  },
-  options:{
-    responsive:true,
-    maintainAspectRatio:false, /* CRITICAL FIX */
-    plugins:{legend:{display:false}},
-    scales:{
-      y:{beginAtZero:true}
-    }
-  }
-});
+        type: "line",
+        data: {
+          labels: ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],
+          datasets: [{
+            label: "Revenue",
+            data: [30,40,35,50,49,60,70,80,75,85,90,95],
+            borderColor: "#1a5f5a",
+            backgroundColor: "rgba(26,95,90,0.15)",
+            tension: 0.4,
+            fill: true,
+            pointRadius: 4,
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: { y: { beginAtZero: true } }
+        }
+      });
 
-      // Donut Chart (Disease Prevalence) - Enhanced
-     new Chart(document.getElementById("donutChart"), {
-  type:"doughnut",
-  data:{
-    labels:["Malaria","Cancer","Typhoid","Flu/Fever"],
-    datasets:[{
-      data:[40,25,20,15],
-      backgroundColor:[
-        "#1a5f5a",
-        "#2d8b83",
-        "#7dd3c0",
-        "#b8e6de"
-      ],
-      borderWidth:0,
-      spacing:2
-    }]
-  },
-  options:{
-    responsive:true,
-    maintainAspectRatio:false, /* MOST IMPORTANT */
-    cutout:"70%",
-    plugins:{
-      legend:{display:false}
-    }
-  }
-});
+      // Donut Chart (Disease Prevalence)
+      new Chart(document.getElementById("donutChart"), {
+        type: "doughnut",
+        data: {
+          labels: ["Malaria","Cancer","Typhoid","Flu/Fever"],
+          datasets: [{
+            data: [40,25,20,15],
+            backgroundColor: ["#1a5f5a","#2d8b83","#7dd3c0","#b8e6de"],
+            borderWidth: 0,
+            spacing: 2,
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          cutout: "70%",
+          plugins: { legend: { display: false } }
+        }
+      });
 
+      // Patient Visits Chart (re-uses same data shape as Revenue)
+      new Chart(document.getElementById("patientVisitsChart"), {
+        type: "bar",
+        data: {
+          labels: ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],
+          datasets: [{
+            label: "Visits",
+            data: [850,940,780,1100,1050,1300,1450,1600,1500,1700,1800,1900],
+            backgroundColor: "rgba(45,139,131,0.7)",
+            borderRadius: 6,
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: { y: { beginAtZero: true } }
+        }
+      });
 
-     
+      // Gender Chart
+      new Chart(document.getElementById("genderChart"), {
+        type: "doughnut",
+        data: {
+          labels: ["Male","Female","Other"],
+          datasets: [{
+            data: [55, 43, 2],
+            backgroundColor: ["#1a5f5a","#7dd3c0","#b8e6de"],
+            borderWidth: 0,
+            spacing: 2,
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          cutout: "65%",
+          plugins: { legend: { position: "bottom", labels: { font: { family: "Outfit" } } } }
+        }
+      });
 
-      // Animate numbers
+      // ─── Animate stat numbers ────────────────────────────────────────────────
       function animateValue(id, start, end, duration) {
         const obj = document.getElementById(id);
+        if (!obj) return;
         const range = end - start;
         const minTimer = 50;
         const stepTime = Math.abs(Math.floor(duration / range));
@@ -1889,10 +1257,7 @@
         const step = () => {
           current += increment * 100;
           obj.textContent = current.toLocaleString();
-          if (
-            current !== end &&
-            (increment > 0 ? current < end : current > end)
-          ) {
+          if (current !== end && (increment > 0 ? current < end : current > end)) {
             setTimeout(step, timer);
           } else {
             obj.textContent = end.toLocaleString();
@@ -1901,18 +1266,16 @@
         step();
       }
 
-      // Run animations on page load
+      // ─── Init on DOMContentLoaded ────────────────────────────────────────────
       window.addEventListener("DOMContentLoaded", () => {
-        // Show loading screen briefly, then show onboarding modal
         setTimeout(() => {
           document.getElementById("loadingScreen").classList.add("hidden");
-
-          // After loading screen fades out, show onboarding modal
           setTimeout(() => {
             document.getElementById("onboarding").style.display = "flex";
-          }, 500); // Wait for fade-out transition
-        }, 100); // Instant loading
+          }, 500);
+        }, 100);
       });
     </script>
+
   </body>
 </html>
